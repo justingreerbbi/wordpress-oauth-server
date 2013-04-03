@@ -1,14 +1,14 @@
 === OAuth2 Complete For WordPress ===
 Contributors: jgwpk
 Donate link: http://justin-greer.com/donate
-Tags: oauth2, oath provider, provider, oauth, oauth client, signle sign on, sso
+Tags: oauth2, OAuth provider, Provider, OAuth, OAuth client, Single Sign On, sso
 Requires at least: 3.4.2
 Tested up to: 3.5.1
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Allows WordPress to use OAuth 2 and become a SSO - Data provider. Your site will be able provided Single Sign On and also deliver authorized user data.
+Your site will be able provided Single Sign On and also deliver authorized user data using the built in OAuth 2.0 API.
 
 == Description ==
 
@@ -69,32 +69,34 @@ NOTE: All returns will be in JSON format.
 
 = Is there support for this plugin? Can you help me? =
 
-You can visit our <a href="http://justin-greer.com/forums/forum/wordpress-oauth2-provider-plugin/" title="WordPress OAuth2 Provider Plugin">support forum</a> for support. Although it takes the hard part away from dealing with OAuth it will require some knowledge on your behalf. We are glad to help as much as resonibily possible but there has to be a line drawn somewhere.
+You can visit our <a href="http://justin-greer.com/forums/forum/wordpress-oauth2-provider-plugin/" title="WordPress OAuth2 Provider Plugin">support forum</a> for support. Although it takes the hard part away from dealing with OAuth it will require some knowledge on your behalf. I am glad to help as much as resonibily possible but there has to be a line drawn somewhere.
 
 = Can you set this up for me on my current website? =
 
-Can we? "YES". But thats a different story. You are more than welcome to contact us with if you should ever need assistance.
+Can I? "YES". But thats a different story. You are more than welcome to contact us with if you should ever need assistance.
 
 = What information does the a authorized client have access to? =
 
-By default OAuth2 Provider delivers ALL the information about the user that logged in. We are planning on adding a easy to use dashboard to limit data.
+By default OAuth2 Provider delivers <strong>ALL</strong> the information about the user that logged in. We are planning on adding a easy to use dashboard to limit data.
 
 = Do you have a tutorial I can follow ? =
 
-Yes we do. You can view a video titorial here. If you prefer readin then you may have to wait until the full documentation is complete. We are working hard to make it as easy and painless as possible for you to have a premium feature.
+Yes I do. You can view a video titorial here. If you prefer readin then you may have to wait until the full documentation is complete. I are working hard to make it as easy and painless as possible for you to have a premium feature.
 
 = Where can I download the SDK's for OAuth2 Provider =
 
-You can visit our websit <a href="http://justin-greer.com">Here</a>
+You can visit my websiet <a href="http://justin-greer.com">Here</a>
 
 == Upgrade Notice ==
 
-When Upgrading OAuth2 Provider we serioulsy recommend creating a backup of your site. We will try to create updates that will be flawless. Hopefully any future updates will not chnage to the point where it will stop working. All updates will be ran through multiple tests before being released. In the event that the a upgrade of OAuth2 Provider is realeased and you decide to update, we (balackbird Interactive) can not and will not be held responsible
-for any damages done to your website, business, or part that pertains to your website. Upgrade at your OWN RISK!
+When Upgrading OAuth2 Provider I serioulsy recommend creating a backup of your site. I will try to create updates that will be flawless. Hopefully any future updates will not chnage to the point where it will stop working. All updates will be ran through multiple tests before being released. In the event that the a upgrade of OAuth2 Provider is realeased and you decide to update, I (Justin Greer) can not and will not be held responsible for any damages done to your website, business, or part that pertains to your website. Upgrade at your OWN RISK!
 
 == Screenshots ==
 
 == Changelog ==
 
 = 1.0.0 =
-*INITIAL BUILD 
+*INITIAL BUILD
+= 1.0.1 =
+* Re-worked Readme.txt
+* Fixed absolute paths causing 404 Error when WordPress is running under a sub diractory (Useing admin_url() currently)

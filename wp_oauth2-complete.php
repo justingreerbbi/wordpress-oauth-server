@@ -3,7 +3,7 @@
 Plugin Name: WP OAuth2 Complete
 Plugin URI: http://justin-greer.com/oauth2-provider-complete-wordpress-plugin
 Description: Allows Wordpress to use OAuth2 structure and become a provider
-Version: 1.0.0
+Version: 1.0.1
 Author: jgwpk
 Author URI: http://justin-greer.com
 License: GPL2
@@ -145,7 +145,7 @@ function wp_oauth2_complete_install_data() {
 /**
  * Run the install of the tables 
  */
-register_activation_hook(__FILE__,'wp_oauth2_complete_install');				// REGISTER THE CREATION OF THE TABLE
+register_activation_hook(__FILE__,'wp_oauth2_complete_install');				 // REGISTER THE CREATION OF THE TABLE
 register_activation_hook(__FILE__,'wp_oauth2_complete_install_data');			// REGISTER THE INSTALLATION OF THE INTIAL DATA
 
 
@@ -273,7 +273,7 @@ add_filter( 'admin_init' , array($OAuth2RewritesCode , 'flush_rewrite_rules'));
  * Add action hook to WordPress
  * This was just added and seems to work pretty good
  * 
- * @todo Look into this a little more for a more clean layout and hook
+ * @todo Look into this a little more clean layout and hook
  */
 add_action( 'template_redirect', array($OAuth2RewritesCode, 'template_redirect_intercept') );
 ?>

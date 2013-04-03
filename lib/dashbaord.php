@@ -3,27 +3,30 @@
   * DASHBOARD UI
   * 
   * @author Justin Greer <support@wpkeeper.com>
-  * @version 1.0.0
+  * @version 1.0.1
   */
 function wp_oauth2_complete_init_dashboard() {
 	
 	require_once(plugin_dir_path( __FILE__ )."classes/admin/IOAuth2Storage.php");	// INCLUDE OAuth 2.0 STORAGE
-	require_once(plugin_dir_path( __FILE__ )."classes/admin/OAuthMain.php"); 		// INCLUDE THE OAuth ADMIN OBJECT
+	require_once(plugin_dir_path( __FILE__ )."classes/admin/OAuthMain.php"); 		 // INCLUDE THE OAuth ADMIN OBJECT
 	$oauthStorage = new IOAuth2StorageWP();	    // STORAGE OBJECT
-	$admin = new oauthAdmin();					// ADMIN OB]JECT
+	$admin = new oauthAdmin();					 // ADMIN OB]JECT
 	
-	$messageType;								// MESSAGE TYPE HOLDER							
-	$messagetext;								// MESSAGE TEXT HOLDER
+	$messageType;								  // MESSAGE TYPE HOLDER							
+	$messagetext;								  // MESSAGE TEXT HOLDER
 	
   	wp_enqueue_style('wp_oauth2_provider_stylesheet');
 
 	if(isset($_POST['op2action']) && $_POST['op2action'] == 'Add Client'){
-		$oauthStorage->addClient($_POST['mdop_name'], $_POST['mdop_redirect_uri']); // REGISTER A CONSUMER WITH NAME TEST
+		$oauthStorage->addClient($_POST['mdop_name'], $_POST['mdop_redirect_uri']);
 		}
 	if(isset($_GET['delete']) && $_GET['delete'] != ''){
 		global $wpdb;
 		$wpdb->delete('oauth2_clients', array('client_id'=> $_GET['delete']));
 		}
+	
+	// Added to be used through out the plugin backend
+	$adminUrl = admin_url();
 ?>
    
 	<h2 class="section_title">WordPress OAuth2 Provider</h2>
@@ -93,8 +96,7 @@ function wp_oauth2_complete_init_dashboard() {
         <article class="module width_3_quarter">
 			<header><h3>Add Client</h3></header>
 			<div class="module_content">
-				
-				<form name="mdop_add_client" method="post" action="/wp-admin/admin.php?page=wp_oauth2_complete">
+				<form name="mdop_add_client" method="post" action="<?php print $adminUrl; ?>admin.php?page=wp_oauth2_complete">
                 	<table width="564" border="0">
                       <tr>
                         <td>Name:</td>
