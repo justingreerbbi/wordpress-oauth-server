@@ -3,8 +3,8 @@ Contributors: jgwpk
 Donate link: http://justin-greer.com/donate
 Tags: oauth2, OAuth provider, Provider, OAuth, OAuth client, Single Sign On, sso
 Requires at least: 3.4.2
-Tested up to: 3.5.1
-Stable tag: 1.0.1
+Tested up to: 3.5.2
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -97,6 +97,10 @@ When Upgrading OAuth2 Provider I serioulsy recommend creating a backup of your s
 
 = 1.0.0 =
 *INITIAL BUILD
+
 = 1.0.1 =
 * Re-worked Readme.txt
 * Fixed absolute paths causing 404 Error when WordPress is running under a sub diractory (Useing admin_url() currently)
+
+= 1.0.2 = 
+* Fixed Broken login redirect

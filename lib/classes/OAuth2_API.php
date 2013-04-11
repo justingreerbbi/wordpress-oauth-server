@@ -169,7 +169,45 @@ switch($method){
 /**
  * Contains the HTML layout for the authorization login page
  */
-function oauth2LoginLayout(){?>
+function oauth2LoginLayout(){
+	
+	/**
+	 * Form handler
+	 */
+		
+	// CHECK IF THE LOGIN FORM HAS BEEN SUBMITTED
+	if(isset($_POST['login'])) {
+		
+		$user 	= $_POST['user'];
+		$pwd	= $_POST['pwd'];
+		$creds = array();
+		$creds['user_login'] 		= $user;
+		$creds['user_password'] 	= $pwd;
+		$user = wp_signon( $creds, false );
+		
+			if ( !is_wp_error($user) ){
+			
+			/*
+				HOOK FOR SINGLE SIGN ON
+				
+				Description:
+				
+					If the sso_redirect if present then the script will look for the client_id (which has been encrypted with AES);
+					We need to take that encryption and decrypt it and to get the client ID.
+					
+					NOW we will wait until the user has entered the credinials that is needed to log in. If the login is good and the sso_redirect is present we will redirect then back through the OAuth process which will then authinicate and send the 
+					user with a token to the clients site. The client can then take the token and use it to get all the users information for database (AS IF THEY ARE LOGGED IN HERE). 
+			*/
+			if (isset($_GET['sso_redirect']) && $_GET['sso_redirect'] != ''){
+				wp_redirect(site_url() .'/oauth/authorize/?client_id='.$_GET['sso_redirect'].'&state='.$_GET['state'].'&response_type=code');
+				
+			}else{
+				$error = '<div class="login_message" style="margin:0 auto;width:50%; font-weight:bold;font-size:14px;color:red;">Incorrect Information</div>';
+				} 
+		 
+	}
+	}
+	?>
 	<!DOCTYPE html>
 	<!--[if lt IE 7 ]> <html lang="en" class="ie6 ielt8"> <![endif]-->
 	<!--[if IE 7 ]>    <html lang="en" class="ie7 ielt8"> <![endif]-->
@@ -385,44 +423,6 @@ function oauth2LoginLayout(){?>
 		background-position: 0 -135px;
 		color: #00aeef;
 	}
-	<?php
-	/**
-	 * Form handler
-	 */
-		
-	// CHECK IF THE LOGIN FORM HAS BEEN SUBMITTED
-	if(isset($_POST['login'])) {
-		
-		$user 	= $_POST['user'];
-		$pwd	= $_POST['pwd'];
-		$creds = array();
-		$creds['user_login'] 		= $user;
-		$creds['user_password'] 	= $pwd;
-		$user = wp_signon( $creds, false );
-		
-			if ( !is_wp_error($user) ){
-			
-			/*
-				HOOK FOR SINGLE SIGN ON
-				
-				Description:
-				
-					If the sso_redirect if present then the script will look for the client_id (which has been encrypted with AES);
-					We need to take that encryption and decrypt it and to get the client ID.
-					
-					NOW we will wait until the user has entered the credinials that is needed to log in. If the login is good and the sso_redirect is present we will redirect then back through the OAuth process which will then authinicate and send the 
-					user with a token to the clients site. The client can then take the token and use it to get all the users information for MyDwellworks database (AS IF THEY ARE LOGGED IN HERE). 
-			*/
-			if (isset($_GET['sso_redirect']) && $_GET['sso_redirect'] != ''){
-				wp_redirect(site_url() .'/oauth/authorize/?client_id='.$_GET['sso_redirect'].'&state='.$_GET['state'].'&response_type=code');
-				exit;
-			}else{
-				$error = '<div class="login_message" style="margin:0 auto;width:50%; font-weight:bold;font-size:14px;color:red;">Incorrect Information</div>';
-				} 
-		 
-	}
-	}
-	?>
 	</style>
 	</head>
 	<body>

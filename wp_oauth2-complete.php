@@ -3,7 +3,7 @@
 Plugin Name: WP OAuth2 Complete
 Plugin URI: http://justin-greer.com/oauth2-provider-complete-wordpress-plugin
 Description: Allows Wordpress to use OAuth2 structure and become a provider
-Version: 1.0.1
+Version: 1.0.2
 Author: jgwpk
 Author URI: http://justin-greer.com
 License: GPL2
