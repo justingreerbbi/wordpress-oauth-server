@@ -10,7 +10,7 @@ function wp_oauth2_complete_init_dashboard() {
 	require_once(plugin_dir_path( __FILE__ )."classes/admin/IOAuth2Storage.php");	// INCLUDE OAuth 2.0 STORAGE
 	require_once(plugin_dir_path( __FILE__ )."classes/admin/OAuthMain.php"); 		 // INCLUDE THE OAuth ADMIN OBJECT
 	$oauthStorage = new IOAuth2StorageWP();	    // STORAGE OBJECT
-	$admin = new oauthAdmin();					 // ADMIN OB]JECT
+	$admin = new oauthAdmin();					 // ADMIN OBJECT
 	
 	$messageType;								  // MESSAGE TYPE HOLDER							
 	$messagetext;								  // MESSAGE TEXT HOLDER
