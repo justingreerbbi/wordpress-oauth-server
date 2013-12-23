@@ -2,13 +2,11 @@
 
 Plugin that enables a WordPress website to become a provider and Authenticator for Single Sign on and data transfer 
 
-Contributors: jgwpk
-Donate link: http://justin-greer.com/donate
-Tags: oauth2, OAuth provider, Provider, OAuth, OAuth client, Single Sign On, sso
-Requires at least: 3.4.2
-Tested up to: 3.5.2
-Stable tag: 1.0.3
-License: GPLv2 or later
+Requires at least: 3.4.2  
+Tested up to: 3.5.2  
+Stable tag: 1.0.3  
+License: GPLv2 or later  
+
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Your site will be able provided Single Sign On and also deliver authorized user data using the built in OAuth 2.0 API.
