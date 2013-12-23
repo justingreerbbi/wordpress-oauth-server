@@ -1,5 +1,5 @@
 === OAuth2 Complete For WordPress ===
-Contributors: jgwpk
+Contributors: jgwpk, jwickard
 Donate link: http://justin-greer.com/donate
 Tags: oauth2, OAuth provider, Provider, OAuth, OAuth client, Single Sign On, sso
 Requires at least: 3.4.2
