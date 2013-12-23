@@ -446,6 +446,6 @@ function oauth2LoginLayout(){
 	</html>
 
 
-<?
+<?php
 }
 ?>
