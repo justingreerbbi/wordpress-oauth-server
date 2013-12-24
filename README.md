@@ -4,7 +4,7 @@ Plugin that enables a WordPress website to become a provider and Authenticator f
 
 Contributors: Justin Greer, Joel Wickard  
 Requires at least: 3.4.2  
-Tested up to: 3.5.2  
+Tested up to: 3.7  
 Stable tag: 1.0.3  
 License: GPLv2 or later  
 
