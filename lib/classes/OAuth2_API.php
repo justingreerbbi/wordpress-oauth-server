@@ -141,6 +141,11 @@ switch($method){
 		
 		global $wpdb;
 		$info = $wpdb->get_row("SELECT * FROM wp_users WHERE ID = ".$user_id."");
+
+		//don't send sensitive info accross the wire.
+		unset($info->user_pass);
+		unset($info->user_activation_key);
+
 		header('Cache-Control: no-cache, must-revalidate');
 		header('Content-type: application/json');
 		print_r(json_encode($info));
@@ -216,7 +221,7 @@ function oauth2LoginLayout(){
 	<head>
 	<meta charset="utf-8">
 	<title><?php print bloginfo('name'); ?> - Authorization Login</title>
-	<link rel="stylesheet" type="text/css" href="style.css" />
+	<!-- <link rel="stylesheet" type="text/css" href="style.css" /> -->
 	<style>
 	/* Reset CSS */
 	html, body, div, span, applet, object, iframe,
