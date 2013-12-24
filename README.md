@@ -2,7 +2,7 @@
 
 Plugin that enables a WordPress website to become a provider and Authenticator for Single Sign on and data transfer 
 
-Contributors: Justin Greer, Joel Wickard
+Contributors: Justin Greer, Joel Wickard  
 Requires at least: 3.4.2  
 Tested up to: 3.5.2  
 Stable tag: 1.0.3  
