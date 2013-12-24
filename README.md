@@ -108,3 +108,7 @@ When Upgrading OAuth2 Provider I serioulsy recommend creating a backup of your s
 
 ### 1.0.3
 * Fixed Admin URL links for plugin dashboard
+
+### 1.0.4
+* Fixed short tag in login layout
+* Filtered out hashed password / user activation key from returned oauth data.
