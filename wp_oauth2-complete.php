@@ -109,12 +109,12 @@ function wp_oauth2_complete_install() {
   
   	// TOKEN REFRESH TABLE
 	$install_refresh_token_table = "CREATE TABLE oauth2_refresh_tokens (
-	refresh_token varchar(40) NOT NULL,
+	oauth_token varchar(40) NOT NULL,
 	client_id varchar(40) NOT NULL,
 	user_id int(11) UNSIGNED NOT NULL,
 	expires int(11) NOT NULL,
 	scope varchar(255) DEFAULT NULL,
-	PRIMARY KEY (refresh_token)
+	PRIMARY KEY (oauth_token)
   	) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 	
 	/**
