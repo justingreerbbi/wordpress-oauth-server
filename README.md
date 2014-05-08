@@ -1,6 +1,6 @@
 # OAuth2 Complete For WordPress
 
-Plugin that enables a WordPress website to become a provider and Authenticator for Single Sign on and data transfer 
+Your site will be able to provide Single Sign On and also deliver authorized user data using the OAuth 2.0 API.
 
 Contributors: Justin Greer, Joel Wickard  
 Requires at least: 3.4.2  
@@ -10,31 +10,29 @@ License: GPLv2 or later
 
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Your site will be able provided Single Sign On and also deliver authorized user data using the built in OAuth 2.0 API.
-
 ## Description
 
-OAuth2 Complete is a ONE OF A KIND plugin that instanly turns your WordPress webste into a valid OAuth v2 Provider. The plugin is built using OAuth2 Draft 20 standards. The backend is designed or extremly easy use for any level of experience. OAuth is a great tool but leaves most developers behind since it a bit technical.
+OAuth2 Complete is a ONE OF A KIND plugin that instantly turns your WordPress webste into a valid OAuth v2 provider. The plugin is built using OAuth2 Draft 20 standards. The backend is designed to be extremely easy to use for any level of experience. OAuth is a great tool but leaves most developers behind since it a bit technical.
 The plugin has aleady done the hard part for you.
 
 Current Features Features:
 
-*   Allows for Single Sign On Abilities
-*   Backend Panel for adding Apps/Clients
-*	3 Methods pre built in to allow for a plug and play system
+*   Allows for Single Sign On abilities
+*   Backend panel for adding apps/clients
+*	3 methods built-in to allow for a plug-and-play system
 
 ## Installation
 
-1. Upload `ouath2-complete` to the `/wp-content/plugins/` directory or use the built in plugin install by WordPress
+1. Upload `wordpress-oauth` to the `/wp-content/plugins/` directory or use the built-in plugin install system
 1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Click 'Settings' and then 'permalinks'. Then simply click 'Save Changes' to flush the rewrite rules so that OAuth2 Provider
-1. Your Ready to Rock
+1. Click 'Settings' and then 'Oermalinks'. Then simply click 'Save Changes' to flush the rewrite rules.
+1. You're Ready to Rock
 
 ## Frequently Asked Questions
 
-### How do I add an APP/Client?
+### How do I add an app/client?
 
-Visit the OAuth2 Complete dashboard by clicking `Provider` in the WordPress admin panel. Once you are in teh dashboard there is a form to label `Add a Client`. Give your client a name and a redirect URI. The redirect URI is the HTTP location where the user will be returned to after authinicating (Your client should provide this for you). Click `Add Client` and you will that the client has been added to your Client Manager.
+Visit the OAuth2 Complete dashboard by clicking `Provider` in the WordPress admin panel. Once you are in the dashboard, there is a form labeled `Add Client`. Give your client a name and a redirect URI. The redirect URI is the HTTP location where the user will be returned to after authenticating (your client should provide this for you). Click `Add Client` and your client will be added to your Consumer Manager table.
 
 ### How does a client connect to my website to use the Single Sign On?
 
@@ -69,31 +67,20 @@ Request Access Requires only 1 parmeter
 
 NOTE: All returns will be in JSON format.
 
-### Is there support for this plugin? Can you help me?
-
-You can visit our <a href="http://justin-greer.com/forums/forum/wordpress-oauth2-provider-plugin/" title="WordPress OAuth2 Provider Plugin">support forum</a> for support. Although it takes the hard part away from dealing with OAuth it will require some knowledge on your behalf. I am glad to help as much as resonibily possible but there has to be a line drawn somewhere.
 
 ### Can you set this up for me on my current website?
 
-Can I? "YES". But thats a different story. You are more than welcome to contact us with if you should ever need assistance.
+Yes. You are more than welcome to contact us if you should ever need assistance.
 
 ### What information does the a authorized client have access to?
 
 By default OAuth2 Provider delivers <strong>ALL</strong> the information about the user that logged in. We are planning on adding a easy to use dashboard to limit data.
 
-### Do you have a tutorial I can follow ?
-
-Yes I do. You can view a video titorial here. If you prefer readin then you may have to wait until the full documentation is complete. I are working hard to make it as easy and painless as possible for you to have a premium feature.
-
-### Where can I download the SDK's for OAuth2 Provider
-
-You can visit my websiet <a href="http://justin-greer.com">Here</a>
 
 ## Upgrade Notice
 
-When Upgrading OAuth2 Provider I serioulsy recommend creating a backup of your site. I will try to create updates that will be flawless. Hopefully any future updates will not chnage to the point where it will stop working. All updates will be ran through multiple tests before being released. In the event that the a upgrade of OAuth2 Provider is realeased and you decide to update, I (Justin Greer) can not and will not be held responsible for any damages done to your website, business, or part that pertains to your website. Upgrade at your OWN RISK!
+When upgrading OAuth2 Provider, I seriously recommend creating a backup of your site. I will try to create updates that will be flawless. Hopefully any future updates will not change to the point where it will stop working. All updates will be ran through multiple tests before being released. In the event that an upgrade of OAuth2 Provider is released and you decide to update, I (Justin Greer) can not and will not be held responsible for any damages done to your website, business, or part that pertains to your website. Upgrade at your OWN RISK!
 
-## Screenshots
 
 ## Changelog
 
