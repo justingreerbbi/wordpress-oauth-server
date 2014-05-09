@@ -34,7 +34,7 @@ add_action( 'admin_menu', 'wp_oauth2_complete_menu' );
 /**
  * Require the dashboard into the plugin - Contains the dashboard function 
  */
-require_once( dirname(__FILE__).'/lib/dashbaord.php');
+require_once( dirname(__FILE__).'/lib/dashboard.php');
 
 /**
  * Defines the path to the OAuth2 Complete plugin
