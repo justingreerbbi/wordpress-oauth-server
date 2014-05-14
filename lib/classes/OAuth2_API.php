@@ -5,10 +5,11 @@
  * @author Justin Greer
  */
 global $wp_query;
+
 /**
 * Require OAuth Storage
 */
-require_once( dirname(__FILE__) .'/admin/IOAuth2Storage.php' );
+require_once( dirname(__FILE__) . '/admin/IOAuth2Storage.php' );
 
 /**
 * @var Set the object
@@ -19,7 +20,6 @@ $oauth = new OAuth2(new IOAuth2StorageWP());
 * @var Clean the method from the query up a bit if needed
 */
 $method = $wp_query->get('oauth');
-
 $allowed = array(
 				'authorize', 		// Authorize a user
 				'request_token',	// Request a Token
@@ -35,7 +35,7 @@ $allowed = array(
 	$file = dirname(__FILE__).'/log.txt';
 	$log  = "Incomming Connection:".date("D F j")." at ".date("g:i:s a")."\n";
 	$log .= "Method Being Called: ". $method ."\n";
-	$log .= $_SERVER['HTTP_REFERER']."\n";
+	$log .= @$_SERVER['HTTP_REFERER']."\n";
 	foreach ($_GET as $name => $value) {
     	$log .= "$name: $value\n";
 	}
@@ -59,15 +59,9 @@ if (!in_array($method,$allowed)){
 switch($method){
 	
 	case 'authorize':
-		
-		/**
-		 * Prevention check
-		 */
+	
 		header('X-Frame-Options: DENY');
 		
-		/**
-		 *Check for client_id
-		 */
 		if (!isset($_GET['client_id']) || empty($_GET['client_id'])){
 			header("Content-Type: application/json");
 			header("Cache-Control: no-store");
@@ -75,10 +69,7 @@ switch($method){
 			echo $error;
 			exit;
 			}
-		
-		/**
-		 * Check for state
-		 */
+
 		if(!isset($_GET['state']) || empty($_GET['state'])){
 			header("Content-Type: application/json");
 			header("Cache-Control: no-store");
@@ -87,11 +78,8 @@ switch($method){
 			exit;
 			}
 		
-		/**
-		 * If the user is not logged in then redirect them to the OAuth Login
-		 */
-		if (!is_user_logged_in()) {
-			wp_redirect('/oauth/login?sso_redirect='.$_GET['client_id'].'&state='.$_GET['state']);
+		if ( !is_user_logged_in() ) {
+			wp_redirect( site_url() . '/oauth/login?sso_redirect='.$_GET['client_id'].'&state='.$_GET['state']);
 			exit();
 		}
 		
@@ -105,7 +93,7 @@ switch($method){
 		*/
 		$userId = $current_user->ID;
 		
-		// JUST IN CASE ONLY RUN IF $user_id HAS BEEN SET
+		// @todo Not too sure what this is doing but we need to look at it.
 		if($userId != ''){
 			$oauth->finishClientAuthorization(TRUE, $userId, $_GET); // AUTO AUTHORIZE
 		}
@@ -116,19 +104,18 @@ switch($method){
 			$oauthError->sendHttpResponse();
 		}
 	
-	break;
+		break;
 	
 	case 'request_token':
 	
-	header('X-Frame-Options: DENY');
-	
-	try {
-		$oauth->grantAccessToken();
-	} catch (OAuth2ServerException $oauthError) {
-		$oauthError->sendHttpResponse();
-	}
-	
-	break;
+		header('X-Frame-Options: DENY');
+		try {
+			$oauth->grantAccessToken();
+		} catch (OAuth2ServerException $oauthError) {
+			$oauthError->sendHttpResponse();
+		}
+		
+		break;
 	
 	case 'request_access':
 	
@@ -142,7 +129,7 @@ switch($method){
 		global $wpdb;
 		$info = $wpdb->get_row("SELECT * FROM wp_users WHERE ID = ".$user_id."");
 
-		//don't send sensitive info accross the wire.
+		// don't send sensitive info accross the wire.
 		unset($info->user_pass);
 		unset($info->user_activation_key);
 

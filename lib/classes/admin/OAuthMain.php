@@ -18,7 +18,7 @@ class oauthAdmin {
 	*/
 	public function ConsumerCount(){
 		global $wpdb;
-		$count = $wpdb->query("SELECT * FROM oauth2_clients");
+		$count = $wpdb->query("SELECT * FROM {$wpdb->prefix}oauth2_clients");
 		return $wpdb->num_rows;
 	}
 	
@@ -29,7 +29,7 @@ class oauthAdmin {
 	*/
 	public function listConsumers(){
 		global $wpdb;
-		$results = $wpdb->get_results("SELECT * FROM oauth2_clients");
+		$results = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}oauth2_clients");
 			foreach($results as $single){
 				print '<tr>';
    				print 	'<td><a href="javascript:void(0);" title="Edit this Consumer" class="editor-link ' . $single->client_id . '">' . $single->name . '</a></td>'; 

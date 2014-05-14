@@ -7,9 +7,9 @@ require 'OAuth2RedirectException.php';
  * OAuth2 hook for WordPress
  * 
  * @category  PHP
- * @author    Modified Justin Greer <support@wpkeeper.com>
+ * @author    Modified Justin Greer <justin@blackbirdi.com>
  * @license   http://www.gnu.org/licenses/gpl.html   
- * @link      http://justin-greer.com
+ * @link      http://blackbirdi.com
  */
 class OAuth2 {
 	
@@ -437,6 +437,10 @@ class OAuth2 {
 		
 		// Filter input data
 		$input = $inputData;
+
+		// Added due to server strict policys and was causing kaos in my head
+		if( !isset($input['redirect_uri']) )
+			$input['redirect_uri'] = NULL;
 		
 		// Grant Type must be specified.
 		if (!$input["grant_type"]) {
@@ -567,6 +571,11 @@ class OAuth2 {
 			$stored["scope"] = NULL;
 		}
 		
+		// Added to make things easier for now.
+		if (!isset($input["scope"])) {
+			$input["scope"] = NULL;
+		}
+
 		// Check scope, if provided
 		if ($input["scope"] && (!is_array($stored) || !isset($stored["scope"]) || !$this->checkScope($input["scope"], $stored["scope"]))) {
 			throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_SCOPE, 'An unsupported scope was requested.');
@@ -577,7 +586,7 @@ class OAuth2 {
 		
 		// Send response
 		$this->sendJsonHeaders();
-		echo json_encode($token);
+		echo json_encode( $token );
 	}
 
 	/**
@@ -677,7 +686,7 @@ class OAuth2 {
 		if ($this->getVariable(self::CONFIG_ENFORCE_INPUT_REDIRECT) && !$input["redirect_uri"]) {
 			header("Content-Type: application/json");
 			header("Cache-Control: no-store");
-			$error = json_encode(array('Error' => 'redirect_uri is require by the OAuth API'));
+			$error = json_encode(array('Error' => 'redirect_uri is require by Mydwellworks OAuth API'));
 			echo $error;
 			exit;
 		}
@@ -723,7 +732,7 @@ class OAuth2 {
 		if ($this->getVariable(self::CONFIG_ENFORCE_STATE) && !$input["state"]) {
 			header("Content-Type: application/json");
 			header("Cache-Control: no-store");
-			$error = json_encode(array('Error' => 'state is required'));
+			$error = json_encode(array('Error' => 'state is required by Mydwellworks'));
 			echo $error;
 			exit;
 		}

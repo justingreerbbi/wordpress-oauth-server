@@ -15,46 +15,30 @@ function wp_oauth2_complete_init_dashboard() {
 	$messageType;								  // MESSAGE TYPE HOLDER							
 	$messagetext;								  // MESSAGE TEXT HOLDER
 	
-  	wp_enqueue_style('wp_oauth2_provider_stylesheet');
+  	wp_register_style( 'wp_oauth2_provider_stylesheet', WP_OAUTH2_URL . '/lib/assets/css/layout.css' );
+  	wp_enqueue_style('wp_oauth2_provider_stylesheet' );
 
 	if(isset($_POST['op2action']) && $_POST['op2action'] == 'Add Client'){
 		$oauthStorage->addClient($_POST['mdop_name'], $_POST['mdop_redirect_uri']);
 		}
 	if(isset($_GET['delete']) && $_GET['delete'] != ''){
 		global $wpdb;
-		$wpdb->delete('oauth2_clients', array('client_id'=> $_GET['delete']));
+		$wpdb->delete($wpdb->prefix.'oauth2_clients', array('client_id'=> $_GET['delete']));
 		}
 	
 	// Added to be used through out the plugin backend
 	$adminUrl = admin_url();
 ?>
    
-	<h2 class="section_title">WordPress OAuth2 Provider</h2>
+	<h2 class="section_title"> WordPress OAuth2 Provider </h2>
 	<hr />
 
 	<aside id="sidebar" class="column">
-		
 			<h3>Support</h3>
 			<hr />
 			<p></p>
-            <p><a href="mailto:support@wpkeeper.com">Email Support</a></p>
-            <p><a href="http://justin-greer.com">Online Documentation</a></p>
-            
-            <!--
-            <h3>Extras</h3>
-			<hr />
-			<p></p>
-            <p><a href="javascript:void(0);">PHP SDK</a></p>
-            <p><a href="javascript:void(0)">JavaScript SDK</a></p>
-            -->
-            
-            <!--
-            <h3>Developer</h3>
-			<hr />
-			<p></p>
-            <p><a href="javascript:void(0);">Code Break Down</a></p>
-            -->
-		
+            <p><a href="https://github.com/justingreerbbi/wordpress-oauth" target="_blank">GitHub Home</a></p>
+            <p><a href="https://github.com/justingreerbbi/wordpress-oauth" target="_blank">Online Documentation</a></p>	
 	</aside><!-- end of sidebar -->
 	
 	<section id="main" class="column">

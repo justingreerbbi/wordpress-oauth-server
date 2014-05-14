@@ -2,15 +2,17 @@
 
 Your site will be able to provide Single Sign On and also deliver authorized user data using the OAuth 2.0 API.
 
-Contributors: Justin Greer, Joel Wickard  
+Contributors: Justin Greer, Joel Wickard, Neil Pullman  
 Requires at least: 3.4.2  
 Tested up to: 3.7  
-Stable tag: 1.0.4  
+Stable tag: 2.0.0
 License: GPLv2 or later  
 
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 ## Description
+
+ENSURE THAT WP_DEBUG IS SET TO FALSE IN THE WP-CONFIG.PHP FILE..... NO JOKE!!!!
 
 OAuth2 Complete is a ONE OF A KIND plugin that instantly turns your WordPress webste into a valid OAuth v2 provider. The plugin is built using OAuth2 Draft 20 standards. The backend is designed to be extremely easy to use for any level of experience. OAuth is a great tool but leaves most developers behind since it a bit technical.
 The plugin has aleady done the hard part for you.
@@ -57,7 +59,7 @@ Request Token Requires only 4 parameters
 * grant_type - Supported value's = `authorization_code`
 * client_id
 * client_secret
-* Example call `http://example.com/oauth/request_token?code=the_auth_key_sent_back_from_the_authorize_call&grant_typ=authorization_code&client_id=the_client_id&client_secret=the_client_secret`
+* Example call `http://example.com/oauth/request_token?code=the_auth_key_sent_back_from_the_authorize_call&grant_type=authorization_code&client_id=the_client_id&client_secret=the_client_secret`
 
 Request Access Requires only 1 parmeter
 
@@ -100,3 +102,16 @@ When upgrading OAuth2 Provider, I seriously recommend creating a backup of your 
 ### 1.0.4
 * Fixed short tag in login layout
 * Filtered out hashed password / user activation key from returned oauth data.
+
+## 2.0.0
+* Rebuild init plugin code struture for more flexibilty and scalability.
+* Added prefix to all DB connections
+* Changed install query to use the InnoDB engine for better support and performance.
+* Fixed improper loading of plugin stylesheet.
+* Removed garbage data when plugin is activated. It was not being used and cluttering the codebase as well as the database.
+* Move action template_redirect to rewrites file
+* Added login form support for installs that are installed in sub directory
+* Added missing in documentation for when calling requesting_token
+* Suppressed some errors that was preventing a proper JSON return when `WP_DEBUG` was enabled.
+* Added a client sample script to help learn the baiscs of connecting to the provider plugin.
+* Add legacy installer that will hopfully keep old data in tacked while updating to the new structure with no data loss.

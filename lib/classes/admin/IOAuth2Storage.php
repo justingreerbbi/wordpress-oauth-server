@@ -9,13 +9,6 @@ require_once(WP_OAUTH2_PATH . 'lib/classes/IOAuth2RefreshTokens.php');
 
 /**
  * IOAuth2StorageWP class is used in for the admin functions in via the admin panel. 
- * 
- *
- * @category  PHP
- * @author    Justin Greer <support@wpkeeper.com>
- * @license   http://www.gnu.org/licenses/gpl.html   
- * @link      http://justin-greer.com
- * @copyright 2013 Justin Greer <support@wpkeeper.com>
  */
 class IOAuth2StorageWP implements IOAuth2GrantCode, IOAuth2RefreshTokens{
 
@@ -48,7 +41,7 @@ class IOAuth2StorageWP implements IOAuth2GrantCode, IOAuth2RefreshTokens{
 		$client_secret 	= $this->generateSecret();
 		
 		global $wpdb;
-		$addClient = $wpdb->insert('oauth2_clients',array('name'=>$mdop_name, 'client_id' => trim(rtrim($client_id)), 'client_secret' => $client_secret, 'redirect_uri' => $client_redirect));
+		$addClient = $wpdb->insert($wpdb->prefix . 'oauth2_clients',array('name'=>$mdop_name, 'client_id' => trim(rtrim($client_id)), 'client_secret' => $client_secret, 'redirect_uri' => $client_redirect));
 		if (!$addClient){
 			$this->handleException('Could not add Client');
 			}else{
@@ -68,7 +61,7 @@ class IOAuth2StorageWP implements IOAuth2GrantCode, IOAuth2RefreshTokens{
 	 */
 	public function checkClientCredentials($client_id, $client_secret) {
 		global $wpdb;
-		$wpdb->query("SELECT client_id, client_secret FROM oauth2_clients WHERE client_id = '$client_id' AND client_secret = '$client_secret'");
+		$wpdb->query("SELECT client_id, client_secret FROM {$wpdb->prefix}oauth2_clients WHERE client_id = '$client_id' AND client_secret = '$client_secret'");
 		if ($wpdb->num_rows > 0){
 			return TRUE;
 		}else{
@@ -85,7 +78,7 @@ class IOAuth2StorageWP implements IOAuth2GrantCode, IOAuth2RefreshTokens{
 	 */
 	public function getClientDetails($client_id) {
 		global $wpdb;
-		$info = $wpdb->get_results("SELECT * FROM oauth2_clients WHERE client_id = '$client_id'", ARRAY_A );
+		$info = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}oauth2_clients WHERE client_id = '$client_id'", ARRAY_A );
 		if ($wpdb->num_rows > 0){
 			return $info[0];
 			}else{
@@ -134,7 +127,7 @@ class IOAuth2StorageWP implements IOAuth2GrantCode, IOAuth2RefreshTokens{
 	 */
 	public function unsetRefreshToken($refresh_token) {
 		global $wpdb;
-		$deleteToken = $wpd->query("DELETE FROM  oauth2_refresh_tokens WHERE refresh_token = '$refresh_token'");
+		$deleteToken = $wpd->query("DELETE FROM  {$wpdb->prefix}oauth2_refresh_tokens WHERE refresh_token = '$refresh_token'");
 		if (!$deleteToken){
 			$this->handleException('Could not delete refresh token'); // THROW ERROR
 		}
@@ -145,7 +138,7 @@ class IOAuth2StorageWP implements IOAuth2GrantCode, IOAuth2RefreshTokens{
 	 */
 	public function getAuthCode($code) {
 		global $wpdb;
-			$select = $wpdb->get_results("SELECT code, client_id, user_id, redirect_uri, expires, scope FROM oauth2_auth_codes  WHERE code = '$code'", ARRAY_A );
+			$select = $wpdb->get_results("SELECT code, client_id, user_id, redirect_uri, expires, scope FROM {$wpdb->prefix}oauth2_auth_codes  WHERE code = '$code'", ARRAY_A );
 			
 			if ($wpdb->num_rows > 0){
 				return $select[0];
@@ -166,7 +159,7 @@ class IOAuth2StorageWP implements IOAuth2GrantCode, IOAuth2RefreshTokens{
 	 */
 	public function setAuthCode($code, $client_id, $user_id, $redirect_uri, $expires, $scope = NULL) {
 		  global $wpdb;
-		  $set = $wpdb->insert('oauth2_auth_codes',array('code' => $code, 'client_id' => $client_id, 'user_id' => $user_id, 'redirect_uri' => $redirect_uri, 'expires' => $expires, 'scope' => $scope ));
+		  $set = $wpdb->insert($wpdb->prefix.'oauth2_auth_codes',array('code' => $code, 'client_id' => $client_id, 'user_id' => $user_id, 'redirect_uri' => $redirect_uri, 'expires' => $expires, 'scope' => $scope ));
 		  if (!$set){
 			  $this->handleException('Failed to set token');
 			  }
@@ -190,12 +183,12 @@ class IOAuth2StorageWP implements IOAuth2GrantCode, IOAuth2RefreshTokens{
 	 * @param bool $isRefresh
 	 */
 	protected function setToken($token, $client_id, $user_id, $expires, $scope, $isRefresh = TRUE) {
-		if ($isRefresh == TRUE){
-			$tablename = 'oauth2_refresh_tokens';
-			}else{
-				$tablename = 'oauth2_access_tokens';
-				}
 		global $wpdb;
+		if ($isRefresh == TRUE){
+			$tablename = $wpdb->prefix.'oauth2_refresh_tokens';
+			}else{
+				$tablename = $wpdb->prefix.'oauth2_access_tokens';
+				}
 		$set = $wpdb->insert($tablename,array('oauth_token' => $token, 'client_id' => $client_id, 'user_id' => $user_id, 'expires' => $expires, 'scope' => $scope ));
 		if ($set){
 			return TRUE;
@@ -211,9 +204,9 @@ class IOAuth2StorageWP implements IOAuth2GrantCode, IOAuth2RefreshTokens{
 	protected function getToken($token, $isRefresh) {
 		global $wpdb;
 		if ($isRefresh == TRUE){
-			$tablename = 'oauth2_refresh_tokens';
+			$tablename = $wpdb->prefix.'oauth2_refresh_tokens';
 			}else{
-				$tablename = 'oauth2_access_tokens';
+				$tablename = $wpdb->prefix.'oauth2_access_tokens';
 				}
 		$token = $wpdb->get_results("SELECT * FROM $tablename WHERE oauth_token = '$token'", ARRAY_A );
 		return $token[0];	
