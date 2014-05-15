@@ -61,6 +61,7 @@ switch($method){
 	case 'authorize':
 	
 		header('X-Frame-Options: DENY');
+		error_reporting(0);
 		
 		if (!isset($_GET['client_id']) || empty($_GET['client_id'])){
 			header("Content-Type: application/json");
@@ -109,6 +110,8 @@ switch($method){
 	case 'request_token':
 	
 		header('X-Frame-Options: DENY');
+		error_reporting(0);
+
 		try {
 			$oauth->grantAccessToken();
 		} catch (OAuth2ServerException $oauthError) {
@@ -118,6 +121,8 @@ switch($method){
 		break;
 	
 	case 'request_access':
+	
+	error_reporting(0);
 	
 	try {
 		$token = $oauth->getBearerToken();
