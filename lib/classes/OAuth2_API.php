@@ -27,20 +27,6 @@ $allowed = array(
 				'login'				// This is for the authorization login screen
 				);
 				
-	/**
-	 * Log each request coming in trying to use OAuth2 Provider
-	 * 
-	 * @since 1.0.0
-	 */		
-	$file = dirname(__FILE__).'/log.txt';
-	$log  = "Incomming Connection:".date("D F j")." at ".date("g:i:s a")."\n";
-	$log .= "Method Being Called: ". $method ."\n";
-	$log .= @$_SERVER['HTTP_REFERER']."\n";
-	foreach ($_GET as $name => $value) {
-    	$log .= "$name: $value\n";
-	}
-	$log .= "=========================\n";
-	file_put_contents($file,$log, FILE_APPEND | LOCK_EX);
 	
 /**
  * Check to make sure only parameters defined are used and nothing else
