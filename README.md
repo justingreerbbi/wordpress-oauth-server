@@ -115,3 +115,4 @@ When upgrading OAuth2 Provider, I seriously recommend creating a backup of your 
 * Suppressed some errors that was preventing a proper JSON return when `WP_DEBUG` was enabled.
 * Added a client sample script to help learn the baiscs of connecting to the provider plugin.
 * Add legacy installer that will hopfully keep old data in tacked while updating to the new structure with no data loss.
+* Fixed hardocde database prefix in API ( credit to Matthew Bass for the find )
