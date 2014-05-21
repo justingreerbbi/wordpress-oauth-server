@@ -118,7 +118,7 @@ switch($method){
 		$user_id = $data['user_id'];
 		
 		global $wpdb;
-		$info = $wpdb->get_row("SELECT * FROM wp_users WHERE ID = ".$user_id."");
+		$info = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}users WHERE ID = ".$user_id."");
 
 		// don't send sensitive info accross the wire.
 		unset($info->user_pass);
