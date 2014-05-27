@@ -1,35 +1,45 @@
 <?php
-/**
- * Example WP OAuth2 Client
- * 
- * @author Justin Greer
- * @copyright 2014 Justin Greer <justin@justin-greer.com>
- * @license GPL2
- */
+// Generic OAuth Example
+// @author Justin Greer
 
-/**
- * session_start
- * In this example we will use simple sessions
- * You can use cookies or any means to track user login status. It is up to you!
- */
+// Set the OAuth Client_ID and the OAuth Link
+// Replace and add your domain instead of http://justin-greer.com
+$Client_ID = '************************';
+$OAuth_Login = 'http://justin-greer.com/oauth/authorize/?client_id=' . $Client_ID. '&state=123&response_type=code';
+
+// Session Start
 session_start();
-
-// Check if the user is logged in. This is simple for demonstration purposes
-if( ! isset( $_SESSION['loggedIn'] ) )
-	$_SESSION['loggedIn'] = false;
 ?>
 
 <html>
+
 	<head>
-		<title> WP Oauth2 Client - Example</title>
-	</head>
-	<body>
-		<?php if( $_SESSION['loggedIn'] === false  ): ?>
-			<a href="http://development.dev/oauth/authorize/?client_id=b953042c39dc30f07004a54e916acc9aa0bc7751&state=someuidparameter&response_type=code" title="This will link to the WordPress site runing Oauth2 plugin"> Login </a>
-		<?php else: ?>
-			Welcome Back - <a href="/logout.php" title="The user will directed to a logout script that will simply unset the user sesion"> Logout </a>
-		<?php endif; ?>
+    	<title>Simple OAuth Client</title>
+    </head>
+    
+   	<body>
 
-
+	<?php 
+    // If the person is not logged in then display the login link
+    if(!isset($_SESSION['loggedin'])){
+            print 'You are not logged in. <a href="'.$OAuth_Login.'">Login Here</a>';
+        }else{
+            print 'Welcome Back, '.$_SESSION['loggedin']->user_login . ' <a href="/logout.php">Logout</a>';
+        }
+    ?>
+    
+    
+    <h3>
+    	This is just an example and should be used as ONLY a reference and not production code.
+    </h3>
+    
+    <p>
+    	Although the OAuth server authenticates a users, it does not store user sessions. This is up to you however you decide to log a user in. Think of the OAuth server as a 3rd party login.
+    </p>
+    
+    <p>
+    	This is a very simple example of how to use the WordPress OAuth 2.0 Server plugin as a PHP client.
+    </p>
+    
 	</body>
 </html>
