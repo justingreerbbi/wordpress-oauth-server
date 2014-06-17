@@ -450,10 +450,6 @@ class OAuth2 {
 		// Authorize the client
 		$client = $this->getClientCredentials($inputData, $authHeaders);
 			
-		if ($this->storage->checkClientCredentials($client[0], $client[1]) === FALSE) {
-			throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_CLIENT, 'The client credentials are invalid');
-		}
-		
 		if (!$this->storage->checkRestrictedGrantType($client[0], $input["grant_type"])) {
 			throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNAUTHORIZED_CLIENT, 'The grant type is unauthorized for this client_id');
 		}
@@ -539,6 +535,7 @@ class OAuth2 {
 				
 				// store the refresh token locally so we can delete it when a new refresh token is generated
 				$this->oldRefreshToken = $stored["refresh_token"];
+				die(print_r($stored));
 				break;
 			
 			case self::GRANT_TYPE_IMPLICIT:
@@ -662,7 +659,6 @@ class OAuth2 {
 		
 		// GET CLIENT DETAILS
 		$stored = $this->storage->getClientDetails($input["client_id"]);
-		//print_r($inputData);
 		
 		if ($stored === FALSE) {
 			header("Content-Type: application/json");
@@ -897,10 +893,19 @@ class OAuth2 {
 			$token["refresh_token"] = $this->genAccessToken();
 			$this->storage->setRefreshToken($token["refresh_token"], $client_id, $user_id, time() + $this->getVariable(self::CONFIG_REFRESH_LIFETIME), $scope);
 			
+			// @todo HERE we need to call or add a function to truly unset and remove the access_tokens as well as the old refresh token
+			// If the user has made it this far then it is a safe bet to say we can remove the refresh_token from the database as
+			//die($_GET['refresh_token']);
 			// If we've granted a new refresh token, expire the old one
 			if ($this->oldRefreshToken) {
 				$this->storage->unsetRefreshToken($this->oldRefreshToken);
 				unset($this->oldRefreshToken);
+
+				// Acually remove the refresh token from the database so it can not be used again
+				//global $wpdb;
+				//$prepare = $wpdb->prepare("DELETE FROM {$wpdb->prefix}oauth2_access_tokens WHERE oauth_token='%s'", array($this->oldRefreshToken));
+				die($this->oldRefreshToken);
+
 			}
 		}
 		

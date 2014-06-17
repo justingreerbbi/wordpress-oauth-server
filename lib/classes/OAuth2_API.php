@@ -24,6 +24,7 @@ $allowed = array(
 				'authorize', 		// Authorize a user
 				'request_token',	// Request a Token
 				'request_access',	// Request Access
+				'refresh_token',	// Refresh Token
 				'login'				// This is for the authorization login screen
 				);
 				
@@ -134,6 +135,12 @@ switch($method){
 	
 	break;
 	// RETURN EVERYTHING ABOUT THE CURRENT USER
+	
+	case 'refresh_token':
+		header('Cache-Control: no-cache, must-revalidate');
+		header('Content-type: application/json');
+		print_r(json_encode(array('status'=>'Good')));
+		break;
 	
 	/**
 	 * Login Redirect

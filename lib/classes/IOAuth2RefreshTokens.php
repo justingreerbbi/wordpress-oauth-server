@@ -72,6 +72,8 @@ interface IOAuth2RefreshTokens extends IOAuth2Storage {
 	 * Refresh token to be expirse.
 	 *
 	 * @ingroup oauth2_section_6
+	 *
+	 * @todo This is not working as of right now. Although the refresh token is being regenerated the one one is not being removed from storage
 	 */
 	public function unsetRefreshToken($refresh_token);
 }
