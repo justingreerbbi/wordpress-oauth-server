@@ -67,7 +67,7 @@ switch($method){
 			}
 		
 		if ( !is_user_logged_in() ) {
-			wp_redirect( site_url() . '/oauth/login?sso_redirect='.$_GET['client_id'].'&state='.$_GET['state']);
+			wp_redirect( home_url() . '/oauth/login?sso_redirect='.$_GET['client_id'].'&state='.$_GET['state']);
 			exit();
 		}
 		
@@ -189,7 +189,7 @@ function oauth2LoginLayout(){
 					user with a token to the clients site. The client can then take the token and use it to get all the users information for database (AS IF THEY ARE LOGGED IN HERE). 
 			*/
 			if (isset($_GET['sso_redirect']) && $_GET['sso_redirect'] != ''){
-				wp_redirect(site_url() .'/oauth/authorize/?client_id='.$_GET['sso_redirect'].'&state='.$_GET['state'].'&response_type=code');
+				wp_redirect(home_url() .'/oauth/authorize/?client_id='.$_GET['sso_redirect'].'&state='.$_GET['state'].'&response_type=code');
 				
 			}else{
 				$error = '<div class="login_message" style="margin:0 auto;width:50%; font-weight:bold;font-size:14px;color:red;">Incorrect Information</div>';
