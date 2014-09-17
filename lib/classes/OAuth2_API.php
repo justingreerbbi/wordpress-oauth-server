@@ -125,6 +125,19 @@ switch($method){
 		unset($info->user_pass);
 		unset($info->user_activation_key);
 
+		// add user metadata
+		$infometa = $wpdb->get_results("SELECT meta_key, meta_value FROM {$wpdb->prefix}usermeta WHERE user_id = ".$user_id."");
+		foreach ($infometa as $metarow) {
+		   // exclude sensitive data
+		   if (1 === preg_match( 
+			"/pmpro_|token|wp_|theme_my_login_security|credit|card|password/i",
+			$metarow->meta_key))
+			continue;
+		   
+		   $key = $metarow->meta_key;
+		   $info->$key = $metarow->meta_value;
+		}
+		
 		header('Cache-Control: no-cache, must-revalidate');
 		header('Content-type: application/json');
 		print_r(json_encode($info));
