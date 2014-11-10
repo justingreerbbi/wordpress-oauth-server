@@ -17,12 +17,15 @@ class WO_Server
 	 * @var array
 	 */
 	protected $defualt_settings = array(
-		"enabled" 						=> 1,
-		"refresh_tokens_enabled" 		=> 1,
-		"refresh_token_lifespan" 		=> 1,
+		"enabled" 											=> 1,
+		"refresh_tokens_enabled" 				=> 1,
+		"refresh_token_lifespan" 				=> 1,
 		"refresh_token_lifespan_unit" 	=> "year",
-		"auth_code_expiration_time" 	=> 10,
-		"access_token_lifespan"	 		=> 3600
+		"auth_code_expiration_time" 		=> 10,
+		"access_token_lifespan"	 				=> 3600,
+		"client_id_length"							=> 60,
+		"additional_key_characters"			=> '',
+		"license"												=> null
 		);
 
 	/**
@@ -31,12 +34,23 @@ class WO_Server
 	 */
 	function __construct ()
 	{
+
+		/** define some basics before we begin  */
+		if (! defined( "WOABSPATH" ) )
+			define("WOABSPATH", dirname( __FILE__ ) );
+		if (! defined( "WOURI" ) )
+				define( "WOURI", plugins_url("/", __FILE__) );
+
 		if ( function_exists( "__autoload" ) ) {
 			spl_autoload_register( "__autoload" );
 		}
 		spl_autoload_register( array( $this, 'autoload' ) );
 		
 		add_action("init", array(__CLASS__, "includes"));
+		add_action("wp_loaded", array(__CLASS__, "register_scripts"));
+		add_action("wp_loaded", array(__CLASS__, "register_styles"));
+
+		/** activation hook for the server */
 		register_activation_hook(__FILE__, array($this, 'setup'));
 	}
 
@@ -46,9 +60,8 @@ class WO_Server
 	public static function instance ()
 	{
 		if ( is_null( self::$_instance ) ) 
-		{
 			self::$_instance = new self();
-		}
+		
 		return self::$_instance;
 	}
 
@@ -113,6 +126,24 @@ class WO_Server
 	 */
 	public function ajax_includes() {
 		include_once( 'includes/class-wo-ajax.php' );
+	}
+
+	/**
+	 * register plugin styles
+	 * @return [type] [description]
+	 */
+	public function register_styles ()
+	{
+		wp_register_style( 'wo_admin', plugins_url( '/assets/css/admin.css', __FILE__ )  );
+	}
+
+	/**
+	 * register plugin scripts
+	 * @return [type] [description]
+	 */
+	public function register_scripts ()
+	{
+		wp_register_script( 'wo_admin', plugins_url( '/assets/js/admin.js', __FILE__ ) );
 	}
 
 	/**

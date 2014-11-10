@@ -1,0 +1,76 @@
+@import url('//ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/themes/cupertino/jquery-ui.css');
+
+.ui-corner-all {
+  border-radius: 0px;
+}
+
+.ui-widget-content {
+  border: none;
+  background: none;
+}
+
+.ui-widget-header {
+  border: none;
+  background: none;
+}
+
+.ui-state-default, 
+.ui-widget-content .ui-state-default, 
+.ui-widget-header .ui-state-default {
+  border: 1px #eee solid;
+  background: #FFF;
+  color: #000;
+  border-radius: 0px;
+}
+
+.ui-state-default a,
+.ui-state-default a:link,
+.ui.state-default a:visited {
+  color: #444;
+  background: none;
+  border: none;
+  outline: none;
+}
+
+
+.ui-state-active, 
+.ui-widget-content .ui-state-active, 
+.ui-widget-header .ui-state-active {
+  border: 1px #eee solid;
+  background: #444;
+  color: #000;
+  border-radius: 0px;
+}
+
+.ui-state-active a, 
+.ui-state-active a:link, 
+.ui-state-active a:visited {
+  color: #FFF;
+  border: none;
+  outline: none;
+}
+
+.ui-tabs .ui-tabs-nav {
+  padding-left: 0;
+}
+
+.ui-widget-content {
+}
+
+.ui-tabs-nav,
+.ui-tabs-nav li:first-of-type {
+  padding-left: 0;
+}
+
+.ui-tabs .ui-tabs-panel {
+  border-top-width: 1px;
+  border-top-color: rgb(239, 239, 239);
+  border-top-style: solid;
+  background: rgb(255, 255, 255);
+}
+
+a:focus,
+a:active {
+  outline: none !important;
+  outline: 0 !important;
+}
