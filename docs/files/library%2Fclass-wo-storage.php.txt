@@ -1,0 +1,152 @@
+<?php
+/**
+ * WP OAuth Storage Class
+ */
+class WO_Storage extends WO_API
+{
+
+	/**
+	 * [__construct description]
+	 *
+	 * The WP Db settings will be deturmined here so that it is exstendable and in the future the 
+	 * plugin could interacted with a different DB other than the DB that WP is using.
+	 */
+	function __construct ()
+	{
+		$this->DB_NAME = DB_NAME;
+		$this->DB_USER = DB_USER;
+		$this->DB_PASSWORD = DB_PASSWORD;
+		$this->DB_HOST = DB_HOST;
+	}
+
+	/**
+	 * Verify client creditials 
+	 * @param  [type] $client_id     [description]
+	 * @param  [type] $client_secret [description]
+	 * @return [type]                [description]
+	 */
+	public function verify_creditials ( $client_id=null, $client_secret=null )
+	{
+		global $wpdb;
+		$query = $wpdb->prepare("SELECT client_id, user_id FROM {$wpdb->prefix}oauth_clients WHERE client_id=%s", $client_id);
+		$return = $wpdb->get_row($query);
+		if( $wpdb->num_rows > 0 )
+		{
+			return $return;
+		}else
+		{
+			return false;
+		}
+	}
+
+	/**
+	 * Verify a given code
+	 * @param  [type] $client_id [description]
+	 * @param  [type] $code      [description]
+	 * @return [type]            [description]
+	 *
+	 * @todo add the expires check
+	 */
+	public function verify_code ($client_id, $code)
+	{
+		global $wpdb;
+		$query = $wpdb->prepare("SELECT code FROM {$wpdb->prefix}oauth_codes WHERE client_id=%s AND code=%s", $client_id, $code);
+		$return = $wpdb->get_results($query);
+		if($wpdb->num_rows > 0)
+		{
+			// Codes are only good for one run. We need to remove the code
+			$wpdb->delete("{$wpdb->prefix}oauth_codes", array( "code" => $code));
+			return true;
+		}
+	}
+
+	/**
+	 * [create_code description]
+	 * @param  [type] $client_id [description]
+	 * @return [type]            [description]
+	 */
+	public function create_code ( $client_id )
+	{
+		global $wpdb;
+		$_code = self::generate_token();
+		$data= array(
+			"client_id" => $client_id,
+			"code" 		=> $_code,
+			"expires" 	=> strtotime('date("Y-m-d H:i:s") + 10 minute')
+			);
+		$query = $wpdb->insert("{$wpdb->prefix}oauth_codes", $data);
+
+		return $_code;
+	}
+
+	/**
+	 * Create and access token for a client ID
+	 * @param  [type] $client_id [description]
+	 * @return [type]            [description]
+	 */
+	public function create_token ( $client_id, $user_id, $type=null )
+	{
+		global $wpdb;
+	
+		if( 1===1 )
+		{
+			$wpdb->delete("{$wpdb->prefix}oauth_access_tokens", array("user_id", $user_id));
+			$wpdb->delete("{$wpdb->prefix}oauth_refresh_tokens", array("user_id", $user_id));
+		}
+
+		$_token = self::generate_token();
+		$data= array(
+			"access_token" => $_token,
+			"client_id" => $client_id,
+			"user_id"	=> $user_id
+			);
+		$query = $wpdb->insert("{$wpdb->prefix}oauth_access_tokens", $data);
+
+		// Start setting up the return to the API
+		$return = new stdClass;
+		$return->token = $_token;
+
+		// We will only issue an refresh token if the type is set to "code"
+		if ($type === "code")
+		{
+			$_refresh_token = self::generate_token();
+			$data= array(
+				"refresh_token" => $_refresh_token,
+				"client_id" => $client_id,
+				"user_id"	=> $user_id
+				);
+			$query = $wpdb->insert("{$wpdb->prefix}oauth_refresh_tokens", $data);
+			$return->refresh_token = $_refresh_token;
+		}
+
+		// @todo add $query check
+		return $return;
+	}
+
+	/**
+	 * Return redirect URI
+	 * @param  [type] $client_id [description]
+	 * @return [type]            [description]
+	 */
+	public function get_redirect_uri ($client_id)
+	{
+		global $wpdb;
+		$query = $wpdb->prepare("SELECT redirect_uri FROM {$wpdb->prefix}oauth_clients WHERE client_id=%s", $client_id);
+		$query = $wpdb->get_row($query);
+		return $query->redirect_uri;
+	}
+
+	/**
+	 * [generate_token description]
+	 * @param  integer $length [description]
+	 * @return [type]          [description]
+	 */
+	private static function generate_token ( $length = 40 ) {
+	    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	    $randomString = '';
+	    for ($i = 0; $i < $length; $i++) {
+	        $randomString .= $characters[rand(0, strlen($characters) - 1)];
+	    }
+	    return $randomString;
+	}
+}

@@ -1,0 +1,152 @@
+<?php
+if( defined("ABSPATH") === false )
+	die("Illegal use of the API");
+/**
+ * WordPress Mobile Oauth Main API Hook
+ * This file is used to validate, process and perform all actions
+ * @author Justin Greer <justin@justin-greer.com>
+ * @package WordPress Mobile Oauth
+ */
+class WO_API extends WO_Server {
+
+ 	/**
+ 	 * @var method
+ 	 */
+ 	public $method = null;
+
+ 	/**
+ 	 * [__construct description]
+ 	 * @todo Find a better way to pass args to the methods in question
+ 	 */
+	public static function init ()
+	{
+		global $wp_query;
+		$method = $wp_query->get("oauth");
+		$allowed = array("token", "authorize");
+		if ( method_exists(__CLASS__, $method) && in_array($method, $allowed))
+		{
+			call_user_func( array(__CLASS__, $method));
+		}
+	}
+
+	/**
+	 * [token description]
+	 * 
+	 * @uses  WO_Storage::verify_creditials to verify client_id
+	 * @uses  WO_Storage::verify_code to validate code given by client
+	 * @uses  WO_Storage::grant_access_token to generate an access_token for the client
+	 *
+	 * @param  [type] $args $_REQUEST paramters so that the method can handle the request
+	 *
+	 * @return [type]         [description]
+	 */
+	private function token ()
+	{
+		$args = $_REQUEST;
+		if ( empty( $args ) )
+			wp_die('No paramters given');
+
+		if (empty($args["grant_type"]))
+			new WO_Error("unsupported_response_type");
+
+		$storage = new WO_Storage();
+		$client = $storage::verify_creditials($args["client_id"]);
+		if( $client == false )
+			new WO_Error("unauthorized_client");
+
+		// Grant Type - authorization_code
+		if (strtolower($args["grant_type"]) === "authorization_code")
+		{
+			$storage = new WO_Storage();
+			if($storage::verify_code($args["client_id"], $args["code"]))
+			{
+				self::grant_access_token($client, $args);
+			}
+
+			// Code not valid. Throw Error
+			new WO_Error("access_denied");
+		}
+	}
+
+	/**
+	 * [authorize description]
+	 *
+	 * @uses  WO_Storage::verify_creditials to verify client_id
+	 * @uses  WO_Storage::grant_authorization_code to generate an authorization_code to client
+	 * 
+	 * @return [type] [description]
+	 */
+	private function authorize ()
+	{
+		$args = $_REQUEST;
+		if (empty($args))
+			new WO_Error("invalid_request");
+
+		if (empty($args["response_type"]))
+			new WO_Error("invalid_request");
+
+		if(empty($args["client_id"]))
+			new WO_Error("invalid_request");
+	
+		$storage = new WO_Storage();
+		$client = $storage::verify_creditials($args["client_id"]);
+		if( $client == false )
+			new WO_Error("unauthorized_client");
+
+		// Grant Authorization Code
+		if (strtolower($args["response_type"]) === "code")
+			self::grant_authorization_code($client, $args);
+	}
+
+	/**
+	 * Generates an authorization code
+	 * 
+	 * @uses WO_Storage::create_code to generate a authorization code
+	 * @uses WO_Storage::get_redirect_uri to generate the redirect link designaed for the client
+	 * 
+	 * @param  [type] $args [description]
+	 * @return [type]       [description]
+	 */
+	private function grant_authorization_code($client, $args)
+	{
+		if (empty($args))
+			new WO_Error("invalid_request");
+		
+		if ( is_user_logged_in() === false )
+			wp_redirect(wp_login_url( site_url() . $_SERVER['REQUEST_URI']));
+
+		$storage = new WO_Storage();
+		$code = $storage::create_code($args["client_id"]);
+		new WO_Redirect($storage::get_redirect_uri($args["client_id"])."?code=".$code);
+	}
+
+	/**
+	 * Grant an access token
+	 *
+	 * @uses WO_Storage::create_token to generate an access_token
+	 * 
+	 * @param  [type] $args [description]
+	 * @return [type]       [description]
+	 */
+	private function grant_access_token ($client, $args)
+	{
+		if (empty($args))
+			new WO_Error("invalid_request");
+
+		if (is_user_logged_in() === false)
+			wp_redirect(wp_login_url( site_url() . $_SERVER['REQUEST_URI']));
+		
+		$storage = new WO_Storage();
+		$tokens = $storage::create_token($client->client_id, $client->user_id, "token");
+		$data = array(
+			"access_token" 	=> $tokens->token,
+			"token_type" 	=> "bearer",
+			"expires_in"	=> 3600,
+			"refresh_token"	=> $token->refresh_token
+			);
+		new WO_Output($data);
+
+	}
+
+}
+WO_API::init();
