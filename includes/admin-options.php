@@ -76,10 +76,8 @@ class WPOAuth_Admin {
 							  
 							  <!-- GENERAL SETTINGS -->
 							  <div id="general-settings">
-							  	<h3>General Settings</h3>
-							  	<p>
-							  		General setting are where you can do, blah blah blah
-							  	</p>
+							  	<!--<h2>General Settings</h2>-->
+							  	
 							  	<table class="form-table">
 			                <tr valign="top">
 			                	<th scope="row">API Enabled:</th>
@@ -96,15 +94,16 @@ class WPOAuth_Admin {
 
 							  	<h2>Advanced Configuration</h2>
 							  	<p>
-							  		Advanced configuration settings are reserved for license holders.
+							  		Advanced Configuration for the OAuth Server.
 							  	</p>
 
 							 		<h3>Key Generation <hr></h3>
 							    <table class="form-table">
 			              <tr valign="top">
-			               	<th scope="row">Client ID Length</th>
+			               	<th scope="row">Key Lengths</th>
 			                  <td>
 			                  	<input type="number" name="<?php echo $this->option_name?>[client_id_length]" min="60" value="<?php echo $options["client_id_length"]; ?>" />
+			                  	<p class="description">Length of Client ID and Client Secrets when generated.</p>
 			              	  </td>
 			              </tr>
 			              <tr valign="top">

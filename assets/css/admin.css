@@ -18,15 +18,17 @@
 .ui-widget-content .ui-state-default, 
 .ui-widget-header .ui-state-default {
   border: 1px #eee solid;
-  background: #FFF;
+  background: #444;
   color: #000;
   border-radius: 0px;
+  padding: .3em 1em;
+  opacity: 0.5;
 }
 
 .ui-state-default a,
 .ui-state-default a:link,
 .ui.state-default a:visited {
-  color: #444;
+  color: #ccc !important;
   background: none;
   border: none;
   outline: none;
@@ -37,15 +39,16 @@
 .ui-widget-content .ui-state-active, 
 .ui-widget-header .ui-state-active {
   border: 1px #eee solid;
-  background: #444;
-  color: #000;
+  background: #FFF;
+  color: #000 !important;
   border-radius: 0px;
+  opacity: 1;
 }
 
 .ui-state-active a, 
 .ui-state-active a:link, 
 .ui-state-active a:visited {
-  color: #FFF;
+  color: #000 !important;
   border: none;
   outline: none;
 }
@@ -85,5 +88,6 @@ a:active {
 }
 
 .ui-tabs-panel h3 {
-  margin-top: 20px;
+  margin-top: 35px;
+  color: #0074a2;
 }
