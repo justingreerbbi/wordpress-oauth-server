@@ -42,3 +42,21 @@ function wo_gen_key($length=60)
   }
   return $randomString;
 }
+
+/**
+ * Blowfish Encryptions
+ * @param  [type]  $input  [description]
+ * @param  integer $rounds [description]
+ * @return [type]          [description]
+ *
+ * REQUIRES ATLEAST 5.3.x
+ */
+function wo_crypt($input, $rounds = 7)
+  {
+  $salt = "";
+  $salt_chars = array_merge(range('A','Z'), range('a','z'), range(0,9));
+  for($i=0; $i < 22; $i++) {
+    $salt .= $salt_chars[array_rand($salt_chars)];
+  }
+  return crypt($input, sprintf('$2a$%02d$', $rounds) . $salt);
+}

@@ -74,3 +74,12 @@ a:active {
   outline: none !important;
   outline: 0 !important;
 }
+
+.settings_page_wo_settings .form-table {
+  background: #fafafa;
+  border-left: #0074a2 solid 5px;
+}
+
+.settings_page_wo_settings .form-table th {
+  padding-left: 20px;
+}

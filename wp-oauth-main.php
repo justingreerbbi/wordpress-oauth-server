@@ -35,7 +35,7 @@ class WO_Server
 	function __construct ()
 	{
 
-		/** define some basics before we begin  */
+		/** define some basics  */
 		if (! defined( "WOABSPATH" ) )
 			define("WOABSPATH", dirname( __FILE__ ) );
 		if (! defined( "WOURI" ) )
@@ -61,7 +61,7 @@ class WO_Server
 	{
 		if ( is_null( self::$_instance ) ) 
 			self::$_instance = new self();
-		
+
 		return self::$_instance;
 	}
 
@@ -110,13 +110,15 @@ class WO_Server
 	 */
 	public static function includes ()
 	{
+		require_once( dirname(__FILE__) . '/includes/functions.php');
+		require_once( dirname(__FILE__) . '/includes/upgrade.php');
 		require_once( dirname(__FILE__) . '/includes/admin-options.php');
 		require_once( dirname(__FILE__) . '/includes/rewrites.php');
 		require_once( dirname(__FILE__) . '/includes/filters.php');
 
 		// If WP is doing any ajax calls, let include them.
 		if ( defined( 'DOING_AJAX' ) ) {
-			$this->ajax_includes();
+			//$this->ajax_includes();
 		}
 	}
 
@@ -164,4 +166,3 @@ function _WO ()
 	return WO_Server::instance();
 }
 $GLOBAL['WO'] = _WO();
-

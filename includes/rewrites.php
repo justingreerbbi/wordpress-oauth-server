@@ -49,7 +49,7 @@ class WO_Rewrites {
         global $wp_query;
         if ( $wp_query->get('oauth') ) 
         {
-            require_once( dirname(__FILE__) . '/class-wo-api.php' );
+            require_once( dirname(dirname(__FILE__)) . '/library/class-wo-api.php' );
             exit;
         }
     }

@@ -56,20 +56,26 @@ class WPOAuth_Admin {
 	    ?>
 	    <div class="wrap">
 	        <h2>Server Confirguration</h2>
-	        <p>Need Help? Check out the <a href="#">documentation</a></p>
-	        <div class="updated error">
-			        <p>Be sure to understand OAuth protocols before you start making changes.</p>
-			    </div>
+	        <p>Need Help? Check out the <a href="#">Documentation</a></p>
+
+	        <!--<div class="updated error">
+			        <p>You are not licensed to use the advanced configuration portion of WordPress OAuth Server. Get your license by registering at <a href="http://wp-oauth.com" target="_blank">http://wp-oauth.com</a>.</p>
+			    </div>-->
+	        
 	        <form method="post" action="options.php">
 	            <?php settings_fields('wo_options'); ?>
 
 	            <!-- Tabs Trials -->
 	            <div id="wo_tabs">
+							  
+							  <!-- TABS UI -->
 							  <ul>
-							    <li><a href="#tabs-1">General Settings</a></li>
+							    <li><a href="#general-settings">General Settings</a></li>
 							    <li><a href="#advanced-configuration">Advanced Configuration</a></li>
 							  </ul>
-							  <div id="tabs-1">
+							  
+							  <!-- GENERAL SETTINGS -->
+							  <div id="general-settings">
 							  	<h3>General Settings</h3>
 							  	<p>
 							  		General setting are where you can do, blah blah blah
@@ -82,6 +88,35 @@ class WPOAuth_Admin {
 			                    	<p class="description">When disabled, API will present a "Server is Temporarily Unavailable" message.</p>
 			                    </td>
 			                </tr>
+			            </table>  
+							  </div>
+ 
+							  <!-- ADVANCED CONFIGURATION -->
+							  <div id="advanced-configuration">
+
+							  	<h2>Advanced Configuration</h2>
+							  	<p>
+							  		Advanced configuration settings are reserved for license holders.
+							  	</p>
+
+							 		<h3>Key Generation <hr></h3>
+							    <table class="form-table">
+			              <tr valign="top">
+			               	<th scope="row">Client ID Length</th>
+			                  <td>
+			                  	<input type="number" name="<?php echo $this->option_name?>[client_id_length]" min="60" value="<?php echo $options["client_id_length"]; ?>" />
+			              	  </td>
+			              </tr>
+			              <tr valign="top">
+			               	<th scope="row">Additional Key Characters</th>
+			                  <td>
+			                  	<input type="text" name="<?php echo $this->option_name?>[additional_key_characters]" value="<?php echo $options["additional_key_characters"]; ?>" />
+			                  </td>
+			              </tr>
+			            	</table>
+
+			            	<h3>Resfresh Tokens <hr></h3>
+			              <table class="form-table">
 			                <tr valign="top">
 			                	<th scope="row">Refresh Tokens Enabled:</th>
 			                    <td>
@@ -104,17 +139,19 @@ class WPOAuth_Admin {
 			                    	<p class="description">0 = Never Expires</p>
 			                    </td>
 			                </tr>
+			              </table>
 
+			              <h3>Tokens & Authentication<hr></h3>
+			              <table class="form-table">
 			                <tr valign="top">
 			                	<th scope="row">
-			                		Auth code lifespan:
+			                		Authentication Code Lifespan:
 			                	</th>
 			                    <td>
 			                    	<input type="number" name="<?php echo $this->option_name?>[auth_code_expiration_time]" min="1" max="10" value="<?php echo $options["auth_code_expiration_time"]; ?>" /> Minutes
 			                    	<p class="description">Between 1 and 10 minutes.</p>
 			                    </td>
 			                </tr>
-
 			                <tr valign="top">
 			                	<th scope="row">
 			                		Access Token lifespan:
@@ -124,34 +161,10 @@ class WPOAuth_Admin {
 			                    	<p class="description">0 = Unlimited</p>
 			                    </td>
 			                </tr>
-			            </table>  
+			           		</table>
 							  </div>
- 
-							  <!-- ADVANCED CONFIGURATION -->
-							  <div id="advanced-configuration">
-							 		<h3>Advanced Configuration</h3>
-							    <table class="form-table">
-			                <tr valign="top">
-			                	<th scope="row">Client ID Length</th>
-			                    <td>
-			                    	<input type="number" name="<?php echo $this->option_name?>[client_id_length]" min="60" value="<?php echo $options["client_id_length"]; ?>" />
-			                    </td>
-			                </tr>
-
-			                <tr valign="top">
-			                	<th scope="row">Additional Key Characters</th>
-			                    <td>
-			                    	<input type="text" name="<?php echo $this->option_name?>[additional_key_characters]" value="<?php echo $options["additional_key_characters"]; ?>" />
-			                    </td>
-			                </tr>
-			            </table>
-							  </div>
-							
 
 							</div>
-
-
-
 	            
 	            <p class="submit">
 	                <input type="submit" class="button-primary" value="<?php _e('Save Changes') ?>" />
