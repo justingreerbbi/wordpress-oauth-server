@@ -83,3 +83,7 @@ a:active {
 .settings_page_wo_settings .form-table th {
   padding-left: 20px;
 }
+
+.ui-tabs-panel h3 {
+  margin-top: 20px;
+}
