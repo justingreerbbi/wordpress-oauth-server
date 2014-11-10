@@ -10,6 +10,7 @@ class WO_Redirect extends WO_API
 		self::_redirect($redirect);
 	}
 
+  
 	private static function _redirect($location)
 	{
 		wp_redirect($location, 302);

@@ -36,7 +36,7 @@ class WO_Server
 		}
 		spl_autoload_register( array( $this, 'autoload' ) );
 		
-		add_action("wp_loaded", array(__CLASS__, "includes"));
+		add_action("init", array(__CLASS__, "includes"));
 		register_activation_hook(__FILE__, array($this, 'setup'));
 	}
 
@@ -100,7 +100,6 @@ class WO_Server
 		require_once( dirname(__FILE__) . '/includes/admin-options.php');
 		require_once( dirname(__FILE__) . '/includes/rewrites.php');
 		require_once( dirname(__FILE__) . '/includes/filters.php');
-		require_once( dirname(__FILE__) . '/includes/types.php');
 
 		// If WP is doing any ajax calls, let include them.
 		if ( defined( 'DOING_AJAX' ) ) {
@@ -134,3 +133,4 @@ function _WO ()
 	return WO_Server::instance();
 }
 $GLOBAL['WO'] = _WO();
+

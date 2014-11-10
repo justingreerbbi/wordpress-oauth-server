@@ -43,11 +43,6 @@ class WO_Rewrites {
 	/**
      * [template_redirect_intercept description]
      * @return [type] [description]
-     *
-     * @todo OAuth 2.0 requires that all request be made using POST when still obtaining ALL GET veriables.
-     * If a request comes in that is not using POST, we need to no even bother with it and skip the API.
-     * This may be a setting that we can add in WP Admin (allow use of GET) but then we are not following
-     * the OAuth 2.0 guidelines.
      */
     function template_redirect_intercept() 
     {
@@ -61,7 +56,6 @@ class WO_Rewrites {
 
 }
 $WO_Rewrites = new WO_Rewrites();
-
 add_filter( 'rewrite_rules_array' , array( $WO_Rewrites , 'create_rewrite_rules' ));
 add_filter( 'query_vars' , array( $WO_Rewrites , 'add_query_vars'));
 add_filter( 'wp_loaded' , array( $WO_Rewrites , 'flush_rewrite_rules'));
