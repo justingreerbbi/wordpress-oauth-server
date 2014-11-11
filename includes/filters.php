@@ -16,12 +16,29 @@
  * - invalid_access_token
  * - invalid_refresh_token
  */
-add_filter("WO_API_Errors", "wo_api_errors", 1);
-function wo_api_errors ( $errors )
+add_filter("WO_API_Errors", "wo_api_error_setup", 1);
+function wo_api_error_setup ( $errors )
 {
 	$errors["invalid_access_token"] = "The access token is invalid or has expired";
 	$errors["invalid_refresh_token"] = "The refresh token is invalid or has expired";
 	return $errors;
 }
 
-//add_filter();
+/**
+ * Default Scopes Supported
+ * @since 0.2
+ * @todo Link scopes to checks system that is dynamic some how when performing API calls
+ *
+ * "scope_name" => enabled/disabled
+ */
+add_filter("WO_Scopes", "wo_scopes_setup");
+function wo_scopes_setup ()
+{
+  $scopes = array(
+    'general' => true,
+    'email' => true,
+    'media' => true,
+    'posts' => true,
+    );
+  return $scopes;
+}

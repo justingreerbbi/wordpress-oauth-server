@@ -72,6 +72,10 @@
   background: rgb(255, 255, 255);
 }
 
+.ui-tabs-nav .ui-state-focus a {
+    outline: none;
+}   
+
 a:focus,
 a:active {
   outline: none !important;
@@ -90,4 +94,44 @@ a:active {
 .ui-tabs-panel h3 {
   margin-top: 35px;
   color: #0074a2;
+}
+
+.notification {
+  border-left: 4px solid #dd3d36;
+  background: #fff;
+  -webkit-box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
+  box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
+  padding: 10px 12px;
+  margin: 5px 0 15px;
+}
+
+.wo-popup-inner {}
+  .wo-popup-inner h3.header {
+    color: #0074a2;
+  }
+  .wo-popup-inner form {
+  }
+    .wo-popup-inner form label {
+      font-weight: bold;
+      margin-top: 20px;
+      display: block;
+      font-size: 14px;
+    }
+    .wo-popup-inner input[type="text"] {
+      display: block;
+      padding: 10px;
+      margin: 10px 0px;
+    }
+
+    .wo-popup-inner textarea {
+      width: 100%;
+      resize: vertical;
+      min-height: 150px;
+    }
+#TB_title {
+  background: #0074a2 !important;
+  color: #FFF !important;
+}
+.tb-close-icon {
+  color: #FFF !important;
 }
