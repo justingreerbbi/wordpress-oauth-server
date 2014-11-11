@@ -244,7 +244,7 @@ class WPOAuth_Admin {
 	        <div id="add-new-client" style="display:none;">
 						<div class="wo-popup-inner">
 							<h3 class="header">Add a New Client</h3>
-							<form action="/" method="get">
+							<form id="create-new-client" action="/" method="get">
 								<label>Client Name *</label>
 								<input type="text" name="client_name" placeholder="Client Name"/>
 

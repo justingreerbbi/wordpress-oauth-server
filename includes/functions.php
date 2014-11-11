@@ -33,7 +33,7 @@ function wo_edit_client ($client_id=null, $data)
  *
  * @todo Allow more characters to be added to the character list to provide comlex keys
  */
-function wo_gen_key($length=60)
+function wo_gen_key($length=40)
 {
   $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
   $randomString = '';

@@ -115,14 +115,10 @@ class WO_Server
 		require_once( dirname(__FILE__) . '/includes/admin-options.php');
 		require_once( dirname(__FILE__) . '/includes/rewrites.php');
 		require_once( dirname(__FILE__) . '/includes/filters.php');
-
-		if(!class_exists('WP_List_Table')){
-   		require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
-		}
 		
-		// If WP is doing any ajax calls, let include them.
+		/** include the ajax class if DOING_AJAX is defined */
 		if ( defined( 'DOING_AJAX' ) ) {
-			//$this->ajax_includes();
+			require_once( dirname(__FILE__) . '/includes/ajax/class-wo-ajax.php');
 		}
 	}
 
