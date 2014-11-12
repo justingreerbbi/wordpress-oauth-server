@@ -39,12 +39,8 @@ function wo_gen_key($length=40)
   $user_defined_length = (int)$options["client_id_length"];
   if($user_defined_length > 0)
     $length = $user_defined_length;
-
-  $additional_characters = '';
-  if(strlen($options["additional_key_characters"]) > 0)
-    $additional_characters = $options["additional_key_characters"];
-
-  $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.$additional_characters;
+  
+  $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
   $randomString = '';
   for ($i = 0; $i < $length; $i++) {
       $randomString .= $characters[rand(0, strlen($characters) - 1)];
