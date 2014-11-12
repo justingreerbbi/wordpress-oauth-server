@@ -137,3 +137,7 @@ a:active {
 }
 
 .name.column-name a {color: #0074a2;}
+
+#the-list tr:nth-child(odd) {
+  background: #f9f9f9;
+}
