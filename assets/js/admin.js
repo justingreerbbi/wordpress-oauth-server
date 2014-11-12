@@ -25,8 +25,31 @@
       {
         location.reload(); // Reload the page - Temp way until I have time to do it properly
       }
-
     });
   });
+  
 
 })(jQuery);
+
+/**
+ * Remove a Client
+ */
+function wo_remove_client (client_id)
+{
+  var data = {
+      'action': 'wo_remove_client',
+      'data': client_id
+    };
+    // We can also pass the url value separately from ajaxurl for front end AJAX implementations
+    jQuery.post(ajaxurl, data, function(response) {
+      if(response != '1')
+      {
+        alert(response);
+      }
+      else
+      {
+        alert(client_id);
+        jQuery("#record_"+client_id+"").remove();
+      }
+    });
+}

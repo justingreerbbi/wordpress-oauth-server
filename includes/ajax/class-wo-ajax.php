@@ -6,7 +6,8 @@ class WO_Ajax {
 
 		$ajax_events = array(
 			'get_refreshed_fragments' => true,
-			'create_new_client'	=> false
+			'create_new_client'	=> false,
+			'remove_client' => false
 		);
 
 		foreach ( $ajax_events as $ajax_event => $nopriv ) 
@@ -72,9 +73,26 @@ class WO_Ajax {
 			print 'System Error: Failed to add the client to the server.';
 			exit;
 		}
-
 		print '1';
+		exit;
+	}
 
+	/**
+	 * Remove a client from the database
+	 * @todo Add more of a check to make sure there is nothing fishing going on
+	 */
+	function remove_client ()
+	{
+		global $wpdb;
+		$action = $wpdb->delete( "{$wpdb->prefix}oauth_clients", array( 'client_id' =>  $_POST['data']) );
+		if($action)
+		{
+			print "1";
+		}
+		else
+		{
+			print "System Error: Could not remove the client from the server.";
+		}
 		exit;
 	}
 
