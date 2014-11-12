@@ -12,9 +12,9 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 
 ## TODO
-- [] Add filter in admin table class to return only clients that are owned by the admin
-- [] Add _nonce to AJAX when adding and deleting
-- [] Add check when deleting clients in admin to ensure current user is owner if the client. (Super Admin should have rights to all)
+- [ ] Add filter in admin table class to return only clients that are owned by the admin
+- [ ] Add _nonce to AJAX when adding and deleting
+- [ ] Add check when deleting clients in admin to ensure current user is owner if the client. (Super Admin should have rights to all)
 
 ## Description
 
