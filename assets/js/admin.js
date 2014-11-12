@@ -40,6 +40,9 @@
  */
 function wo_remove_client (client_id)
 {
+  if(!confirm("Are you sure you want to delete this client?"))
+    return;
+  
   var data = {
     'action': 'wo_remove_client',
     'data': client_id
@@ -51,7 +54,6 @@ function wo_remove_client (client_id)
     }
     else
     {
-      alert(client_id);
       jQuery("#record_"+client_id+"").remove();
     }
   });
