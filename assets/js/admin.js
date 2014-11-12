@@ -19,7 +19,7 @@
     jQuery.post(ajaxurl, data, function(response) {
       if(response != '1')
       {
-        alert(resonse);
+        alert(response);
       }
       else
       {

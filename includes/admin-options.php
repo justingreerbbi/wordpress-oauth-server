@@ -215,9 +215,9 @@ class WPOAuth_Admin {
 							  	</h2>
 							  	
 							  	<?php
-							  	//$wp_list_table = new WO_Table();
-									//$wp_list_table->prepare_items();
-									//$wp_list_table->display();
+							  	$wp_list_table = new WO_Table();
+									$wp_list_table->prepare_items();
+									$wp_list_table->display();
 									?>
 							  </div>
 
@@ -229,7 +229,7 @@ class WPOAuth_Admin {
 	        </form>
 
 	        <!-- ADD NEW CLIENT HIDDEN FROM -->
-	        <!--<div id="add-new-client" style="display:none;">
+	        <div id="add-new-client" style="display:none;">
 						<div class="wo-popup-inner">
 							<h3 class="header">Add a New Client</h3>
 							<form id="create-new-client" action="/" method="get">
@@ -244,7 +244,7 @@ class WPOAuth_Admin {
 
 								<?php submit_button("Add Client"); ?>
 							</form>
-						</div>-->
+						</div>
 
 					</div>
 

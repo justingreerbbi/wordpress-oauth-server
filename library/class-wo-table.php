@@ -18,16 +18,36 @@ class WO_Table extends WP_List_Table {
    * Add extra markup in the toolbars before or after the list
    * @param string $which, helps you decide if you add the markup after (bottom) or before (top) the list
    */
-  /*function extra_tablenav( $which ) {
+  function extra_tablenav( $which ) {
     if ( $which == "top" ){
-      //The code that goes before the table is here
-      echo"Hello, I'm before the table";
+      return false;
     }
     if ( $which == "bottom" ){
-      //The code that goes after the table is there
-      echo"Hi, I'm after the table";
+     return false;
     }
-  }*/
+  }
+
+  /**
+   * Overide default functionality to remove _nonce field
+   * @return [type] [description]
+   */
+  function display_tablenav ( $which )
+  {
+    //if ( 'top' == $which )
+      //wp_nonce_field( 'bulk-' . $this->_args['plural'] );
+    ?>
+    <div class="tablenav <?php echo esc_attr( $which ); ?>">
+      <div class="alignleft actions bulkactions">
+       <?php $this->bulk_actions( $which ); ?>
+      </div>  
+      <?php
+      $this->extra_tablenav( $which );
+      $this->pagination( $which );
+      ?>
+      <br class="clear" />
+    </div>
+  <?php
+  }
 
   /**
    * Define the columns that are going to be used in the table
@@ -48,8 +68,8 @@ class WO_Table extends WP_List_Table {
    */
   public function get_sortable_columns() {
     return $sortable = array(
-      'name'  => array('name'),
-      'user_id'=>array('user_id')
+      //'name'  => array('name'),
+      //'user_id'=>array('user_id')
     );
   }
 
