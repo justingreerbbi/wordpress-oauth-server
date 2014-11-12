@@ -23,7 +23,7 @@ class WO_Server
 		"refresh_token_lifespan_unit" 	=> "year",
 		"auth_code_expiration_time" 		=> 10,
 		"access_token_lifespan"	 				=> 3600,
-		"client_id_length"							=> 60,
+		"client_id_length"							=> 30,
 		"additional_key_characters"			=> '',
 		"license"												=> null
 		);
