@@ -41,6 +41,9 @@ class WO_Server
 		/** register plugin styles and scripts */
 		add_action("wp_loaded", array(__CLASS__, "register_scripts"));
 		add_action("wp_loaded", array(__CLASS__, "register_styles"));
+
+		/** activation hook for plugin - This may need to be moved. Not sure wh it is not running here. It does work in the main plugin file but that is not want I want */
+		register_activation_hook( WPOAUTH_FILE, array($this,'setup'));
 	}
 
 	/**
