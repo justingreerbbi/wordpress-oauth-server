@@ -41,6 +41,9 @@ class WO_Ajax {
 		parse_str($_POST['data'], $params);
 		extract($params);
 
+		$user = wp_get_current_user();
+		$userID = $user->ID;
+
 		$new_client_id = wo_gen_key();
 		$new_client_secret = wo_gen_key();
 
@@ -64,7 +67,8 @@ class WO_Ajax {
 			"client_secret" => $new_client_secret,
 			"name"	=> $client_name,
 			"description"	=> $client_description,
-			"redirect_uri"	=> $redirect_uri
+			"redirect_uri"	=> $redirect_uri,
+			"user_id"	=> $userID
 			);
 		$insert = $wpdb->insert("{$wpdb->prefix}oauth_clients", $insert_data);
 
