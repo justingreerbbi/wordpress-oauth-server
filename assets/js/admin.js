@@ -7,15 +7,18 @@
     }
   });
 
+  /**
+   * Create New Client Form Submission Hook
+   * @param  {[type]} e [description]
+   * @return {[type]}   [description]
+   */
   $('#create-new-client').submit(function(e){
     e.preventDefault();
     var formData = $(this).serialize();
-    //console.log(formData);
     var data = {
       'action': 'wo_create_new_client',
       'data': formData
     };
-    // We can also pass the url value separately from ajaxurl for front end AJAX implementations
     jQuery.post(ajaxurl, data, function(response) {
       if(response != '1')
       {
@@ -23,7 +26,8 @@
       }
       else
       {
-        location.reload(); // Reload the page - Temp way until I have time to do it properly
+        /** reload for the time being */
+        location.reload();
       }
     });
   });
@@ -37,19 +41,18 @@
 function wo_remove_client (client_id)
 {
   var data = {
-      'action': 'wo_remove_client',
-      'data': client_id
-    };
-    // We can also pass the url value separately from ajaxurl for front end AJAX implementations
-    jQuery.post(ajaxurl, data, function(response) {
-      if(response != '1')
-      {
-        alert(response);
-      }
-      else
-      {
-        alert(client_id);
-        jQuery("#record_"+client_id+"").remove();
-      }
-    });
+    'action': 'wo_remove_client',
+    'data': client_id
+  };
+  jQuery.post(ajaxurl, data, function(response) {
+    if(response != '1')
+    {
+      alert(response);
+    }
+    else
+    {
+      alert(client_id);
+      jQuery("#record_"+client_id+"").remove();
+    }
+  });
 }
