@@ -35,6 +35,11 @@ function wo_edit_client ($client_id=null, $data)
  */
 function wo_gen_key($length=40)
 {
+  $options = get_option("wo_options");
+  $user_defined_length = (int)$options["client_id_length"];
+  if($user_defined_length > 0)
+    $length = $user_defined_length;
+
   $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
   $randomString = '';
   for ($i = 0; $i < $length; $i++) {
