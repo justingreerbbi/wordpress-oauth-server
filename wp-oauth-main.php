@@ -2,20 +2,13 @@
 class WO_Server
 {
 
-	/**
-	 * @var version Current version of the plugin
-	 */
+	/** @var string current plugin version */
 	public static $version = "1.0.0";
 
-	/**
-	 * @var _instance Current scope of the plugin
-	 */
+	/** @var object current plugin instance */
 	public static $_instance = null;
 
-	/**
-	 * Default settings
-	 * @var array
-	 */
+	/** @var array default plugin settings */
 	protected $defualt_settings = array(
 		"enabled" 											=> 1,
 		"refresh_tokens_enabled" 				=> 1,
@@ -28,13 +21,10 @@ class WO_Server
 		);
 
 	/**
-	 * Construct Mehtod
-	 * Setup autoload functionality and initiate plugin inlcudes
+	 * plugin construct method
 	 */
 	function __construct ()
 	{
-
-		/** define some basics  */
 		if (! defined( "WOABSPATH" ) )
 			define("WOABSPATH", dirname( __FILE__ ) );
 		if (! defined( "WOURI" ) )
@@ -45,16 +35,17 @@ class WO_Server
 		}
 		spl_autoload_register( array( $this, 'autoload' ) );
 		
+		/** load all dependants */
 		add_action("init", array(__CLASS__, "includes"));
+
+		/** register plugin styles and scripts */
 		add_action("wp_loaded", array(__CLASS__, "register_scripts"));
 		add_action("wp_loaded", array(__CLASS__, "register_styles"));
-
-		/** activation hook for the server */
-		register_activation_hook(__FILE__, array($this, 'setup'));
 	}
 
 	/**
-	 * Load intance of the plugin
+	 * populate the instance if the plugin for exstendability
+	 * @return object plugin instance
 	 */
 	public static function instance ()
 	{
@@ -65,25 +56,8 @@ class WO_Server
 	}
 
 	/**
-	 * Cloning is forbidden.
-	 * @todo  Convert
-	 */
-	public function __clone() {
-		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'oauthserver' ), '2.1' );
-	}
-
-	/**
-	 * Unserializing instances of this class is forbidden.
-	 * @todo  Convert
-	 */
-	public function __wakeup() {
-		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'oauthserver' ), '2.1' );
-	}
-
-	/**
-	 * Autoload all the classes on demand.
-	 * All WO classes are located in library directory.
-	 * @return [type] [description]
+	 * setup plugin class autoload
+	 * @return void
 	 */
 	public function autoload ($class)
 	{
@@ -104,7 +78,7 @@ class WO_Server
 	}
 
 	/**
-	 * WP OAuth includes. Nothing to special here
+	 * plugin includes called during load of plugin
 	 * @return void
 	 */
 	public static function includes ()
@@ -116,22 +90,13 @@ class WO_Server
 		require_once( dirname(__FILE__) . '/includes/filters.php');
 		
 		/** include the ajax class if DOING_AJAX is defined */
-		if ( defined( 'DOING_AJAX' ) ) {
+		if ( defined( 'DOING_AJAX' ) )
 			require_once( dirname(__FILE__) . '/includes/ajax/class-wo-ajax.php');
-		}
-	}
-
-	/**
-	 * Ajax inlcludes
-	 * @return void
-	 */
-	public function ajax_includes() {
-		include_once( 'includes/class-wo-ajax.php' );
 	}
 
 	/**
 	 * register plugin styles
-	 * @return [type] [description]
+	 * @return void
 	 */
 	public function register_styles ()
 	{
@@ -140,7 +105,7 @@ class WO_Server
 
 	/**
 	 * register plugin scripts
-	 * @return [type] [description]
+	 * @return void
 	 */
 	public function register_scripts ()
 	{
@@ -148,14 +113,91 @@ class WO_Server
 	}
 
 	/**
-	 * [setup description]
-	 * @return void
+	 * plugin setup. this is only ran on activation
+	 * @return [type] [description]
 	 */
 	public function setup ()
 	{
 		$options = get_option("wo_options");
 		if(! isset($options["enabled"]) )
 			update_option("wo_options", $this->defualt_settings);
+
+		/** check if we need to install or upgrade */
+		if(get_option("wpoauth_version") != self::$version)
+			$this->install();
+
+	}
+
+	/**
+	 * plugin update check
+	 * @return [type] [description]
+	 */
+	public function install ()
+	{
+		/** install the required tables in the database */
+		global $wpdb;
+		$charset_collate = '';
+		
+		/** set charset to current wp option */
+		if ( ! empty( $wpdb->charset ) )
+  		$charset_collate = "DEFAULT CHARACTER SET {$wpdb->charset}";
+
+  	/** set collate to current wp option */
+		if ( ! empty( $wpdb->collate ) )
+  		$charset_collate .= " COLLATE {$wpdb->collate}";
+
+		/** update the plugin version in the database */
+		update_option("wpoauth_version", self::$version);
+
+		$sql1 = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_access_tokens(
+  					access_token varchar(40) NOT NULL,
+  					client_id varchar(80) NOT NULL,
+  					user_id varchar(255) DEFAULT NULL,
+  					expires timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  					scope varchar(2000) DEFAULT NULL,
+  					PRIMARY KEY (access_token)
+						) $charset_collate;";
+
+		$sql2 = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_clients (
+  					client_id varchar(80) NOT NULL,
+  					client_secret varchar(80) NOT NULL,
+  					redirect_uri varchar(2000) NOT NULL,
+  					grant_types varchar(80) DEFAULT NULL,
+  					scope varchar(100) DEFAULT NULL,
+  					user_id varchar(80) DEFAULT NULL,
+  					name varchar(255) NOT NULL,
+  					description varchar(255) NOT NULL,
+  					PRIMARY KEY (client_id)
+						) $charset_collate;";
+
+		$sql3 = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_codes (
+  					client_id varchar(62) NOT NULL,
+  					code varchar(62) NOT NULL,
+  					expires timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  					UNIQUE KEY code (code)
+						) $charset_collate;";
+
+
+		$sql4 = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_refresh_tokens (
+					  refresh_token varchar(40) NOT NULL,
+					  client_id varchar(80) NOT NULL,
+					  user_id varchar(255) DEFAULT NULL,
+					  expires timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+					  scope varchar(2000) DEFAULT NULL,
+					  PRIMARY KEY (refresh_token)
+						) $charset_collate;";
+		
+		$sql5 = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_scopes (
+					  scope text,
+					  is_default tinyint(1) DEFAULT NULL
+						) $charset_collate;";
+
+		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+		dbDelta( $sql1 );
+		dbDelta( $sql2 );
+		dbDelta( $sql3 );
+		dbDelta( $sql4 );
+		dbDelta( $sql5 );
 	}
 
 }
