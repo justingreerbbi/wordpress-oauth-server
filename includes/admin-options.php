@@ -57,52 +57,40 @@ class WPOAuth_Admin {
     	error_reporting(0);
     	add_thickbox();
 	    ?>
-	    <div class="wrap">
-	        <h2>Server Confirguration</h2>
-	        <p>Need Help? Check out the <a href="#">Documentation</a></p>
-
-	        <!--<div class="updated error">
-			        <p>You are not licensed to use the advanced configuration portion of WordPress OAuth Server. Get your license by registering at <a href="http://wp-oauth.com" target="_blank">http://wp-oauth.com</a>.</p>
-			    </div>-->
+	    		<div class="wrap">
+	        	<h2>Server Confirguration</h2>
+	        	<p>Need Help? Check out the <a href="#">Documentation</a></p>
 	       
-	        <form method="post" action="options.php">
-	            <?php settings_fields('wo_options'); ?>
+	        	<form method="post" action="options.php">
+	          	<?php settings_fields('wo_options'); ?>
 
-	            <!-- Tabs Trials -->
-	            <div id="wo_tabs">
+	          	<div id="wo_tabs">
+								<ul>
+							  	<li><a href="#general-settings">General Settings</a></li>
+							  	<li><a href="#advanced-configuration">Advanced Configuration</a></li>
+							  	<li><a href="#shortcodes">Shortcodes</a></li>
+							  	<li><a href="#clients">Clients</a></li>
+								</ul>
 							  
-							  <!-- TABS UI -->
-							  <ul>
-							    <li><a href="#general-settings">General Settings</a></li>
-							    <li><a href="#advanced-configuration">Advanced Configuration</a></li>
-							    <li><a href="#shortcodes">Shortcodes</a></li>
-							    <li><a href="#clients">Clients</a></li>
-							  </ul>
-							  
-							  <!-- GENERAL SETTINGS -->
-							  <div id="general-settings">
-							  	<!--<h2>General Settings</h2>-->
-							  	
+								<!-- GENERAL SETTINGS -->
+								<div id="general-settings">
 							  	<table class="form-table">
-			                <tr valign="top">
-			                	<th scope="row">API Enabled:</th>
-			                    <td>
-			                    	<input type="checkbox" name="<?php echo $this->option_name?>[enabled]" value="1" <?php echo $options["enabled"] == "1" ? "checked='checked'" : ""; ?> />
-			                    	<p class="description">When disabled, API will present a "Server is Temporarily Unavailable" message.</p>
-			                    </td>
-			                </tr>
+			            	<tr valign="top">
+			            		<th scope="row">API Enabled:</th>
+			                	<td>
+			                  	<input type="checkbox" name="<?php echo $this->option_name?>[enabled]" value="1" <?php echo $options["enabled"] == "1" ? "checked='checked'" : ""; ?> />
+			                  	<p class="description">When disabled, API will present a "Server is Temporarily Unavailable" message.</p>
+			                	</td>
+			              	</tr>
 			            </table>  
 							  </div>
  
 							  <!-- ADVANCED CONFIGURATION -->
 							  <div id="advanced-configuration">
-
 							  	<h2>Advanced Configuration</h2>
-							  	<p>
-							  		Advanced Configuration for OAuth Server.
-							  	</p>
+							  	<p>Advanced Configuration for OAuth Server.</p>
 
-							  	<h3>Server Type<hr></h3>
+							  	<!--<h3>Server Type<hr></h3>
 							    <table class="form-table">
 			              <tr valign="top">
 			               	<th scope="row">Server Type</th>
@@ -117,9 +105,9 @@ class WPOAuth_Admin {
 			                  	</p>
 			              	  </td>
 			              </tr>
-			            </table>
+			            </table>-->
 
-							  	<h3>Scopes<hr></h3>
+							  	<!--<h3>Scopes<hr></h3>
 							    <table class="form-table">
 			              <tr valign="top">
 			               	<th scope="row">Enabled Scopes</th>
@@ -128,19 +116,19 @@ class WPOAuth_Admin {
 			                  		Scopes not yet supported -> Still in Development
 			                  	</div>
 			                  	<?php foreach($scopes as $scope=>$enabled): ?>
-			                  		<!--<input type="checkbox" name="<?php echo $this->option_name; ?>[scopes][<?php echo $scope; ?>]" value="1"  <?php if($this->option_name["scopes"][$scope] == 1) print 'checked="checked"'; ?> /><?php echo ucfirst($scope); ?><br/>-->
+			                  		<input type="checkbox" name="<?php echo $this->option_name; ?>[scopes][<?php echo $scope; ?>]" value="1"  <?php if($this->option_name["scopes"][$scope] == 1) print 'checked="checked"'; ?> /><?php echo ucfirst($scope); ?><br/>
 			                  	<?php endforeach; ?>
 			              	  </td>
 			              </tr>
-			            </table>
+			            </table>-->
 
 
-							 		<h3>Key Generation <hr></h3>
-							    <table class="form-table">
+									<h3>Key Generation <hr></h3>
+									<table class="form-table">
 			              <tr valign="top">
 			               	<th scope="row">Key Lengths</th>
 			                  <td>
-			                  	<input type="number" name="<?php echo $this->option_name?>[client_id_length]" min="60" value="<?php echo $options["client_id_length"]; ?>" />
+			                  	<input type="number" name="<?php echo $this->option_name?>[client_id_length]" min="10" value="<?php echo $options["client_id_length"]; ?>" />
 			                  	<p class="description">Length of Client ID and Client Secrets when generated.</p>
 			              	  </td>
 			              </tr>
@@ -221,17 +209,17 @@ class WPOAuth_Admin {
 
 							  <!-- CLIENTS -->
 							  <div id="clients">
-							  	<h2>Clients <a href="#TB_inline?width=600&height=550&inlineId=add-new-client" class="add-new-h2 thickbox" title="Add New Client">Add New Client</a></h2>
+							  	<h2>
+							  		Clients 
+							  		<a href="#TB_inline?width=600&height=550&inlineId=add-new-client" class="add-new-h2 thickbox" title="Add New Client">Add New Client</a>
+							  	</h2>
 							  	
 							  	<?php
-							  	$wp_list_table = new WO_Table();
-									$wp_list_table->prepare_items();
-									$wp_list_table->display();
+							  	//$wp_list_table = new WO_Table();
+									//$wp_list_table->prepare_items();
+									//$wp_list_table->display();
 									?>
-
-							
 							  </div>
- 
 
 							</div>
 	            
@@ -241,7 +229,7 @@ class WPOAuth_Admin {
 	        </form>
 
 	        <!-- ADD NEW CLIENT HIDDEN FROM -->
-	        <div id="add-new-client" style="display:none;">
+	        <!--<div id="add-new-client" style="display:none;">
 						<div class="wo-popup-inner">
 							<h3 class="header">Add a New Client</h3>
 							<form id="create-new-client" action="/" method="get">
@@ -256,7 +244,8 @@ class WPOAuth_Admin {
 
 								<?php submit_button("Add Client"); ?>
 							</form>
-						</div>
+						</div>-->
+
 					</div>
 
 	    </div>
