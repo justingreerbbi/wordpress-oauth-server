@@ -132,14 +132,7 @@ class WPOAuth_Admin {
 			                  	<p class="description">Length of Client ID and Client Secrets when generated.</p>
 			              	  </td>
 			              </tr>
-			              <!--<tr valign="top">
-			               	<th scope="row">Additional Key Characters</th>
-			                  <td>
-			                  	<input type="text" name="<?php echo $this->option_name?>[additional_key_characters]" value="<?php echo $options["additional_key_characters"]; ?>" />
-			                  	<p class="description">Keys generated use 0-9 a-Z. You can add adition characters to key that are being generated ( example: #$%^&#@)</p>
-			                  </td>
-			              </tr>-->
-			            	</table>
+			            </table>
 
 			            	<h3>Resfresh Tokens <hr></h3>
 			              <table class="form-table">

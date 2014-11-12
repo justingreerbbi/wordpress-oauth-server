@@ -24,7 +24,6 @@ class WO_Server
 		"auth_code_expiration_time" 		=> 10,
 		"access_token_lifespan"	 				=> 3600,
 		"client_id_length"							=> 30,
-		"additional_key_characters"			=> '',
 		"license"												=> null
 		);
 
