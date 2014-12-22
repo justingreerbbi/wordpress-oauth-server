@@ -1,4 +1,3 @@
-=== WP OAuth ===
 Contributors: Justin Greer
 Donate link: http://justin-greer.com/
 Tags: mobile oauth, oauth
@@ -8,11 +7,7 @@ Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Developer Logs
-- Remove All WP and server headers from all outputs (add options for this in admin).
-- Recode the install script as needed for the new server layout.
-- Add Filter user defined scopes
-- Add filter for user permissions (media, posts, pages, email, full, sso)
+{NO COMPLETE}
 
 A Complete OAuth Server for WordPress
 

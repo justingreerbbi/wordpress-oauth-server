@@ -4,116 +4,45 @@ This project is an OAuth 2.0 compatible authentication method for WordPress.
 
 The goal of WP OAuth Server (WordPress Open Authentication) is to provide an easy to use authentication method that 3rd party services can use to securely connect to any server running WordPress site.
 
-## Framework
+### Framework
 
-The OAuth Server included in this WordPress plugin is build on top of the PHP server designed by Brent Shaffer.
+This project is built on top of [Brent Shaffer's](https://github.com/bshaffer) PHP OAuth Server project.
 
-## Description
+### Supported Grant Types
+* Authentication Code
+* Implicit 
+* User Credentials
+* Client Credentials
+* Refresh Token
 
-OAuth suggests certian aspects that this plugin does not follow entirerly.
-* Doc state that POST should be used for some calls to the server. As if version 1.0, ONLY $_GET is supported.
-
-OAuth2 Complete is a ONE OF A KIND plugin that instantly turns your WordPress webste into a valid OAuth v2 provider. The plugin is built using OAuth2 Draft 20 standards. The backend is designed to be extremely easy to use for any level of experience. OAuth is a great tool but leaves most developers behind since it a bit technical.
-The plugin has aleady done the hard part for you.
-
-Current Features Features:
-
-*   Allows for Single Sign On abilities
-*   Backend panel for adding apps/clients
-* 3 methods built-in to allow for a plug-and-play system
+WP OAuth Server does not currently support `Jwt Bearer` or `Crypto Tokens`.
 
 ## Installation
 
 1. Upload `wordpress-oauth` to the `/wp-content/plugins/` directory or use the built-in plugin install system
-1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Click 'Settings' and then 'Oermalinks'. Then simply click 'Save Changes' to flush the rewrite rules.
+1. Activate the plugin through the `Plugins` menu in WordPress
+1. Click `Settings` and then `Permalinks`. Then simply click `Save Changes` to flush the rewrite rules.
 1. You're Ready to Rock
 
-NOTE: ENSURE that WP_DEBUG is set to false in the wp=config.php file.
 
-## Frequently Asked Questions
+## Adding a new Client?
 
-### How do I add an app/client?
+Visit the dashboard by clicking `Provider` in the WordPress admin panel under `Setiings`. Once you are in the dashboard, there is a form labeled `Add Client`. Give your client a name and a redirect uri and description. The redirect uri is the HTTP location where the user will be returned to after authenticating (your client should provide this for you). Click `Add Client`.
 
-Visit the OAuth2 Complete dashboard by clicking `Provider` in the WordPress admin panel. Once you are in the dashboard, there is a form labeled `Add Client`. Give your client a name and a redirect URI. The redirect URI is the HTTP location where the user will be returned to after authenticating (your client should provide this for you). Click `Add Client` and your client will be added to your Consumer Manager table.
+## Authentication Documentation
 
-### How does a client connect to my website to use the Single Sign On?
+*The following documentation assumes that you are famialr with PHP and at least a basic understand the workflow for OAuth 2.0 works.*
 
-Currently there is 3 Methods that OAuth2 Provider has built in:
+Since the main framework of this plugin was built on Brent Shaffers sevrver, you can follow his documentation. The only difference is the endpoints. The plugin endpoints are below:
 
-1. http://example.com/oauth/authorize
+- `/oauth/authorize`
+- `oauth/token`
 
-1. http://example.com/oauth/request_token
-
-1. http://example.com/oauth/request_access
-
-Authorize requires only 3 parameters:
-
-* client_id
-* response_type - Supported value's = `code`
-* state
-* Example call `http://example.com/oauth/authorize?client_id=the_client_id&state=anything_you_want&response_type=code`
-
-Request Token Requires only 4 parameters
-
-* code - This is auth code returned from the authorize call
-* grant_type - Supported value's = `authorization_code`
-* client_id
-* client_secret
-* Example call `http://example.com/oauth/request_token?code=the_auth_key_sent_back_from_the_authorize_call&grant_type=authorization_code&client_id=the_client_id&client_secret=the_client_secret`
-
-Request Access Requires only 1 parmeter
-
-* access_token - This is the access_token provided from the Request Token call
-* Example Call `http://example.com/oauth/request_access?access_token=the_token_from_the_request_call`
+Brent Shaffer has created a very detailed Step-by-Step guide to using the Authentication API. You can view the 
+homepage of this documentation [here](http://bshaffer.github.io/oauth2-server-php-docs/cookbook/). 
 
 
-NOTE: All returns will be in JSON format.
 
+## Resource API
 
-### Can you set this up for me on my current website?
-
-Yes. You are more than welcome to contact us if you should ever need assistance.
-
-### What information does the a authorized client have access to?
-
-By default OAuth2 Provider delivers <strong>ALL</strong> the information about the user that logged in. We are planning on adding a easy to use dashboard to limit data.
-
-
-## Upgrade Notice
-
-When upgrading OAuth2 Provider, I seriously recommend creating a backup of your site. I will try to create updates that will be flawless. Hopefully any future updates will not change to the point where it will stop working. All updates will be ran through multiple tests before being released. In the event that an upgrade of OAuth2 Provider is released and you decide to update, I (Justin Greer) can not and will not be held responsible for any damages done to your website, business, or part that pertains to your website. Upgrade at your OWN RISK!
-
-
-## Changelog
-
-### 1.0.0
-*INITIAL BUILD
-
-### 1.0.1
-* Re-worked Readme.txt
-* Fixed absolute paths causing 404 Error when WordPress is running under a sub directory (Using admin_url() currently)
-
-### 1.0.2 
-* Fixed Broken login redirect
-
-### 1.0.3
-* Fixed Admin URL links for plugin dashboard
-
-### 1.0.4
-* Fixed short tag in login layout
-* Filtered out hashed password / user activation key from returned oauth data.
-
-## 2.0.0
-* Rebuild init plugin code struture for more flexibilty and scalability.
-* Added prefix to all DB connections
-* Changed install query to use the InnoDB engine for better support and performance.
-* Fixed improper loading of plugin stylesheet.
-* Removed garbage data when plugin is activated. It was not being used and cluttering the codebase as well as the database.
-* Move action template_redirect to rewrites file
-* Added login form support for installs that are installed in sub directory
-* Added missing in documentation for when calling requesting_token
-* Suppressed some errors that was preventing a proper JSON return when `WP_DEBUG` was enabled.
-* Added a client sample script to help learn the baiscs of connecting to the provider plugin.
-* Add legacy installer that will hopfully keep old data in tacked while updating to the new structure with no data loss.
-* Fixed hardocde database prefix in API ( credit to Matthew Bass for the find )
+{STILL NEEDS DOCUMENTATION}
