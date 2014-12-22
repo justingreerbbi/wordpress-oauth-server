@@ -2,7 +2,7 @@
 /**
  * WP OAuth Output Class
  */
-class WO_Output extends WO_API
+class WO_Output
 {
 	public function __construct($data, $type=null, $header=null)
 	{

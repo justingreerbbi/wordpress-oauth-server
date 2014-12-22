@@ -5,7 +5,7 @@
  * @todo Error descriptions are optional. Add a setting wether or not to include error description 
  * the admin area.
  */
-class WO_Error extends WO_API
+class WO_Error
 {
 	public $errors;
 

@@ -21,6 +21,7 @@ function wo_api_error_setup ( $errors )
 {
 	$errors["invalid_access_token"] = "The access token is invalid or has expired";
 	$errors["invalid_refresh_token"] = "The refresh token is invalid or has expired";
+  $errors["invalid_credentials"] = "Invalid user credentials";
 	return $errors;
 }
 

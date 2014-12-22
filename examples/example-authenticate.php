@@ -85,3 +85,14 @@ class WP_OAuth_Authenticate {
     }
 
 }
+
+/**
+ * cURL examples using PHP. Most cURL calls to the OAuth server need to have a basic header authorization
+ * @var [type]
+ */
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL,$URL);
+curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+curl_setopt($ch, CURLOPT_USERPWD, "username:password"); // basic header authentication

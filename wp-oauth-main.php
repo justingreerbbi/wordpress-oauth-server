@@ -1,14 +1,8 @@
 <?php
 class WO_Server
 {
-
-	/** @var string current plugin version */
-	public static $version = "1.0.0";
-
-	/** @var object current plugin instance */
+	public static $version = "2.0.0";
 	public static $_instance = null;
-
-	/** @var array default plugin settings */
 	protected $defualt_settings = array(
 		"enabled" 											=> 1,
 		"refresh_tokens_enabled" 				=> 1,
@@ -21,7 +15,7 @@ class WO_Server
 		);
 
 	/**
-	 * plugin construct method
+	 * [__construct description]
 	 */
 	function __construct ()
 	{
@@ -126,7 +120,7 @@ class WO_Server
 			update_option("wo_options", $this->defualt_settings);
 
 		/** check if we need to install or upgrade */
-		if(get_option("wpoauth_version") != self::$version)
+		//if(get_option("wpoauth_version") != self::$version)
 			$this->install();
 
 	}
@@ -152,55 +146,89 @@ class WO_Server
 		/** update the plugin version in the database */
 		update_option("wpoauth_version", self::$version);
 
-		$sql1 = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_access_tokens(
-  					access_token varchar(40) NOT NULL,
-  					client_id varchar(80) NOT NULL,
-  					user_id varchar(255) DEFAULT NULL,
-  					expires timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  					scope varchar(2000) DEFAULT NULL,
-  					PRIMARY KEY (access_token)
-						) $charset_collate;";
+		$sql1 = "
+			CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_clients (
+        client_id             VARCHAR(80)   NOT NULL,
+        client_secret         VARCHAR(80)   NOT NULL,
+        redirect_uri          VARCHAR(2000),
+        grant_types           VARCHAR(80),
+        scope                 VARCHAR(4000),
+        user_id               VARCHAR(80),
+        name                  VARCHAR(80),
+        description           LONGTEXT
+        PRIMARY KEY (client_id)
+      );
+			";
+			
+			$sql2 = "
+			CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_access_tokens (
+				access_token         VARCHAR(40)    NOT NULL,
+        client_id            VARCHAR(80)    NOT NULL,
+        user_id              VARCHAR(80),
+        expires              TIMESTAMP      NOT NULL,
+        scope                VARCHAR(4000),
+        PRIMARY KEY (access_token)
+      );
+			";
+			
+			$sql3 = "
+			CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_refresh_tokens (
+				refresh_token       VARCHAR(40)    NOT NULL,
+        client_id           VARCHAR(80)    NOT NULL,
+        user_id             VARCHAR(80),
+        expires             TIMESTAMP      NOT NULL,
+        scope               VARCHAR(4000),
+        PRIMARY KEY (refresh_token)
+      );
+			";
 
-		$sql2 = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_clients (
-  					client_id varchar(80) NOT NULL,
-  					client_secret varchar(80) NOT NULL,
-  					redirect_uri varchar(2000) NOT NULL,
-  					grant_types varchar(80) DEFAULT NULL,
-  					scope varchar(100) DEFAULT NULL,
-  					user_id varchar(80) DEFAULT NULL,
-  					name varchar(255) NOT NULL,
-  					description varchar(255) NOT NULL,
-  					PRIMARY KEY (client_id)
-						) $charset_collate;";
+			$sql4 = "
+			CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_authorization_codes (
+        authorization_code  VARCHAR(40)    NOT NULL,
+        client_id           VARCHAR(80)    NOT NULL,
+        user_id             VARCHAR(80),
+        redirect_uri        VARCHAR(2000),
+        expires             TIMESTAMP      NOT NULL,
+        scope               VARCHAR(4000),
+        id_token            VARCHAR(1000),
+        PRIMARY KEY (authorization_code)
+      );
+			";
+			
+			$sql5 = "
+			CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_scopes (
+        scope               VARCHAR(80)  NOT NULL,
+        is_default          BOOLEAN,
+        PRIMARY KEY (scope)
+      );
+			";
 
-		$sql3 = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_codes (
-  					client_id varchar(62) NOT NULL,
-  					code varchar(62) NOT NULL,
-  					expires timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  					UNIQUE KEY code (code)
-						) $charset_collate;";
+			$sql6 = "
+			CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_jwt (
+        client_id           VARCHAR(80)   NOT NULL,
+        subject             VARCHAR(80),
+        public_key          VARCHAR(2000) NOT NULL,
+        PRIMARY KEY (client_id)
+      );
+			";
 
-
-		$sql4 = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_refresh_tokens (
-					  refresh_token varchar(40) NOT NULL,
-					  client_id varchar(80) NOT NULL,
-					  user_id varchar(255) DEFAULT NULL,
-					  expires timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-					  scope varchar(2000) DEFAULT NULL,
-					  PRIMARY KEY (refresh_token)
-						) $charset_collate;";
-		
-		$sql5 = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_scopes (
-					  scope text,
-					  is_default tinyint(1) DEFAULT NULL
-						) $charset_collate;";
-
+			$sql6 = "
+			CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_public_keys (
+        client_id            VARCHAR(80),
+        public_key           VARCHAR(2000),
+        private_key          VARCHAR(2000),
+        encryption_algorithm VARCHAR(100) DEFAULT 'RS256',
+        PRIMARY KEY (client_id)
+      );
+			";
+			
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-		dbDelta( $sql1 );
-		dbDelta( $sql2 );
-		dbDelta( $sql3 );
-		dbDelta( $sql4 );
-		dbDelta( $sql5 );
+		dbDelta( $sql1 );	
+		dbDelta( $sql2 );	
+		dbDelta( $sql3 );	
+		dbDelta( $sql4 );	
+		dbDelta( $sql5 );	
+		dbDelta( $sql6 );	
 	}
 
 }

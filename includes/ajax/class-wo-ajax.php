@@ -68,7 +68,7 @@ class WO_Ajax {
 			"name"	=> $client_name,
 			"description"	=> $client_description,
 			"redirect_uri"	=> $redirect_uri,
-			"user_id"	=> $userID
+			"user_id"	=> null
 			);
 		$insert = $wpdb->insert("{$wpdb->prefix}oauth_clients", $insert_data);
 

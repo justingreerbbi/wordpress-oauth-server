@@ -30,5 +30,5 @@ if ( ! defined( 'WPOAUTH_FILE' ) ) {
 	define( 'WPOAUTH_FILE', __FILE__ );
 }
 
-// Load WP OAuth Plugin
 require_once( dirname( __FILE__ ) . '/wp-oauth-main.php' );
+register_activation_hook( __FILE__, array(new WO_Server, 'setup'));

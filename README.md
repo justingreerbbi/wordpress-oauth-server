@@ -1,20 +1,12 @@
 # WordPress OAuth Server
 
-Your site will be able to provide Single Sign On and also deliver authorized user data using the OAuth 2.0 API.
+This project is an OAuth 2.0 compatible authentication method for WordPress.
 
-Contributors: Justin Greer, Joel Wickard, Neil Pullman  
-Requires at least: 3.8
-Tested up to: 4.0 
-Stable tag: 1.0.0
-License: GPLv2 or later  
+The goal of WP OAuth Server (WordPress Open Authentication) is to provide an easy to use authentication method that 3rd party services can use to securely connect to any server running WordPress site.
 
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+## Framework
 
-
-## TODO
-- [ ] Add filter in admin table class to return only clients that are owned by the admin
-- [ ] Add _nonce to AJAX when adding and deleting
-- [ ] Add check when deleting clients in admin to ensure current user is owner if the client. (Super Admin should have rights to all)
+The OAuth Server included in this WordPress plugin is build on top of the PHP server designed by Brent Shaffer.
 
 ## Description
 

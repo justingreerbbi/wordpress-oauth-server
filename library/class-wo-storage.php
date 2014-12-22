@@ -2,7 +2,7 @@
 /**
  * WP OAuth Storage Class
  */
-class WO_Storage extends WO_API
+class WO_Storage
 {
 
 	/**
@@ -205,4 +205,5 @@ class WO_Storage extends WO_API
 	    }
 	    return $randomString;
 	}
+	
 }
