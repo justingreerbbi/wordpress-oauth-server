@@ -2,7 +2,7 @@
 /**
  * Main API Hook
  *
- * You can read here to understand how this plugin works. 
+ * For now, you can read here to understand how this plugin works. 
  * @link(Github, http://bshaffer.github.io/oauth2-server-php-docs/)
  *
  * @todo Add adittional layer of security to API allow for a generic firewall
@@ -25,25 +25,20 @@ if( defined("ABSPATH") === false )
 
 $o = get_option("wo_options");
 if($o["enabled"] == 0)
-	new WO_Error("temporarily_unavailable");
+{
+	header('Content-Type: application/json');
+	print_r(json_encode(array('error' => 'temporarily_unavailable')));
+	exit;
+}
 
 global $wp_query;
 $method = $wp_query->get("oauth");
 
-// cleanup header sent by the server to the plugin during any API calls
-header_remove('X-Powered-By');
-header_remove('X-pingback');
-header_remove('Server');
-
-// load the server
+/** Setup the Autoloader for the OAuth Server */
 require_once(dirname(__FILE__).'/OAuth2/Autoloader.php');
 OAuth2\Autoloader::register();
 
-
-/** SETUP PROPER SCOPES */
-
 $storage = new OAuth2\Storage\Wpo();
-
 $server = new OAuth2\Server($storage,
 	array(
     'use_crypto_tokens'        => false,
