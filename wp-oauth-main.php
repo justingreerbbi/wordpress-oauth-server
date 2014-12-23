@@ -81,7 +81,6 @@ class WO_Server
 	public static function includes ()
 	{
 		require_once( dirname(__FILE__) . '/includes/functions.php');
-		require_once( dirname(__FILE__) . '/includes/upgrade.php');
 		require_once( dirname(__FILE__) . '/includes/admin-options.php');
 		require_once( dirname(__FILE__) . '/includes/rewrites.php');
 		require_once( dirname(__FILE__) . '/includes/filters.php');
