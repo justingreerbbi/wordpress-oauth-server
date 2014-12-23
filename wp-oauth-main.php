@@ -155,7 +155,7 @@ class WO_Server
         scope                 VARCHAR(4000),
         user_id               VARCHAR(80),
         name                  VARCHAR(80),
-        description           LONGTEXT
+        description           LONGTEXT,
         PRIMARY KEY (client_id)
       );
 			";
