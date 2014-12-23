@@ -68,7 +68,6 @@ class WPOAuth_Admin {
 								<ul>
 							  	<li><a href="#general-settings">General Settings</a></li>
 							  	<li><a href="#advanced-configuration">Advanced Configuration</a></li>
-							  	<li><a href="#shortcodes">Shortcodes</a></li>
 							  	<li><a href="#clients">Clients</a></li>
 								</ul>
 							  
@@ -89,39 +88,6 @@ class WPOAuth_Admin {
 							  <div id="advanced-configuration">
 							  	<h2>Advanced Configuration</h2>
 							  	<p>Advanced Configuration for OAuth Server.</p>
-
-							  	<!--<h3>Server Type<hr></h3>
-							    <table class="form-table">
-			              <tr valign="top">
-			               	<th scope="row">Server Type</th>
-			                  <td>
-			                  	<select name="<?php echo $this->option_name;?>[server_type]">
-				                  	<option value="private" <?php echo $options["server_type"]=='private' ? "selected":"";?>>Private</option>
-				                  	<option value="public" <?php echo $options["server_type"]=='public' ? "selected":"";?>>Public</option>
-			                  	</select>
-			                  	<p class="description">
-			                  		<strong>Private: </strong> Only Admins can manage clients (server is used soley for an application ect..)<br>
-			                  		<strong>Public: </strong> Front-end user can add clients as needed (user can create applications that integrate with your this server).
-			                  	</p>
-			              	  </td>
-			              </tr>
-			            </table>-->
-
-							  	<!--<h3>Scopes<hr></h3>
-							    <table class="form-table">
-			              <tr valign="top">
-			               	<th scope="row">Enabled Scopes</th>
-			                  <td>
-			                  	<div class="notification">
-			                  		Scopes not yet supported -> Still in Development
-			                  	</div>
-			                  	<?php foreach($scopes as $scope=>$enabled): ?>
-			                  		<input type="checkbox" name="<?php echo $this->option_name; ?>[scopes][<?php echo $scope; ?>]" value="1"  <?php if($this->option_name["scopes"][$scope] == 1) print 'checked="checked"'; ?> /><?php echo ucfirst($scope); ?><br/>
-			                  	<?php endforeach; ?>
-			              	  </td>
-			              </tr>
-			            </table>-->
-
 
 									<h3>Key Generation <hr></h3>
 									<table class="form-table">
@@ -181,23 +147,6 @@ class WPOAuth_Admin {
 			                    </td>
 			                </tr>
 			           		</table>
-							  </div>
-
-							  <div id="shortcodes">
-							  	<h2>Coming Soon</h2>
-							  	<p>
-							  		Shortcodes will give the front-end user the ability to control their own clients. This will only work if the OAuth Server is setup as a public server.
-							  	</p>
-							  	
-							  	<!--<table class="form-table">
-			                <tr valign="top">
-			                	<th scope="row">API Enabled:</th>
-			                    <td>
-			                    	<input type="checkbox" name="<?php echo $this->option_name?>[enabled]" value="1" <?php echo $options["enabled"] == "1" ? "checked='checked'" : ""; ?> />
-			                    	<p class="description">When disabled, API will present a "Server is Temporarily Unavailable" message.</p>
-			                    </td>
-			                </tr>
-			            </table>-->  
 							  </div>
 
 							  <!-- CLIENTS -->
