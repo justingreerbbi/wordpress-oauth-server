@@ -46,3 +46,11 @@ homepage of this documentation [here](http://bshaffer.github.io/oauth2-server-ph
 ## Resource API
 
 {STILL NEEDS DOCUMENTATION}
+
+## What you need to know
+
+Before you actually start, there is a few things that should be mentioned as it mat just make your day easier.
+
+* This plugin uses `register_styles` and `register_scripts` within the main plugin class. This will throw strict warnings when using PHP 5.4 or higher. This is enterfere with the header responses and will cause output errors all over the place. For the time being, turn Strict Mode off for the server. 
+
+* This one goes hand in hand with the previous note. Ensure the WP_DEGUG is set to `false` to prevent headache.
