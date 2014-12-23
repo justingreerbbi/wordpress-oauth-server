@@ -54,3 +54,12 @@ Before you actually start, there is a few things that should be mentioned as it 
 * This plugin uses `register_styles` and `register_scripts` within the main plugin class. This will throw strict warnings when using PHP 5.4 or higher. This is enterfere with the header responses and will cause output errors all over the place. For the time being, turn Strict Mode off for the server. 
 
 * This one goes hand in hand with the previous note. Ensure the WP_DEGUG is set to `false` to prevent headache.
+
+## Development / Developer Notes
+
+* Clients in the oauth_clients table that have the ID of `0` belong to the OAuth server. These clients should be treated as a private resource and not used for more than one client type. DO NOT use the same client id for multiple clients. Each device, plaform, software using the OAuth Server level client_id shoudl have their own client_id.
+
+
+## TODO
+
+[ ] Look into API enpoint to create a client id via API. This will require and `user credentials.
