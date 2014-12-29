@@ -59,6 +59,7 @@ Before you actually start, there is a few things that should be mentioned as it 
 
 * Clients in the oauth_clients table that have the ID of `0` belong to the OAuth server. These clients should be treated as a private resource and not used for more than one client type. DO NOT use the same client id for multiple clients. Each device, plaform, software using the OAuth Server level client_id should have their own client_id.
 
+* It is solely the responsibility of the client to store user sessions. The OAuth server currently does not store any sessions for you.
 
 ## TODO
 
@@ -66,3 +67,7 @@ Before you actually start, there is a few things that should be mentioned as it 
 * Look into cleaning up the headers when the server is responding.
 * Clean up All un needed classes and abstracts in the original OAuth Server.
 * Proof read all documentation and comments.
+
+## 3rd Party Exstension Examples
+
+* [OAuth2 Complete For WordPress strategy for Passport](https://www.npmjs.com/package/passport-oauth2-complete-for-wordpress) - Author: [Ido Ran](http://github.com/ido-ran).
