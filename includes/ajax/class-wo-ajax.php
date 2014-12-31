@@ -48,7 +48,7 @@ class WO_Ajax {
 		$new_client_secret = wo_gen_key();
 
 		/** validate the redirect URI */
-		if(!filter_var($redirect_uri, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED))
+		if(!filter_var($redirect_uri, FILTER_VALIDATE_URL))
 		{
 			print 'Error: Redirect URI is not Valid.';
 			exit;
