@@ -106,12 +106,10 @@ class WO_Ajax {
 		exit;
 	}
 
-	function edit_client ()
+	/*function edit_client ()
 	{
 		parse_str($_POST['data'], $params);
 		extract($params);
-
-		/** verify _nonce */
 
 		global $wpdb;
 		$update_data = array(
@@ -128,6 +126,7 @@ class WO_Ajax {
 		
 		exit;
 	}
+	*/
 
 }
 WO_Ajax::init();
