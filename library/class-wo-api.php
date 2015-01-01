@@ -41,27 +41,27 @@ OAuth2\Autoloader::register();
 $storage = new OAuth2\Storage\Wordpressdb();
 $server = new OAuth2\Server($storage,
 array(
-    'use_crypto_tokens'        => false,
-    'store_encrypted_token_string' => true,
-    'use_openid_connect'       => false,
+    'use_crypto_tokens'        => false, // false (not supported yet)
+    'store_encrypted_token_string' => true, // true
+    'use_openid_connect'       => false, // false (not supported yet)
     'id_lifetime'              => 3600, // 1 Hour - Crypto (not supported yet)
     'access_lifetime'          => 3600, // 1 Hour
     'refresh_token_lifetime'	 => 2419200, // 14 Days
     'www_realm'                => 'Service',
     'token_param_name'         => 'access_token',
     'token_bearer_header_name' => 'Bearer',
-    'enforce_state'            => false,
-    'require_exact_redirect_uri' => $o['require_exact_redirect_uri'] == '1' ? true:false,
-    'allow_implicit'           => $o['implicit_enabled'] == '1' ? true:false,
+    'enforce_state'            => $o['enforce_state'] == '1' ? true:false, // false
+    'require_exact_redirect_uri' => $o['require_exact_redirect_uri'] == '1' ? true:false, // true
+    'allow_implicit'           => $o['implicit_enabled'] == '1' ? true:false, // false
     'allow_credentials_in_request_body' => true,
-    'allow_public_clients'     => false,
-    'always_issue_new_refresh_token' => false,
+    'allow_public_clients'     => false, // false
+    'always_issue_new_refresh_token' => true, // true
 ));
 		
 /** Set the enabled Grant Types */
 if($o['auth_code_enabled'] == '1')
 {
-	//$server->addGrantType(new OAuth2\GrantType\AuthorizationCode($storage));
+	$server->addGrantType(new OAuth2\GrantType\AuthorizationCode($storage));
 }
 
 if($o['client_creds_enabled'] == '1')

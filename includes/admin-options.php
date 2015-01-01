@@ -148,6 +148,14 @@ class WPOAuth_Admin {
 			                  	<p class="description">Recommended</p>
 			              	  </td>
 			              </tr>
+
+			              <tr valign="top">
+			               	<th scope="row">Enforce State Parameter:</th>
+			                  <td>
+			                  	<input type="checkbox" name="<?php echo $this->option_name?>[enforce_state]" value="1" <?php echo $options["enforce_state"] == "1" ? "checked='checked'" : ""; ?> />
+			                  	<p class="description">Require State parameter when using Authorization Code</p>
+			              	  </td>
+			              </tr>
 			            </table>
 							  </div>
 
@@ -212,6 +220,7 @@ class WPOAuth_Admin {
 	  $input["implicit_enabled"] = isset($input["implicit_enabled"]) ? $input["implicit_enabled"] : 0;
 
 	  $input["require_exact_redirect_uri"] = isset($input["require_exact_redirect_uri"]) ? $input["require_exact_redirect_uri"] : 0;
+	  $input["enforce_state"] = isset($input["enforce_state"]) ? $input["enforce_state"] : 0;
 	  
 	  return $input;
 	}
