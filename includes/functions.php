@@ -40,6 +40,7 @@ function wo_gen_key($length=40)
   if($user_defined_length > 0)
     $length = $user_defined_length;
   
+  /** @var string This could be an option but can cause some issues if validation is not locked down tight */
   $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
   $randomString = '';
   for ($i = 0; $i < $length; $i++) {
