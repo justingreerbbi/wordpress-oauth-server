@@ -8,17 +8,17 @@
  * @todo Add adittional layer of security to API allow for a generic firewall
  * @todo  Find better way to clean up headers from server
  *
- * PASSWORD
- * curl -u 63Ag2O9Sr0DHwZZQwDcxxOjEdP6AUh:30kEhntqgVrTCYTCOqf0XNOgs16zC0 "http://fancychatter.bbidev.com/oauth/token" -d 'grant_type=password&username=blackbird&password=liamjack'
+ * USER PASSWORD
+ * curl -u 9yJeF4nmXfJZvvqKCdgiR9YMTM2JVX:f5wZjb4Hy1Xh1tNsdpFtIxCGkwsmfo "http://wordpress.dev/oauth/token" -d 'grant_type=password&username=blackbird&password=liamjack'
  *
  * CLIENT CREDENTIALS
- * curl -u 63Ag2O9Sr0DHwZZQwDcxxOjEdP6AUh:30kEhntqgVrTCYTCOqf0XNOgs16zC0 http://fancychatter.bbidev.com/oauth/token -d 'grant_type=client_credentials'
+ * curl -u 9yJeF4nmXfJZvvqKCdgiR9YMTM2JVX:f5wZjb4Hy1Xh1tNsdpFtIxCGkwsmfo http://wordpress.dev/oauth/token -d 'grant_type=client_credentials'
  *
  * AUTHORIZE AN ACCESS TOKEN
- * curl http://fancychatter.bbidev.com/oauth/me -d 'access_token=6d39c203c65687c939c34f4c0d48dc7df799ebfc'
+ * curl http://wordpress.dev/oauth/me -d 'access_token=6d39c203c65687c939c34f4c0d48dc7df799ebfc'
  *
  * GET ACCESS TOKEN WITH AUTHORIZATION CODE
- * curl -u 63Ag2O9Sr0DHwZZQwDcxxOjEdP6AUh:30kEhntqgVrTCYTCOqf0XNOgs16zC0 http://fancychatter.bbidev.com/oauth/token -d 'grant_type=authorization_code&code=fa742ce7d15012c061790088a056f04b1166abea'
+ * curl -u 9yJeF4nmXfJZvvqKCdgiR9YMTM2JVX:f5wZjb4Hy1Xh1tNsdpFtIxCGkwsmfo http://wordpress.dev/oauth/token -d 'grant_type=authorization_code&code=fa742ce7d15012c061790088a056f04b1166abea'
  */
 if( defined("ABSPATH") === false )
 	die("Illegal use of the API");
@@ -40,7 +40,7 @@ OAuth2\Autoloader::register();
 
 $storage = new OAuth2\Storage\Wpo();
 $server = new OAuth2\Server($storage,
-	array(
+array(
     'use_crypto_tokens'        => false,
     'store_encrypted_token_string' => true,
     'use_openid_connect'       => false,
@@ -122,8 +122,10 @@ if($method == 'authorize')
 		wp_redirect(wp_login_url(site_url().$_SERVER['REQUEST_URI']));
 	
 	/**
-	 * @todo Add hook here to allow developers to controll what this looks like
+	 * @todo When this is displayed the plugin needs to grab the clients name and all the scopes with
+	 * explinations. For now I will turn this off and auto authorize the requests.
 	 */
+	/*
 	if (empty($_POST)) {
 	  exit('
 	<form method="post">
@@ -133,7 +135,9 @@ if($method == 'authorize')
 	</form>');
 	}
 	$is_authorized = ($_POST['authorized'] === 'yes');
-	$server->handleAuthorizeRequest($request, $response, $is_authorized);
+	*/
+
+	$server->handleAuthorizeRequest($request, $response, true);
 	$response->send();
 }
 
