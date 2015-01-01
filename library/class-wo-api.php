@@ -9,7 +9,7 @@
  * @todo  Find better way to clean up headers from server
  *
  * USER PASSWORD
- * curl -u 9yJeF4nmXfJZvvqKCdgiR9YMTM2JVX:f5wZjb4Hy1Xh1tNsdpFtIxCGkwsmfo "http://wordpress.dev/oauth/token" -d 'grant_type=password&username=blackbird&password=liamjack'
+ * curl -u 9yJeF4nmXfJZvvqKCdgiR9YMTM2JVX:f5wZjb4Hy1Xh1tNsdpFtIxCGkwsmfo "http://wordpress.dev/oauth/token" -d 'grant_type=password&username=admin&password=liamjack'
  *
  * CLIENT CREDENTIALS
  * curl -u 9yJeF4nmXfJZvvqKCdgiR9YMTM2JVX:f5wZjb4Hy1Xh1tNsdpFtIxCGkwsmfo http://wordpress.dev/oauth/token -d 'grant_type=client_credentials'
@@ -38,37 +38,46 @@ $method = $wp_query->get("oauth");
 require_once(dirname(__FILE__).'/OAuth2/Autoloader.php');
 OAuth2\Autoloader::register();
 
-$storage = new OAuth2\Storage\Wpo();
+$storage = new OAuth2\Storage\Wordpressdb();
 $server = new OAuth2\Server($storage,
 array(
     'use_crypto_tokens'        => false,
     'store_encrypted_token_string' => true,
     'use_openid_connect'       => false,
-    'id_lifetime'              => 3600,
-    'access_lifetime'          => 3600,
+    'id_lifetime'              => 3600, // 1 Hour - Crypto (not supported yet)
+    'access_lifetime'          => 3600, // 1 Hour
+    'refresh_token_lifetime'	 => 2419200, // 14 Days
     'www_realm'                => 'Service',
     'token_param_name'         => 'access_token',
     'token_bearer_header_name' => 'Bearer',
     'enforce_state'            => false,
-    'require_exact_redirect_uri' => true,
-    'allow_implicit'           => true,
+    'require_exact_redirect_uri' => $o['require_exact_redirect_uri'] == '1' ? true:false,
+    'allow_implicit'           => $o['implicit_enabled'] == '1' ? true:false,
     'allow_credentials_in_request_body' => true,
     'allow_public_clients'     => false,
     'always_issue_new_refresh_token' => false,
 ));
 		
 /** Set the enabled Grant Types */
-if($o['auth_code_enabled'] == 1)
-	$server->addGrantType(new OAuth2\GrantType\AuthorizationCode($storage));
+if($o['auth_code_enabled'] == '1')
+{
+	//$server->addGrantType(new OAuth2\GrantType\AuthorizationCode($storage));
+}
 
-if($o['client_creds_enabled'] == 1)
+if($o['client_creds_enabled'] == '1')
+{
 	$server->addGrantType(new OAuth2\GrantType\ClientCredentials($storage));
+}
 
-if($o['user_creds_enabled'] == 1)
+if($o['user_creds_enabled'] == '1')
+{
 	$server->addGrantType(new OAuth2\GrantType\UserCredentials($storage));
+}
 
-if($o['refresh_tokens_enabled'] == 1)
+if($o['refresh_tokens_enabled'] == '1')
+{
 	$server->addGrantType(new OAuth2\GrantType\RefreshToken($storage));
+}
 
 /**
  * Configure Scopes
@@ -151,5 +160,7 @@ if($method == 'me')
 	    $server->getResponse()->send();
 	    die;
 	}
+	$token = $server->getAccessTokenData(OAuth2\Request::createFromGlobals());
+	print_r($token);
 	echo json_encode(array('success' => true, 'message' => 'You accessed my APIs!'));
 }

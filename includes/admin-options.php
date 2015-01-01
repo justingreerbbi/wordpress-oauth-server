@@ -100,6 +100,7 @@ class WPOAuth_Admin {
 			            <h3>Grant Types <hr></h3>
 			            <p>Check to enable.</p>
 									<table class="form-table">
+			              
 			              <tr valign="top">
 			               	<th scope="row">Authorization Code:</th>
 			                  <td>
@@ -107,6 +108,7 @@ class WPOAuth_Admin {
 			                  	<p class="description">HTTP redirects and WP login form when authenticating.</p>
 			              	  </td>
 			              </tr>
+			              
 			              <tr valign="top">
 			               	<th scope="row">Client Credentials:</th>
 			                  <td>
@@ -114,6 +116,7 @@ class WPOAuth_Admin {
 			                  	<p class="description">Needs short and sweet description.</p>
 			              	  </td>
 			              </tr>
+			              
 			              <tr valign="top">
 			               	<th scope="row">User Credentials:</th>
 			                  <td>
@@ -121,11 +124,28 @@ class WPOAuth_Admin {
 			                  	<p class="description">Needs short and sweet description.</p>
 			              	  </td>
 			              </tr>
+			              
 			              <tr valign="top">
 			               	<th scope="row">Refresh Tokens:</th>
 			                  <td>
 			                  	<input type="checkbox" name="<?php echo $this->option_name?>[refresh_tokens_enabled]" value="1" <?php echo $options["refresh_tokens_enabled"] == "1" ? "checked='checked'" : ""; ?> />
 			                  	<p class="description">Enable the server to issue and use refresh tokens.</p>
+			              	  </td>
+			              </tr>
+
+			              <tr valign="top">
+			               	<th scope="row">Allow Implicit:</th>
+			                  <td>
+			                  	<input type="checkbox" name="<?php echo $this->option_name?>[implicit_enabled]" value="1" <?php echo $options["implicit_enabled"] == "1" ? "checked='checked'" : ""; ?> />
+			                  	<p class="description">Only Enable if Needed</p>
+			              	  </td>
+			              </tr>
+			         
+			              <tr valign="top">
+			               	<th scope="row">Require Exact Redirect URI:</th>
+			                  <td>
+			                  	<input type="checkbox" name="<?php echo $this->option_name?>[require_exact_redirect_uri]" value="1" <?php echo $options["require_exact_redirect_uri"] == "1" ? "checked='checked'" : ""; ?> />
+			                  	<p class="description">Recommended</p>
 			              	  </td>
 			              </tr>
 			            </table>
@@ -189,6 +209,10 @@ class WPOAuth_Admin {
 	  $input["client_creds_enabled"] = isset($input["client_creds_enabled"]) ? $input["client_creds_enabled"] : 0;
 	  $input["user_creds_enabled"] = isset($input["user_creds_enabled"]) ? $input["user_creds_enabled"] : 0;
 	  $input["refresh_tokens_enabled"] = isset($input["refresh_tokens_enabled"]) ? $input["refresh_tokens_enabled"] : 0;
+	  $input["implicit_enabled"] = isset($input["implicit_enabled"]) ? $input["implicit_enabled"] : 0;
+
+	  $input["require_exact_redirect_uri"] = isset($input["require_exact_redirect_uri"]) ? $input["require_exact_redirect_uri"] : 0;
+	  
 	  return $input;
 	}
 }
