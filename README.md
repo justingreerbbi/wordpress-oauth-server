@@ -49,6 +49,8 @@ homepage of this documentation [here](http://bshaffer.github.io/oauth2-server-ph
 
 ## What you need to know
 
+Auth Code Life Time - 30 Secounds (this will not change for security reasons)
+
 Before you actually start, there is a few things that should be mentioned as it mat just make your day easier.
 
 * This plugin uses `register_styles` and `register_scripts` within the main plugin class. This will throw strict warnings when using PHP 5.4 or higher. This is enterfere with the header responses and will cause output errors all over the place. For the time being, turn Strict Mode off for the server. 
