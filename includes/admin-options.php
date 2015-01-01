@@ -1,7 +1,4 @@
 <?php
-/**
- * Admin Menu 
- */
 class WPOAuth_Admin {
 
 	/**
@@ -59,7 +56,7 @@ class WPOAuth_Admin {
 	    ?>
 	    		<div class="wrap">
 	        	<h2>Server Confirguration</h2>
-	        	<p>Need Help? Check out the <a href="#">Documentation</a></p>
+	        	<p>Need Help? Check out the <a href="http://wp-oauth.com">Documentation</a></p>
 	       
 	        	<form method="post" action="options.php">
 	          	<?php settings_fields('wo_options'); ?>
@@ -87,12 +84,12 @@ class WPOAuth_Admin {
 							  <!-- ADVANCED CONFIGURATION -->
 							  <div id="advanced-configuration">
 							  	<h2>Advanced Configuration</h2>
-							  	<p>Advanced Configuration for OAuth Server.</p>
+							  	<p>Need Help? Try reading the <a href="http://wp-oauth.com/advanced-configuration-guide/" target="_blank">Advanced Configuration Docunentation</a></p>
 
 									<h3>Key Generation <hr></h3>
 									<table class="form-table">
 			              <tr valign="top">
-			               	<th scope="row">Key Lengths</th>
+			               	<th scope="row">Key Length</th>
 			                  <td>
 			                  	<input type="number" name="<?php echo $this->option_name?>[client_id_length]" min="10" value="<?php echo $options["client_id_length"]; ?>" />
 			                  	<p class="description">Length of Client ID and Client Secrets when generated.</p>
@@ -100,53 +97,16 @@ class WPOAuth_Admin {
 			              </tr>
 			            </table>
 
-			            	<h3>Resfresh Tokens <hr></h3>
-			              <table class="form-table">
-			                <tr valign="top">
-			                	<th scope="row">Refresh Tokens Enabled:</th>
-			                    <td>
-			                    	<input type="checkbox" name="<?php echo $this->option_name?>[refresh_tokens_enabled]" value="1" <?php echo $options["refresh_tokens_enabled"] == "1" ? "checked='checked'" : ""; ?> />
-			                    </td>
-			                </tr>
-			                <tr valign="top">
-			                	<th scope="row">
-			                		Refresh Token Lifespan:
-			                	</th>
-			                    <td>
-			                    	<input type="number" name="<?php echo $this->option_name?>[refresh_token_lifespan]" min="0" max="100" value="<?php echo $options["refresh_token_lifespan"]; ?>" />
-			                    	<select name="<?php echo $this->option_name?>[refresh_token_lifespan_unit]?>">
-			                    		<option value="minute">Minute</option>
-			                    		<option value="hour">Hours</option>
-			                    		<option value="day">Days</option>
-			                    		<option value="month">Months</option>
-			                    		<option value="years">Years</option>
-			                    	</select>
-			                    	<p class="description">0 = Never Expires</p>
-			                    </td>
-			                </tr>
-			              </table>
-
-			              <h3>Tokens & Authentication Codes<hr></h3>
-			              <table class="form-table">
-			                <tr valign="top">
-			                	<th scope="row">
-			                		Authentication Code Lifespan:
-			                	</th>
-			                    <td>
-			                    	<input type="number" name="<?php echo $this->option_name?>[auth_code_expiration_time]" min="1" max="10" value="<?php echo $options["auth_code_expiration_time"]; ?>" /> Minutes
-			                    	<p class="description">Between 1 and 10 minutes.</p>
-			                    </td>
-			                </tr>
-			                <tr valign="top">
-			                	<th scope="row">
-			                		Access Token lifespan:
-			                	</th>
-			                    <td>
-			                    	<input type="number" name="<?php echo $this->option_name?>[access_token_lifespan]" value="<?php echo $options["access_token_lifespan"]; ?>" /> seconds
-			                    	<p class="description">0 = Unlimited</p>
-			                    </td>
-			                </tr>
-			           		</table>
+			            <h3>Grant Types <hr></h3>
+									<table class="form-table">
+			              <tr valign="top">
+			               	<th scope="row">Authorization Code Enabled:</th>
+			                  <td>
+			                  	<input type="checkbox" name="<?php echo $this->option_name?>[auth_code_enabled]" value="1" <?php echo $options["auth_code_enabled"] == "1" ? "checked='checked'" : ""; ?> />
+			                  	<p class="description">HTTP redirects and WP login form when authenticating.</p>
+			              	  </td>
+			              </tr>
+			            </table>
 							  </div>
 
 							  <!-- CLIENTS -->
@@ -201,6 +161,7 @@ class WPOAuth_Admin {
 	 */
 	public function validate($input) {
 	    $input["enabled"] = isset($input["enabled"]) ? $input["enabled"] : 0;
+	    $input["auth_code_enabled"] = isset($input["auth_code_enabled"]) ? $input["auth_code_enabled"] : 0;
 	    return $input;
 	}
 }
