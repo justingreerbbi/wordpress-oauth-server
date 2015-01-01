@@ -57,24 +57,25 @@ $server = new OAuth2\Server($storage,
     'always_issue_new_refresh_token' => false,
 ));
 		
-/**
- * SET THE GRANT TYPES AVALIABLE FOR THE SERVER
- *
- * Supported Grant Types
- * - Client Credentials
- * - Authorization Code
- * - User Credentials
- * - Refresh Token
- *
- * Currently NOT Supported
- * - Jwt Bearer (Signed Access to server using certificates)
- */
-$server->addGrantType(new OAuth2\GrantType\ClientCredentials($storage));
-$server->addGrantType(new OAuth2\GrantType\AuthorizationCode($storage));
-$server->addGrantType(new OAuth2\GrantType\UserCredentials($storage));
-$server->addGrantType(new OAuth2\GrantType\RefreshToken($storage));
+/** Set the enabled Grant Types */
+if($o['auth_code_enabled'] == 1)
+	$server->addGrantType(new OAuth2\GrantType\AuthorizationCode($storage));
 
-// configure your available scopes
+if($o['client_creds_enabled'] == 1)
+	$server->addGrantType(new OAuth2\GrantType\ClientCredentials($storage));
+
+if($o['user_creds_enabled'] == 1)
+	$server->addGrantType(new OAuth2\GrantType\UserCredentials($storage));
+
+if($o['refresh_tokens_enabled'] == 1)
+	$server->addGrantType(new OAuth2\GrantType\RefreshToken($storage));
+
+/**
+ * Configure Scopes
+ * 
+ * @todo Need to add a filter that does this. This way a developer could hook into the scopes without modifying
+ * the core plugin.
+ */
 $defaultScope = 'basic';
 $supportedScopes = array(
   'basic',
@@ -86,7 +87,6 @@ $memory = new OAuth2\Storage\Memory(array(
   'supported_scopes' => $supportedScopes
 ));
 $scopeUtil = new OAuth2\Scope($memory);
-
 $server->setScopeUtil($scopeUtil);
 
 /**
@@ -103,9 +103,6 @@ if($method == 'token')
  * The code checks to see if the user is logged in and authorize. If the user is not logged in, the user is 
  * presented with the WP login screen. Upon successfull log in, the user then aknoledges wether it not to
  * authorize the requester access to thier information.
- *
- * @todo Not Working Just Yet. There is something with the expires. May be becuase the authorization code is 
- * not being stored. Check out Wpo object
  */
 if($method == 'authorize')
 {
@@ -118,11 +115,15 @@ if($method == 'authorize')
 	    die;
 	}
 
-	// if the user is not logged in, redirect them to the WP login screen
+	/**
+	 * @todo Add hook here to allow developers to redirect to a new page.
+	 */
 	if(!is_user_logged_in())
 		wp_redirect(wp_login_url(site_url().$_SERVER['REQUEST_URI']));
 	
-	// display an authorization form
+	/**
+	 * @todo Add hook here to allow developers to controll what this looks like
+	 */
 	if (empty($_POST)) {
 	  exit('
 	<form method="post">
@@ -131,14 +132,8 @@ if($method == 'authorize')
 	  <input type="submit" name="authorized" value="no">
 	</form>');
 	}
-
-	// print the authorization code if the user has authorized your client
 	$is_authorized = ($_POST['authorized'] === 'yes');
 	$server->handleAuthorizeRequest($request, $response, $is_authorized);
-	if ($is_authorized) {
-	  // this is only here so that you get to see your code in the cURL request. Otherwise, we'd redirect back to the client
-	  $code = substr($response->getHttpHeader('Location'), strpos($response->getHttpHeader('Location'), 'code=')+5, 40);
-	}
 	$response->send();
 }
 

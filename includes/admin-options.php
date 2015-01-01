@@ -98,12 +98,34 @@ class WPOAuth_Admin {
 			            </table>
 
 			            <h3>Grant Types <hr></h3>
+			            <p>Check to enable.</p>
 									<table class="form-table">
 			              <tr valign="top">
-			               	<th scope="row">Authorization Code Enabled:</th>
+			               	<th scope="row">Authorization Code:</th>
 			                  <td>
 			                  	<input type="checkbox" name="<?php echo $this->option_name?>[auth_code_enabled]" value="1" <?php echo $options["auth_code_enabled"] == "1" ? "checked='checked'" : ""; ?> />
 			                  	<p class="description">HTTP redirects and WP login form when authenticating.</p>
+			              	  </td>
+			              </tr>
+			              <tr valign="top">
+			               	<th scope="row">Client Credentials:</th>
+			                  <td>
+			                  	<input type="checkbox" name="<?php echo $this->option_name?>[client_creds_enabled]" value="1" <?php echo $options["client_creds_enabled"] == "1" ? "checked='checked'" : ""; ?> />
+			                  	<p class="description">Needs short and sweet description.</p>
+			              	  </td>
+			              </tr>
+			              <tr valign="top">
+			               	<th scope="row">User Credentials:</th>
+			                  <td>
+			                  	<input type="checkbox" name="<?php echo $this->option_name?>[user_creds_enabled]" value="1" <?php echo $options["user_creds_enabled"] == "1" ? "checked='checked'" : ""; ?> />
+			                  	<p class="description">Needs short and sweet description.</p>
+			              	  </td>
+			              </tr>
+			              <tr valign="top">
+			               	<th scope="row">Refresh Tokens:</th>
+			                  <td>
+			                  	<input type="checkbox" name="<?php echo $this->option_name?>[refresh_tokens_enabled]" value="1" <?php echo $options["refresh_tokens_enabled"] == "1" ? "checked='checked'" : ""; ?> />
+			                  	<p class="description">Enable the server to issue and use refresh tokens.</p>
 			              	  </td>
 			              </tr>
 			            </table>
@@ -160,9 +182,14 @@ class WPOAuth_Admin {
 	 * @return [type]        [description]
 	 */
 	public function validate($input) {
-	    $input["enabled"] = isset($input["enabled"]) ? $input["enabled"] : 0;
-	    $input["auth_code_enabled"] = isset($input["auth_code_enabled"]) ? $input["auth_code_enabled"] : 0;
-	    return $input;
+
+		// Check box values
+	  $input["enabled"] = isset($input["enabled"]) ? $input["enabled"] : 0;
+	  $input["auth_code_enabled"] = isset($input["auth_code_enabled"]) ? $input["auth_code_enabled"] : 0;
+	  $input["client_creds_enabled"] = isset($input["client_creds_enabled"]) ? $input["client_creds_enabled"] : 0;
+	  $input["user_creds_enabled"] = isset($input["user_creds_enabled"]) ? $input["user_creds_enabled"] : 0;
+	  $input["refresh_tokens_enabled"] = isset($input["refresh_tokens_enabled"]) ? $input["refresh_tokens_enabled"] : 0;
+	  return $input;
 	}
 }
 WPOAuth_Admin::init();
