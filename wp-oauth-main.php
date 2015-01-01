@@ -5,18 +5,16 @@ class WO_Server
 	public static $_instance = null;
 	protected $defualt_settings = array(
 		"enabled" 											=> 1,
-		"refresh_tokens_enabled" 				=> 1,
-		"refresh_token_lifespan" 				=> 1,
-		"refresh_token_lifespan_unit" 	=> "year",
-		"auth_code_expiration_time" 		=> 10,
-		"access_token_lifespan"	 				=> 3600,
-		"client_id_length"							=> 30,
-		"license"												=> null
+		"client_id_length" 							=> 30,
+		"auth_code_enabled" 						=> 1,
+		"client_creds_enabled" 					=> 0,
+		"user_creds_enabled" 						=> 0,
+		"refresh_tokens_enabled"	 			=> 0,
+		"implicit_enabled"							=> 0,
+		"require_exact_redirect_uri"		=> 0,
+		"enforce_state"									=> 0
 		);
 
-	/**
-	 * [__construct description]
-	 */
 	function __construct ()
 	{
 		if (! defined( "WOABSPATH" ) )

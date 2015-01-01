@@ -49,8 +49,6 @@ homepage of this documentation [here](http://bshaffer.github.io/oauth2-server-ph
 
 ## What you need to know
 
-Auth Code Life Time - 30 Secounds (this will not change for security reasons)
-
 Before you actually start, there is a few things that should be mentioned as it mat just make your day easier.
 
 * This plugin uses `register_styles` and `register_scripts` within the main plugin class. This will throw strict warnings when using PHP 5.4 or higher. This is enterfere with the header responses and will cause output errors all over the place. For the time being, turn Strict Mode off for the server. 
@@ -62,6 +60,10 @@ Before you actually start, there is a few things that should be mentioned as it 
 * Clients in the oauth_clients table that have the ID of `0` belong to the OAuth server. These clients should be treated as a private resource and not used for more than one client type. DO NOT use the same client id for multiple clients. Each device, plaform, software using the OAuth Server level client_id should have their own client_id.
 
 * It is solely the responsibility of the client to store user sessions. The OAuth server currently does not store any sessions for you.
+
+* Auth Code Life Time - 30 Secounds (this will not change for security reasons)
+
+* 
 
 ## TODO
 
