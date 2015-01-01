@@ -34,6 +34,10 @@ class WO_Server
 		add_action("wp_loaded", array(__CLASS__, "register_scripts"));
 		add_action("wp_loaded", array(__CLASS__, "register_styles"));
 
+		/** check if permalinks are set */
+    if (! get_option('permalink_structure') )
+        add_action('admin_notices', array(__CLASS__, 'permalink_notice'));
+
 		/** activation hook for plugin - This may need to be moved. Not sure wh it is not running here. It does work in the main plugin file but that is not want I want */
 		register_activation_hook( WPOAUTH_FILE, array($this,'setup'));
 	}
@@ -113,13 +117,19 @@ class WO_Server
 	public function setup ()
 	{
 		$options = get_option("wo_options");
-		if(! isset($options["enabled"]) )
+		if(!isset($options["enabled"]) )
 			update_option("wo_options", $this->defualt_settings);
 
-		/** check if we need to install or upgrade */
-		//if(get_option("wpoauth_version") != self::$version)
-			$this->install();
+		$this->install();
+	}
 
+	/** 
+	 * Error is the permalinks are not set
+	 * @return [type] [description]
+	 */
+	public function permalink_notice ()
+	{
+		 echo '<div id="message" class="error"><p>WordPress OAuth Server Requires <a href="options-permalink.php">Permalinks</a> other than <strong>Default</strong>.</p></div>';
 	}
 
 	/**
