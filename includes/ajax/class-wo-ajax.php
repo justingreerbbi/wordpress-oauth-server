@@ -47,14 +47,20 @@ class WO_Ajax {
 		$new_client_id = wo_gen_key();
 		$new_client_secret = wo_gen_key();
 
-		/** validate the redirect URI */
+		/**
+		 * Validate the redirect URI provided.
+		 * In the instance that the client will not use a redirect uri then there jst needs to be a valid URL
+		 * even it is not going to be using one.
+		 */
 		if(!filter_var($redirect_uri, FILTER_VALIDATE_URL))
 		{
 			print 'Error: Redirect URI is not Valid.';
 			exit;
 		}
 
-		/** @todo Come on man. You can do better than this check */
+		/**
+		 * @todo Use a better check
+		 */
 		if(str_replace(" ", "", $client_name) == "")
 		{
 			print 'Error: Client Name is Required';
@@ -97,6 +103,29 @@ class WO_Ajax {
 		{
 			print "System Error: Could not remove the client from the server.";
 		}
+		exit;
+	}
+
+	function edit_client ()
+	{
+		parse_str($_POST['data'], $params);
+		extract($params);
+
+		/** verify _nonce */
+
+		global $wpdb;
+		$update_data = array(
+			"name"	=> $client_name,
+			"description"	=> $client_description,
+			"redirect_uri"	=> $redirect_uri,
+			"user_id"	=> null
+			);
+		$action = $wpdb->update( 
+			"{$wpdb->prefix}oauth_clients", 
+			$update_data,
+			"client_id" => $client_id
+		);
+		
 		exit;
 	}
 
