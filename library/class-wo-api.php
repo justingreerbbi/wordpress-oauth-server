@@ -5,9 +5,6 @@
  * For now, you can read here to understand how this plugin works. 
  * @link(Github, http://bshaffer.github.io/oauth2-server-php-docs/)
  *
- * @todo Add adittional layer of security to API allow for a generic firewall
- * @todo  Find better way to clean up headers from server
- *
  * USER PASSWORD
  * curl -u 9yJeF4nmXfJZvvqKCdgiR9YMTM2JVX:f5wZjb4Hy1Xh1tNsdpFtIxCGkwsmfo "http://wordpress.dev/oauth/token" -d 'grant_type=password&username=admin&password=liamjack'
  *
