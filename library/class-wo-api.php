@@ -104,6 +104,12 @@ $server->setScopeUtil($scopeUtil);
  */
 if($method == 'token')
 {
+	if(!is_user_logged_in())
+	{
+		wp_redirect(wp_login_url(site_url().$_SERVER['REQUEST_URI']));
+		exit;
+	}
+
 	$server->handleTokenRequest(OAuth2\Request::createFromGlobals())->send();
 }
 
@@ -115,39 +121,28 @@ if($method == 'token')
  */
 if($method == 'authorize')
 {
+
+	/** make sure the user is logged in first */
+	if(!is_user_logged_in())
+	{
+		wp_redirect(wp_login_url(site_url().$_SERVER['REQUEST_URI']));
+		exit;
+	}
+
 	$request = OAuth2\Request::createFromGlobals();
 	$response = new OAuth2\Response();
 
-	// validate the authorize request
+	/** validate the request */
 	if (!$server->validateAuthorizeRequest($request, $response)) {
 	    $response->send();
 	    die;
 	}
 
-	/**
-	 * @todo Add hook here to allow developers to redirect to a new page.
-	 */
-	if(!is_user_logged_in())
-		wp_redirect(wp_login_url(site_url().$_SERVER['REQUEST_URI']));
-	
-	/**
-	 * @todo When this is displayed the plugin needs to grab the clients name and all the scopes with
-	 * explinations. For now I will turn this off and auto authorize the requests.
-	 */
-	/*
-	if (empty($_POST)) {
-	  exit('
-	<form method="post">
-	  <label>Do You Authorize TestClient?</label><br />
-	  <input type="submit" name="authorized" value="yes">
-	  <input type="submit" name="authorized" value="no">
-	</form>');
-	}
-	$is_authorized = ($_POST['authorized'] === 'yes');
-	*/
-
-	$server->handleAuthorizeRequest($request, $response, true);
+	$user_id = get_current_user_id();
+	$server->handleAuthorizeRequest($request, $response, true, $user_id);
 	$response->send();
+
+	exit;
 }
 
 /**
@@ -163,4 +158,6 @@ if($method == 'me')
 	$token = $server->getAccessTokenData(OAuth2\Request::createFromGlobals());
 	print_r($token);
 	echo json_encode(array('success' => true, 'message' => 'You accessed my APIs!'));
+
+	exit;
 }
