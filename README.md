@@ -73,7 +73,6 @@ Before you actually start, there is a few things that should be mentioned as it 
 * Look into cleaning up the headers when the server is responding.
 * Clean up All un needed classes and abstracts in the original OAuth Server.
 * Proof read all documentation and comments.
-* Look into a better way to provide single sign on abilities for users that have not yet registered for a clinet_id and secret.
 * Create a hook so that all users have a unique client_id and key that can be viewed from the user profile page.
 * Add Firewall option to whitelist or blacklist domains/addresses
 

@@ -1,7 +1,7 @@
 <?php
 class WO_Server
 {
-	public static $version = "2.0.0";
+	public static $version = "3.0.0";
 	public static $_instance = null;
 	protected $defualt_settings = array(
 		"enabled" 											=> 1,
