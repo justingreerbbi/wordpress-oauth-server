@@ -23,9 +23,11 @@
 if( defined("ABSPATH") === false )
 	die("Illegal use of the API");
 
+do_action('wo_before_api');
 $o = get_option("wo_options");
 if($o["enabled"] == 0)
 {
+	do_action('wo_before_unavailable_error');
 	header('Content-Type: application/json');
 	print_r(json_encode(array('error' => 'temporarily_unavailable')));
 	exit;
@@ -33,11 +35,8 @@ if($o["enabled"] == 0)
 
 global $wp_query;
 $method = $wp_query->get("oauth");
-
-/** Setup the Autoloader for the OAuth Server */
 require_once(dirname(__FILE__).'/OAuth2/Autoloader.php');
 OAuth2\Autoloader::register();
-
 $storage = new OAuth2\Storage\Wordpressdb();
 $server = new OAuth2\Server($storage,
 array(
@@ -58,33 +57,43 @@ array(
     'always_issue_new_refresh_token' => true, // true
 ));
 		
-/** Set the enabled Grant Types */
+/*
+|--------------------------------------------------------------------------
+| SUPPORTED GRANT TYPES
+|--------------------------------------------------------------------------
+|
+| Authorization Code will always be on. This may be a bug or a f@#$ up on
+| my end. None the less, these are controlled in the server settings page.
+|
+*/
 if($o['auth_code_enabled'] == '1')
 {
 	$server->addGrantType(new OAuth2\GrantType\AuthorizationCode($storage));
 }
-
 if($o['client_creds_enabled'] == '1')
 {
 	$server->addGrantType(new OAuth2\GrantType\ClientCredentials($storage));
 }
-
 if($o['user_creds_enabled'] == '1')
 {
 	$server->addGrantType(new OAuth2\GrantType\UserCredentials($storage));
 }
-
 if($o['refresh_tokens_enabled'] == '1')
 {
 	$server->addGrantType(new OAuth2\GrantType\RefreshToken($storage));
 }
 
-/**
- * Configure Scopes
- * 
- * @todo Need to add a filter that does this. This way a developer could hook into the scopes without modifying
- * the core plugin.
- */
+/*
+|--------------------------------------------------------------------------
+| DEFAULT SCOPES
+|--------------------------------------------------------------------------
+|
+| For the time being, the plugin will not fully support scopes. This is where
+| the scopes can be registered. This will be extended to be a filter in 
+| upcomming release. Modify at your own risk.. This will be wiped unpon
+| a plugin update to newer versions.
+|
+*/
 $defaultScope = 'basic';
 $supportedScopes = array(
   'basic',
@@ -98,12 +107,21 @@ $memory = new OAuth2\Storage\Memory(array(
 $scopeUtil = new OAuth2\Scope($memory);
 $server->setScopeUtil($scopeUtil);
 
-/**
- * TOKEN ENDPOINT
- * @var [type]
- */
+/*
+|--------------------------------------------------------------------------
+| TOKEN CATCH
+|--------------------------------------------------------------------------
+|
+| The followng code is ran when a request is made to the server using the
+| Authorization Code (implicit) Grant Type as well as request tokens
+|
+| 1. Check if the user is logged in (redirect if not)
+| 2. Create the Token Request
+|
+*/
 if($method == 'token')
 {
+	do_action('wo_before_token_method');
 	if(!is_user_logged_in())
 	{
 		wp_redirect(wp_login_url(site_url().$_SERVER['REQUEST_URI']));
@@ -113,51 +131,59 @@ if($method == 'token')
 	$server->handleTokenRequest(OAuth2\Request::createFromGlobals())->send();
 }
 
-/**
- * BROWSER AUTHORIZE
- * The code checks to see if the user is logged in and authorize. If the user is not logged in, the user is 
- * presented with the WP login screen. Upon successfull log in, the user then aknoledges wether it not to
- * authorize the requester access to thier information.
- */
+/*
+|--------------------------------------------------------------------------
+| AUTHORIZATION CODE CATCH
+|--------------------------------------------------------------------------
+|
+| The followng code is ran when a request is made to the server using the
+| Authorization Code (not implicit) Grant Type. 
+|
+| 1. Check if the user is logged in (redirect if not)
+| 2. Validate the request (client_id, redirect_uri)
+| 3. Create the authorization request using the authentication user's user_id
+|
+*/
 if($method == 'authorize')
 {
-
-	/** make sure the user is logged in first */
+	do_action('wo_before_authorize_method');
 	if(!is_user_logged_in())
 	{
 		wp_redirect(wp_login_url(site_url().$_SERVER['REQUEST_URI']));
 		exit;
 	}
-
 	$request = OAuth2\Request::createFromGlobals();
 	$response = new OAuth2\Response();
-
-	/** validate the request */
-	if (!$server->validateAuthorizeRequest($request, $response)) {
+	if (!$server->validateAuthorizeRequest($request, $response)) 
+	{
 	    $response->send();
 	    die;
 	}
-
-	$user_id = get_current_user_id();
-	$server->handleAuthorizeRequest($request, $response, true, $user_id);
+	$server->handleAuthorizeRequest($request, $response, true, get_current_user_id());
 	$response->send();
-
 	exit;
 }
 
-/**
- * DEFAULT PROTECTED RESOURCE ENDPOINT
- * @var [type]
- */
-if($method == 'me')
-{
+/*
+|--------------------------------------------------------------------------
+| EXTENDABLE RESOURCE SERVER METHODS
+|--------------------------------------------------------------------------
+|
+| Below this line is part of the developer API. Do not edit directly. 
+| Refer to the developer documentation for exstending the WordPress OAuth 
+| Server plugin core functionality. 
+|
+*/
+$ext_methods = apply_filters('wo_methods', null);
+if(array_key_exists($method, $ext_methods)){
 	if (!$server->verifyResourceRequest(OAuth2\Request::createFromGlobals())) {
 	    $server->getResponse()->send();
 	    die;
 	}
 	$token = $server->getAccessTokenData(OAuth2\Request::createFromGlobals());
-	print_r($token);
-	echo json_encode(array('success' => true, 'message' => 'You accessed my APIs!'));
-
+	call_user_func_array($ext_methods[$method]['func'], array($token));
 	exit;
 }
+
+// Loaner
+exit;
