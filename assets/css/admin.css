@@ -1,0 +1,143 @@
+@import url('//ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/themes/cupertino/jquery-ui.css');
+
+.ui-corner-all {
+  border-radius: 0px;
+}
+
+.ui-widget-content {
+  border: none;
+  background: none;
+}
+
+.ui-widget-header {
+  border: none;
+  background: none;
+}
+
+.ui-state-default, 
+.ui-widget-content .ui-state-default, 
+.ui-widget-header .ui-state-default {
+  border: 1px #eee solid;
+  background: #444;
+  color: #000;
+  border-radius: 0px;
+  padding: .3em 1em;
+  opacity: 0.5;
+}
+
+.ui-state-default a,
+.ui-state-default a:link,
+.ui.state-default a:visited {
+  color: #ccc !important;
+  background: none;
+  border: none;
+  outline: none;
+}
+
+
+.ui-state-active, 
+.ui-widget-content .ui-state-active, 
+.ui-widget-header .ui-state-active {
+  border: 1px #eee solid;
+  background: #FFF;
+  color: #000 !important;
+  border-radius: 0px;
+  opacity: 1;
+}
+
+.ui-state-active a, 
+.ui-state-active a:link, 
+.ui-state-active a:visited {
+  color: #000 !important;
+  border: none;
+  outline: none;
+}
+
+.ui-tabs .ui-tabs-nav {
+  padding-left: 0;
+}
+
+.ui-widget-content {
+}
+
+.ui-tabs-nav,
+.ui-tabs-nav li:first-of-type {
+  padding-left: 0;
+}
+
+.ui-tabs .ui-tabs-panel {
+  border-top-width: 1px;
+  border-top-color: rgb(239, 239, 239);
+  border-top-style: solid;
+  background: rgb(255, 255, 255);
+}
+
+.ui-tabs-nav .ui-state-focus a {
+    outline: none;
+}   
+
+a:focus,
+a:active {
+  outline: none !important;
+  outline: 0 !important;
+}
+
+.settings_page_wo_settings .form-table {
+  background: #fafafa;
+  border-left: #0074a2 solid 5px;
+}
+
+.settings_page_wo_settings .form-table th {
+  padding-left: 20px;
+}
+
+.ui-tabs-panel h3 {
+  margin-top: 35px;
+  color: #0074a2;
+}
+
+.notification {
+  border-left: 4px solid #dd3d36;
+  background: #fff;
+  -webkit-box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
+  box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
+  padding: 10px 12px;
+  margin: 5px 0 15px;
+}
+
+.wo-popup-inner {}
+  .wo-popup-inner h3.header {
+    color: #0074a2;
+  }
+  .wo-popup-inner form {
+  }
+    .wo-popup-inner form label {
+      font-weight: bold;
+      margin-top: 20px;
+      display: block;
+      font-size: 14px;
+    }
+    .wo-popup-inner input[type="text"] {
+      display: block;
+      padding: 10px;
+      margin: 6px 0px;
+    }
+
+    .wo-popup-inner textarea {
+      width: 100%;
+      resize: vertical;
+      min-height: 150px;
+    }
+#TB_title {
+  background: #0074a2 !important;
+  color: #FFF !important;
+}
+.tb-close-icon {
+  color: #FFF !important;
+}
+
+.name.column-name a {color: #0074a2;}
+
+#the-list tr:nth-child(odd) {
+  background: #f9f9f9;
+}
