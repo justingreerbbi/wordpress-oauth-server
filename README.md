@@ -4,6 +4,8 @@ This project is an OAuth 2.0 compatible authentication method for WordPress.
 
 The goal of WP OAuth Server (WordPress Open Authentication) is to provide an easy to use authentication method that 3rd party services can use to securely connect to any server running WordPress site.
 
+You can find online documentation by visiting [http://wp-oauth.com](http://wp-oauth.com)
+
 ### Framework
 
 This project is built on top of [Brent Shaffer's](https://github.com/bshaffer) PHP OAuth Server project.
