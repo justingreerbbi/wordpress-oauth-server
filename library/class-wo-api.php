@@ -171,7 +171,7 @@ if($method == 'authorize')
 | Server plugin core functionality. 
 |
 */
-$ext_methods = apply_filters('wo_methods', null);
+$ext_methods = apply_filters('wo_endpoints', null);
 if(array_key_exists($method, $ext_methods)){
 	if (!$server->verifyResourceRequest(OAuth2\Request::createFromGlobals())) {
 	    $server->getResponse()->send();
