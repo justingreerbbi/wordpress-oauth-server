@@ -20,8 +20,8 @@ function wo_api_error_setup ( $errors )
 /**
  * Default Method Filter for the resource server API calls
  */
-add_filter('wo_endpoints', 'wo_default_endpoints');
-function wo_default_methods ()
+add_filter('wo_endpoints', 'wo_default_endpoints', 1);
+function wo_default_endpoints ()
 {
   $endpoints = array(
     'me' => array('func' =>'_wo_method_me')

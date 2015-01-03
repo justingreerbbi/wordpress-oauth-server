@@ -112,19 +112,10 @@ $server->setScopeUtil($scopeUtil);
 | The followng code is ran when a request is made to the server using the
 | Authorization Code (implicit) Grant Type as well as request tokens
 |
-| 1. Check if the user is logged in (redirect if not)
-| 2. Create the Token Request
-|
 */
 if($method == 'token')
 {
 	do_action('wo_before_token_method');
-	if(!is_user_logged_in())
-	{
-		wp_redirect(wp_login_url(site_url().$_SERVER['REQUEST_URI']));
-		exit;
-	}
-
 	$server->handleTokenRequest(OAuth2\Request::createFromGlobals())->send();
 }
 
@@ -144,17 +135,17 @@ if($method == 'token')
 if($method == 'authorize')
 {
 	do_action('wo_before_authorize_method');
-	if(!is_user_logged_in())
-	{
-		wp_redirect(wp_login_url(site_url().$_SERVER['REQUEST_URI']));
-		exit;
-	}
 	$request = OAuth2\Request::createFromGlobals();
 	$response = new OAuth2\Response();
 	if (!$server->validateAuthorizeRequest($request, $response)) 
 	{
 	    $response->send();
 	    die;
+	}
+	if(!is_user_logged_in())
+	{
+		wp_redirect(wp_login_url(site_url().$_SERVER['REQUEST_URI']));
+		exit;
 	}
 	$server->handleAuthorizeRequest($request, $response, true, get_current_user_id());
 	$response->send();
@@ -169,6 +160,9 @@ if($method == 'authorize')
 | Below this line is part of the developer API. Do not edit directly. 
 | Refer to the developer documentation for exstending the WordPress OAuth 
 | Server plugin core functionality. 
+| 
+| @todo all resource calls should have an access token. Lets validate it
+| and if it fails send error back to the client.
 |
 */
 $ext_methods = apply_filters('wo_endpoints', null);
