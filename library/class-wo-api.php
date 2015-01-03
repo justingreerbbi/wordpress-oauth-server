@@ -41,7 +41,7 @@ array(
     'store_encrypted_token_string' => true, // true
     'use_openid_connect'       => false, // false (not supported yet)
     'id_lifetime'              => 3600, // 1 Hour - Crypto (not supported yet)
-    'access_lifetime'          => 3600, // 1 Hour
+    'access_lifetime'          => 86400, // 1 Hour
     'refresh_token_lifetime'	 => 2419200, // 14 Days
     'www_realm'                => 'Service',
     'token_param_name'         => 'access_token',
@@ -134,16 +134,14 @@ if($method == 'token')
 */
 if($method == 'authorize')
 {
-	do_action('wo_before_authorize_method');
 	$request = OAuth2\Request::createFromGlobals();
 	$response = new OAuth2\Response();
-	if (!$server->validateAuthorizeRequest($request, $response)) 
-	{
+	if (!$server->validateAuthorizeRequest($request, $response)){
 	    $response->send();
 	    die;
 	}
-	if(!is_user_logged_in())
-	{
+	do_action('wo_before_authorize_method');
+	if(!is_user_logged_in()) {
 		wp_redirect(wp_login_url(site_url().$_SERVER['REQUEST_URI']));
 		exit;
 	}
@@ -167,11 +165,15 @@ if($method == 'authorize')
 */
 $ext_methods = apply_filters('wo_endpoints', null);
 if(array_key_exists($method, $ext_methods)){
-	if (!$server->verifyResourceRequest(OAuth2\Request::createFromGlobals())) {
+	if (!$server->verifyResourceRequest(OAuth2\Request::createFromGlobals())){
 	    $server->getResponse()->send();
 	    die;
 	}
 	$token = $server->getAccessTokenData(OAuth2\Request::createFromGlobals());
+	if(is_null($token)) {
+		$server->getResponse()->send();
+		exit;
+	}
 	call_user_func_array($ext_methods[$method]['func'], array($token));
 	exit;
 }
