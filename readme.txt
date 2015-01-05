@@ -13,7 +13,7 @@ This project is an OAuth 2.0 compatible authentication method for WordPress.
 
 == Description ==
 
-WP OAuth allows your WordPress site become a SSO authitication endpoint as well has allow to you tie
+WP OAuth allows your WordPress site become a SSO authentication endpoint as well has allow to you tie
 in 3rd party apps and software that requires login.
 
 = Supported Grant Types =
@@ -95,5 +95,5 @@ For any upgrade, PLEASE PLEASE PLEASE make a full backup of your data.
 * Removed plugin logging as it was not really needed and caused more issues that it was worth.
 
 = 3.0.0 =
-* Complelty updated and rebuilt
+* Updated and rebuilt structure.
 * Visit <a href="http://wp-oauth.com">http://wp-oauth.com</a> for documentation and more information.
