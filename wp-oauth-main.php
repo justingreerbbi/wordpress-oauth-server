@@ -30,16 +30,9 @@ class WO_Server
 		/** load all dependants */
 		add_action("init", array(__CLASS__, "includes"));
 
-		/** register plugin styles and scripts */
-		add_action("wp_loaded", array(__CLASS__, "register_scripts"));
-		add_action("wp_loaded", array(__CLASS__, "register_styles"));
-
 		/** check if permalinks are set */
     if (! get_option('permalink_structure') )
         add_action('admin_notices', array(__CLASS__, 'permalink_notice'));
-
-		/** activation hook for plugin - This may need to be moved. Not sure wh it is not running here. It does work in the main plugin file but that is not want I want */
-		register_activation_hook( WPOAUTH_FILE, array($this,'setup'));
 	}
 
 	/**
@@ -90,24 +83,6 @@ class WO_Server
 		/** include the ajax class if DOING_AJAX is defined */
 		if ( defined( 'DOING_AJAX' ) )
 			require_once( dirname(__FILE__) . '/includes/ajax/class-wo-ajax.php');
-	}
-
-	/**
-	 * register plugin styles
-	 * @return void
-	 */
-	public function register_styles ()
-	{
-		wp_register_style( 'wo_admin', plugins_url( '/assets/css/admin.css', __FILE__ )  );
-	}
-
-	/**
-	 * register plugin scripts
-	 * @return void
-	 */
-	public function register_scripts ()
-	{
-		wp_register_script( 'wo_admin', plugins_url( '/assets/js/admin.js', __FILE__ ) );
 	}
 
 	/**

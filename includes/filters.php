@@ -43,7 +43,8 @@ function _wo_method_me ( $token=null )
   /** prevent sensative data - makes me happy ;) */
   unset($me_data['user_pass']);
   unset($me_data['user_activation_key']);
-  
-  print json_encode( $me_data );
+  unset($me_data['user_url']);
+  $response = new OAuth2\Response($me_data);
+  $response->send();
   exit;
 }
