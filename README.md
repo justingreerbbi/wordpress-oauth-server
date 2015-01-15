@@ -7,6 +7,14 @@ This project is an OAuth 2.0 compatible authentication method for WordPress. The
 
 You can find online documentation by visiting [http://wp-oauth.com](http://wp-oauth.com)
 
+
+### System Requirements
+
+* WordPress 3.9 or Higher
+* PHP 5.3.9 or Higher
+* (recomended by not required) PHP Apache Module. When using PHP CGI, authentication headers may not work as expected. Please refer to common issues at [http://wp-oauth.com/forums/topic/common-issues/](http://wp-oauth.com/forums/topic/common-issues/).
+
+
 ### Framework
 
 This project is built on top of [Brent Shaffer's](https://github.com/bshaffer) PHP OAuth Server project.
@@ -46,9 +54,11 @@ homepage of this documentation [here](http://bshaffer.github.io/oauth2-server-ph
 
 
 
-## Resource API
+## Resources
 
-{STILL NEEDS DOCUMENTATION}
+[Homepage](http://wp-oauth.com)
+[Documentation](http://wp-oauth.com/documentation/)
+[Server API Docs](http://wp-oauth.com/documentation/server-api/)
 
 ## What you need to know
 
