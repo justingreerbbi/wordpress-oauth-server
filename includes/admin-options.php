@@ -56,7 +56,7 @@ class WPOAuth_Admin {
 	    ?>
 	    		<div class="wrap">
 	        	<h2>Server Confirguration</h2>
-	        	<p>Need Help? Check out the <a href="http://wp-oauth.com">Documentation</a></p>
+	        	<p>Check out the <a href="http://wp-oauth.com/documentation/">documentation</a>.</p>
 	       
 	        	<form method="post" action="options.php">
 	          	<?php settings_fields('wo_options'); ?>
@@ -66,6 +66,7 @@ class WPOAuth_Admin {
 							  	<li><a href="#general-settings">General Settings</a></li>
 							  	<li><a href="#advanced-configuration">Advanced Configuration</a></li>
 							  	<li><a href="#clients">Clients</a></li>
+							  	<li><a href="#server-status">Server Status</a></li>
 								</ul>
 							  
 								<!-- GENERAL SETTINGS -->
@@ -84,21 +85,10 @@ class WPOAuth_Admin {
 							  <!-- ADVANCED CONFIGURATION -->
 							  <div id="advanced-configuration">
 							  	<h2>Advanced Configuration</h2>
-							  	<p>Need Help? Try reading the <a href="http://wp-oauth.com/advanced-configuration-guide/" target="_blank">Advanced Configuration Docunentation</a></p>
-
-									<h3>Key Generation <hr></h3>
-									<table class="form-table">
-			              <tr valign="top">
-			               	<th scope="row">Key Length</th>
-			                  <td>
-			                  	<input type="number" name="<?php echo $this->option_name?>[client_id_length]" min="10" value="<?php echo $options["client_id_length"]; ?>" />
-			                  	<p class="description">Length of Client ID and Client Secrets when generated.</p>
-			              	  </td>
-			              </tr>
-			            </table>
+							  	<p>Need Help? Check out the <a href="http://wp-oauth.com/documentation/getting-started/configuring/advanced-configuration/" target="_blank">Advanced Configuration Docunentation</a></p>
 
 			            <h3>Grant Types <hr></h3>
-			            <p>Check to enable.</p>
+			            <p>Control which Grant Types that the server will accept.</p>
 									<table class="form-table">
 			              
 			              <!--<tr valign="top">
@@ -113,7 +103,7 @@ class WPOAuth_Admin {
 			               	<th scope="row">Client Credentials:</th>
 			                  <td>
 			                  	<input type="checkbox" name="<?php echo $this->option_name?>[client_creds_enabled]" value="1" <?php echo $options["client_creds_enabled"] == "1" ? "checked='checked'" : ""; ?> />
-			                  	<p class="description">Needs short and sweet description.</p>
+			                  	<p class="description">Enable "Client Credentials" Grant Type</p>
 			              	  </td>
 			              </tr>
 			              
@@ -121,7 +111,7 @@ class WPOAuth_Admin {
 			               	<th scope="row">User Credentials:</th>
 			                  <td>
 			                  	<input type="checkbox" name="<?php echo $this->option_name?>[user_creds_enabled]" value="1" <?php echo $options["user_creds_enabled"] == "1" ? "checked='checked'" : ""; ?> />
-			                  	<p class="description">Needs short and sweet description.</p>
+			                  	<p class="description">Enable "User Credentials" Grant Type</p>
 			              	  </td>
 			              </tr>
 			              
@@ -129,7 +119,7 @@ class WPOAuth_Admin {
 			               	<th scope="row">Refresh Tokens:</th>
 			                  <td>
 			                  	<input type="checkbox" name="<?php echo $this->option_name?>[refresh_tokens_enabled]" value="1" <?php echo $options["refresh_tokens_enabled"] == "1" ? "checked='checked'" : ""; ?> />
-			                  	<p class="description">Enable the server to issue and use refresh tokens.</p>
+			                  	<p class="description">Enable "Refresh Token" Grant Type</p>
 			              	  </td>
 			              </tr>
 
@@ -137,15 +127,26 @@ class WPOAuth_Admin {
 			               	<th scope="row">Allow Implicit:</th>
 			                  <td>
 			                  	<input type="checkbox" name="<?php echo $this->option_name?>[implicit_enabled]" value="1" <?php echo $options["implicit_enabled"] == "1" ? "checked='checked'" : ""; ?> />
-			                  	<p class="description">Only Enable if Needed</p>
+			                  	<p class="description">Enable "Authorization Code (Implicit)" <a href="http://wp-oauth.com/documentation/server-api/which-grant-type-to-use/">What is this?</a></p>
 			              	  </td>
 			              </tr>
 			         
-			              <tr valign="top">
+			            </table>
+
+			            <h3>Misc Settings <hr></h3>
+									<table class="form-table">
+										<tr valign="top">
+			               	<th scope="row">Key Length</th>
+			                  <td>
+			                  	<input type="number" name="<?php echo $this->option_name?>[client_id_length]" min="10" value="<?php echo $options["client_id_length"]; ?>" />
+			                  	<p class="description">Length of Client ID and Client Secrets when generated.</p>
+			              	  </td>
+			              </tr>
+										<tr valign="top">
 			               	<th scope="row">Require Exact Redirect URI:</th>
 			                  <td>
 			                  	<input type="checkbox" name="<?php echo $this->option_name?>[require_exact_redirect_uri]" value="1" <?php echo $options["require_exact_redirect_uri"] == "1" ? "checked='checked'" : ""; ?> />
-			                  	<p class="description">Recommended</p>
+			                  	<p class="description">Enable if exact redirect URI is required when authenticating.</p>
 			              	  </td>
 			              </tr>
 
@@ -153,10 +154,10 @@ class WPOAuth_Admin {
 			               	<th scope="row">Enforce State Parameter:</th>
 			                  <td>
 			                  	<input type="checkbox" name="<?php echo $this->option_name?>[enforce_state]" value="1" <?php echo $options["enforce_state"] == "1" ? "checked='checked'" : ""; ?> />
-			                  	<p class="description">Require State parameter when using Authorization Code</p>
+			                  	<p class="description">Enable if the "state" paramter is required when authenticating. </p>
 			              	  </td>
 			              </tr>
-			            </table>
+									</table>
 							  </div>
 
 							  <!-- CLIENTS -->
@@ -171,6 +172,25 @@ class WPOAuth_Admin {
 									$wp_list_table->prepare_items();
 									$wp_list_table->display();
 									?>
+							  </div>
+
+							  <div id="server-status">
+							  	<h2>Server Status</h2>
+							  	<p>
+							  		The following information is a guide. 
+							  	</p>
+							  	<table>
+							  		<tr>
+							  			<th style="text-align:right;">PHP Version (<?php echo PHP_VERSION; ?>): </th>
+							  			<td>
+							  				<?php echo version_compare(PHP_VERSION, '5.3.9') >= 0 ? " <span style='color:green;'>OK</span>":" <span style='color:red;'>Warning</span>"; ?>
+							  			</td>
+							  		</tr>
+							  		<tr>
+							  			<th style="text-align:right;">Running CGI: </th>
+							  			<td><?php echo substr(php_sapi_name(), 0, 3) != 'cgi' ? " <span style='color:green;'>OK</span>":" <span style='color:orange;'>Notice</span> Header 'Authorization Basic' may not work as expected."; ?></td>
+							  		</tr>
+							  	</table>
 							  </div>
 
 							</div>

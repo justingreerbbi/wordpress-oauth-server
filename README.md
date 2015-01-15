@@ -1,8 +1,9 @@
 # WordPress OAuth Server
 
-This project is an OAuth 2.0 compatible authentication method for WordPress.
+Current Version: 3.0.1
 
-The goal of WP OAuth Server (WordPress Open Authentication) is to provide an easy to use authentication method that 3rd party services can use to securely connect to any server running WordPress site.
+This project is an OAuth 2.0 compatible authentication method for WordPress. The goal of WP OAuth Server 
+(WordPress Open Authentication) is to provide an easy to use authentication method that 3rd party services can use to securely connect to any server running WordPress site.
 
 You can find online documentation by visiting [http://wp-oauth.com](http://wp-oauth.com)
 
@@ -21,7 +22,7 @@ WP OAuth Server does not currently support `Jwt Bearer` or `Crypto Tokens`.
 
 ## Installation
 
-1. Upload `wordpress-oauth` to the `/wp-content/plugins/` directory or use the built-in plugin install system
+1. Upload `oauth2-provider` to the `/wp-content/plugins/` directory or use the built-in plugin install system
 1. Activate the plugin through the `Plugins` menu in WordPress
 1. Click `Settings` and then `Permalinks`. Then simply click `Save Changes` to flush the rewrite rules.
 1. You're Ready to Rock
@@ -29,7 +30,7 @@ WP OAuth Server does not currently support `Jwt Bearer` or `Crypto Tokens`.
 
 ## Adding a new Client?
 
-Visit the dashboard by clicking `Provider` in the WordPress admin panel under `Setiings`. Once you are in the dashboard, there is a form labeled `Add Client`. Give your client a name and a redirect uri and description. The redirect uri is the HTTP location where the user will be returned to after authenticating (your client should provide this for you). Click `Add Client`.
+Visit the dashboard by clicking `Provider` in the WordPress admin panel under `Settings`. Once you are in the dashboard, there is a form labeled `Add Client`. Give your client a name and a redirect URI and description. The redirect URI is the HTTP location where the user will be returned to after authenticating (your client should provide this for you). Click `Add Client`.
 
 ## Authentication Documentation
 
@@ -69,12 +70,13 @@ Before you actually start, there is a few things that should be mentioned as it 
 
 ## TODO
 
-* Look into API enpoint to create a client id via API. This will require and `user credentials.
 * Look into cleaning up the headers when the server is responding.
 * Clean up All un needed classes and abstracts in the original OAuth Server.
-* Proof read all documentation and comments.
-* Create a hook so that all users have a unique client_id and key that can be viewed from the user profile page.
-* Add Firewall option to whitelist or blacklist domains/addresses
+
+## Exstentions
+
+* API Firewall
+* JSON-API Hook
 
 ## 3rd Party Exstension Examples
 

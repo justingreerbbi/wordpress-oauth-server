@@ -3,32 +3,30 @@
 Contributors: justingreerbbi
 Donate link: http://justin-greer.com/
 Tags: oauth2, OAuth provider, Provider, OAuth, OAuth client, Single Sign On, SSO
-Requires at least: 3.7
-Tested up to: 3.9.1
-Stable tag: 2.0.0
+Requires at least: 3.9
+Tested up to: 4.1
+Stable tag: 3.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-This project is an OAuth 2.0 compatible authentication method for WordPress.
+This project is an OAuth 2.0 compatible authentication provider using WordPress.
 
 == Description ==
 
-WP OAuth allows your WordPress site become a SSO authentication endpoint as well has allow to you tie
-in 3rd party apps and software that requires login.
+WordPress OAuth Server allows your WordPress site to become an authentication endpoint as well has allowing to you tie in 3rd party apps and software that requires login.
 
 = Supported Grant Types =
 
-* Authentication Code
-* Implicit 
+* Authentication Code/Implicit
 * User Credentials
 * Client Credentials
 * Refresh Token
 
-WP OAuth Server does not currently support `Jwt Bearer` or `Crypto Tokens`.
+WordPress OAuth Server does not currently support `Jwt Bearer` or `Crypto Tokens`.
 
 == Installation ==
 
-1. Upload `wordpress-oauth` to the `/wp-content/plugins/` directory or use the built in plugin install by WordPress
+1. Upload `oauth-provider` to the `/wp-content/plugins/` directory or use the built in plugin install by WordPress
 1. Activate the plugin through the 'Plugins' menu in WordPress
 1. Click 'Settings' and then 'permalinks'. Then simply click 'Save Changes' to flush the rewrite rules so that OAuth2 Provider
 1. Your Ready to Rock
@@ -45,7 +43,7 @@ Yes, WordPress OAuth Server does support Single Sign On.
 
 = Is there support for this plugin? Can you help me? =
 
-You can visit our <a href="http://wp-oauth.com/forums/" title="WordPress OAuth Server">support forum</a> for support. Although it takes the hard part away from dealing with OAuth it will require some knowledge on your behalf.
+You can visit our <a href="http://wp-oauth.com/forums/" title="WordPress OAuth Server">support forum</a> for support.
 
 = Can you set this up for me on my current website? =
 
@@ -53,7 +51,7 @@ You can visit our <a href="http://wp-oauth.com/forums/" title="WordPress OAuth S
 
 = How do I use WordPress OAuth Server? =
 
-You can visit <a href="http://wp-oauth.com">http://wp-oauth.com</a>.
+You can visit <a href="http://wp-oauth.com">http://wp-oauth.com</a>. You will find in-depth documentation as well as examples of how to get started.
 
 == Upgrade Notice ==
 
@@ -97,3 +95,9 @@ For any upgrade, PLEASE PLEASE PLEASE make a full backup of your data.
 = 3.0.0 =
 * Updated and rebuilt structure.
 * Visit <a href="http://wp-oauth.com">http://wp-oauth.com</a> for documentation and more information.
+
+= 3.0.1 =
+* Updated cover image.
+* Fixed documentation links.
+* Added "Server Status" tab
+* Cleaned up "Advanced Configuration" contents.

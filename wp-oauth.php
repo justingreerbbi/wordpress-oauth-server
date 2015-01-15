@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WordPress OAuth Server
  * Plugin URI: 
- * Version: 3.0.0
+ * Version: 3.0.1
  * Description: The first true all-in-one OAuth solution for WordPress, including Single Sign On.
  * Author: Justin Greer
  * Author URI: http://justin-greer.com
