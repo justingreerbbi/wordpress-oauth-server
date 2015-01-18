@@ -1,20 +1,12 @@
 <?php
 /**
  * WordPress Mobile OAuth Filters
- *
  * @author Justin Greer <justin@justin-greer.com>
- * @package WordPress Mobile Oauth
  */
 
 /**
- * WO API Errors Filter
- * OAuth standards do not call for custom errors nor explain how to handle certian aspects other than
- * using the generic errors. This filter allows us to have controll of the errors inside the API 
- * without havign to touch the actual core API
- *
- * Errors
- * - invalid_access_token
- * - invalid_refresh_token
+ * WordPress OAuth Server Error Filter
+ * @deprecated Schedule for removal. The PHP server handles all these now.
  */
 add_filter("WO_API_Errors", "wo_api_error_setup", 1);
 function wo_api_error_setup ( $errors )
@@ -26,20 +18,33 @@ function wo_api_error_setup ( $errors )
 }
 
 /**
- * Default Scopes Supported
- * @since 0.2
- * @todo Link scopes to checks system that is dynamic some how when performing API calls
- *
- * "scope_name" => enabled/disabled
+ * Default Method Filter for the resource server API calls
  */
-add_filter("WO_Scopes", "wo_scopes_setup");
-function wo_scopes_setup ()
+add_filter('wo_endpoints', 'wo_default_endpoints', 1);
+function wo_default_endpoints ()
 {
-  $scopes = array(
-    'general' => true,
-    'email' => true,
-    'media' => true,
-    'posts' => true,
+  $endpoints = array(
+    'me' => array('func' =>'_wo_method_me')
     );
-  return $scopes;
+  return $endpoints;
+}
+
+/**
+ * DEFAULT ME METHOD - DO NOT REMOVE DIRECTLY
+ * This is the default resource call "/oauth/me". Do not edit nor remove.
+ */
+function _wo_method_me ( $token=null )
+{
+  $user_id = &$token['user_id'];
+
+  global $wpdb;
+  $me_data = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}users WHERE ID=$user_id", ARRAY_A);
+  
+  /** prevent sensative data - makes me happy ;) */
+  unset($me_data['user_pass']);
+  unset($me_data['user_activation_key']);
+  unset($me_data['user_url']);
+  $response = new OAuth2\Response($me_data);
+  $response->send();
+  exit;
 }

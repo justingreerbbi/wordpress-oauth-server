@@ -12,7 +12,7 @@ use OAuth2\OpenID\Storage\AuthorizationCodeInterface as OpenIDAuthorizationCodeI
  * @org-author Brent Shaffer <bshafs at gmail dot com>
  * @author Justin Greer <justin@justin-greer.com>
  */
-class Wpo implements 
+class Wordpressdb implements 
     AuthorizationCodeInterface, 
     AccessTokenInterface, 
     ClientCredentialsInterface, 
@@ -403,7 +403,7 @@ class Wpo implements
         $userInfo = $stmt;
         return array_merge(
             array(
-                'user_id' => $username), 
+                'user_id' => $userInfo['ID']), 
             $userInfo
             );
     }

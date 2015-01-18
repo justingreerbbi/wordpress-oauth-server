@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: OAuth2 Server
+ * Plugin Name: WordPress OAuth Server
  * Plugin URI: 
- * Version: 1.0.0
+ * Version: 3.0.1
  * Description: The first true all-in-one OAuth solution for WordPress, including Single Sign On.
  * Author: Justin Greer
  * Author URI: http://justin-greer.com
@@ -28,6 +28,14 @@ if ( ! function_exists( 'add_filter' ) ) {
 
 if ( ! defined( 'WPOAUTH_FILE' ) ) {
 	define( 'WPOAUTH_FILE', __FILE__ );
+}
+
+/** 5.4 Strict Mode Temp Patch */
+add_action("wp_loaded", '_wo_register_files');
+function _wo_register_files ()
+{
+	wp_register_style( 'wo_admin', plugins_url( '/assets/css/admin.css', __FILE__ )  );
+	wp_register_script( 'wo_admin', plugins_url( '/assets/js/admin.js', __FILE__ ) );
 }
 
 require_once( dirname( __FILE__ ) . '/wp-oauth-main.php' );

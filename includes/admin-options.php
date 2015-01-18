@@ -1,7 +1,4 @@
 <?php
-/**
- * Admin Menu 
- */
 class WPOAuth_Admin {
 
 	/**
@@ -59,7 +56,7 @@ class WPOAuth_Admin {
 	    ?>
 	    		<div class="wrap">
 	        	<h2>Server Confirguration</h2>
-	        	<p>Need Help? Check out the <a href="#">Documentation</a></p>
+	        	<p>Check out the <a href="http://wp-oauth.com/documentation/">documentation</a>.</p>
 	       
 	        	<form method="post" action="options.php">
 	          	<?php settings_fields('wo_options'); ?>
@@ -68,8 +65,8 @@ class WPOAuth_Admin {
 								<ul>
 							  	<li><a href="#general-settings">General Settings</a></li>
 							  	<li><a href="#advanced-configuration">Advanced Configuration</a></li>
-							  	<li><a href="#shortcodes">Shortcodes</a></li>
 							  	<li><a href="#clients">Clients</a></li>
+							  	<li><a href="#server-status">Server Status</a></li>
 								</ul>
 							  
 								<!-- GENERAL SETTINGS -->
@@ -88,116 +85,79 @@ class WPOAuth_Admin {
 							  <!-- ADVANCED CONFIGURATION -->
 							  <div id="advanced-configuration">
 							  	<h2>Advanced Configuration</h2>
-							  	<p>Advanced Configuration for OAuth Server.</p>
+							  	<p>Need Help? Check out the <a href="http://wp-oauth.com/documentation/getting-started/configuring/advanced-configuration/" target="_blank">Advanced Configuration Docunentation</a></p>
 
-							  	<!--<h3>Server Type<hr></h3>
-							    <table class="form-table">
-			              <tr valign="top">
-			               	<th scope="row">Server Type</th>
-			                  <td>
-			                  	<select name="<?php echo $this->option_name;?>[server_type]">
-				                  	<option value="private" <?php echo $options["server_type"]=='private' ? "selected":"";?>>Private</option>
-				                  	<option value="public" <?php echo $options["server_type"]=='public' ? "selected":"";?>>Public</option>
-			                  	</select>
-			                  	<p class="description">
-			                  		<strong>Private: </strong> Only Admins can manage clients (server is used soley for an application ect..)<br>
-			                  		<strong>Public: </strong> Front-end user can add clients as needed (user can create applications that integrate with your this server).
-			                  	</p>
-			              	  </td>
-			              </tr>
-			            </table>-->
-
-							  	<!--<h3>Scopes<hr></h3>
-							    <table class="form-table">
-			              <tr valign="top">
-			               	<th scope="row">Enabled Scopes</th>
-			                  <td>
-			                  	<div class="notification">
-			                  		Scopes not yet supported -> Still in Development
-			                  	</div>
-			                  	<?php foreach($scopes as $scope=>$enabled): ?>
-			                  		<input type="checkbox" name="<?php echo $this->option_name; ?>[scopes][<?php echo $scope; ?>]" value="1"  <?php if($this->option_name["scopes"][$scope] == 1) print 'checked="checked"'; ?> /><?php echo ucfirst($scope); ?><br/>
-			                  	<?php endforeach; ?>
-			              	  </td>
-			              </tr>
-			            </table>-->
-
-
-									<h3>Key Generation <hr></h3>
+			            <h3>Grant Types <hr></h3>
+			            <p>Control which Grant Types that the server will accept.</p>
 									<table class="form-table">
+			              
+			              <!--<tr valign="top">
+			               	<th scope="row">Authorization Code:</th>
+			                  <td>
+			                  	<input type="checkbox" name="<?php echo $this->option_name?>[auth_code_enabled]" value="1" <?php echo $options["auth_code_enabled"] == "1" ? "checked='checked'" : ""; ?> />
+			                  	<p class="description">HTTP redirects and WP login form when authenticating.</p>
+			              	  </td>
+			              </tr>-->
+			              
 			              <tr valign="top">
-			               	<th scope="row">Key Lengths</th>
+			               	<th scope="row">Client Credentials:</th>
+			                  <td>
+			                  	<input type="checkbox" name="<?php echo $this->option_name?>[client_creds_enabled]" value="1" <?php echo $options["client_creds_enabled"] == "1" ? "checked='checked'" : ""; ?> />
+			                  	<p class="description">Enable "Client Credentials" Grant Type</p>
+			              	  </td>
+			              </tr>
+			              
+			              <tr valign="top">
+			               	<th scope="row">User Credentials:</th>
+			                  <td>
+			                  	<input type="checkbox" name="<?php echo $this->option_name?>[user_creds_enabled]" value="1" <?php echo $options["user_creds_enabled"] == "1" ? "checked='checked'" : ""; ?> />
+			                  	<p class="description">Enable "User Credentials" Grant Type</p>
+			              	  </td>
+			              </tr>
+			              
+			              <tr valign="top">
+			               	<th scope="row">Refresh Tokens:</th>
+			                  <td>
+			                  	<input type="checkbox" name="<?php echo $this->option_name?>[refresh_tokens_enabled]" value="1" <?php echo $options["refresh_tokens_enabled"] == "1" ? "checked='checked'" : ""; ?> />
+			                  	<p class="description">Enable "Refresh Token" Grant Type</p>
+			              	  </td>
+			              </tr>
+
+			              <tr valign="top">
+			               	<th scope="row">Allow Implicit:</th>
+			                  <td>
+			                  	<input type="checkbox" name="<?php echo $this->option_name?>[implicit_enabled]" value="1" <?php echo $options["implicit_enabled"] == "1" ? "checked='checked'" : ""; ?> />
+			                  	<p class="description">Enable "Authorization Code (Implicit)" <a href="http://wp-oauth.com/documentation/server-api/which-grant-type-to-use/">What is this?</a></p>
+			              	  </td>
+			              </tr>
+			         
+			            </table>
+
+			            <h3>Misc Settings <hr></h3>
+									<table class="form-table">
+										<tr valign="top">
+			               	<th scope="row">Key Length</th>
 			                  <td>
 			                  	<input type="number" name="<?php echo $this->option_name?>[client_id_length]" min="10" value="<?php echo $options["client_id_length"]; ?>" />
 			                  	<p class="description">Length of Client ID and Client Secrets when generated.</p>
 			              	  </td>
 			              </tr>
-			            </table>
+										<tr valign="top">
+			               	<th scope="row">Require Exact Redirect URI:</th>
+			                  <td>
+			                  	<input type="checkbox" name="<?php echo $this->option_name?>[require_exact_redirect_uri]" value="1" <?php echo $options["require_exact_redirect_uri"] == "1" ? "checked='checked'" : ""; ?> />
+			                  	<p class="description">Enable if exact redirect URI is required when authenticating.</p>
+			              	  </td>
+			              </tr>
 
-			            	<h3>Resfresh Tokens <hr></h3>
-			              <table class="form-table">
-			                <tr valign="top">
-			                	<th scope="row">Refresh Tokens Enabled:</th>
-			                    <td>
-			                    	<input type="checkbox" name="<?php echo $this->option_name?>[refresh_tokens_enabled]" value="1" <?php echo $options["refresh_tokens_enabled"] == "1" ? "checked='checked'" : ""; ?> />
-			                    </td>
-			                </tr>
-			                <tr valign="top">
-			                	<th scope="row">
-			                		Refresh Token Lifespan:
-			                	</th>
-			                    <td>
-			                    	<input type="number" name="<?php echo $this->option_name?>[refresh_token_lifespan]" min="0" max="100" value="<?php echo $options["refresh_token_lifespan"]; ?>" />
-			                    	<select name="<?php echo $this->option_name?>[refresh_token_lifespan_unit]?>">
-			                    		<option value="minute">Minute</option>
-			                    		<option value="hour">Hours</option>
-			                    		<option value="day">Days</option>
-			                    		<option value="month">Months</option>
-			                    		<option value="years">Years</option>
-			                    	</select>
-			                    	<p class="description">0 = Never Expires</p>
-			                    </td>
-			                </tr>
-			              </table>
-
-			              <h3>Tokens & Authentication Codes<hr></h3>
-			              <table class="form-table">
-			                <tr valign="top">
-			                	<th scope="row">
-			                		Authentication Code Lifespan:
-			                	</th>
-			                    <td>
-			                    	<input type="number" name="<?php echo $this->option_name?>[auth_code_expiration_time]" min="1" max="10" value="<?php echo $options["auth_code_expiration_time"]; ?>" /> Minutes
-			                    	<p class="description">Between 1 and 10 minutes.</p>
-			                    </td>
-			                </tr>
-			                <tr valign="top">
-			                	<th scope="row">
-			                		Access Token lifespan:
-			                	</th>
-			                    <td>
-			                    	<input type="number" name="<?php echo $this->option_name?>[access_token_lifespan]" value="<?php echo $options["access_token_lifespan"]; ?>" /> seconds
-			                    	<p class="description">0 = Unlimited</p>
-			                    </td>
-			                </tr>
-			           		</table>
-							  </div>
-
-							  <div id="shortcodes">
-							  	<h2>Coming Soon</h2>
-							  	<p>
-							  		Shortcodes will give the front-end user the ability to control their own clients. This will only work if the OAuth Server is setup as a public server.
-							  	</p>
-							  	
-							  	<!--<table class="form-table">
-			                <tr valign="top">
-			                	<th scope="row">API Enabled:</th>
-			                    <td>
-			                    	<input type="checkbox" name="<?php echo $this->option_name?>[enabled]" value="1" <?php echo $options["enabled"] == "1" ? "checked='checked'" : ""; ?> />
-			                    	<p class="description">When disabled, API will present a "Server is Temporarily Unavailable" message.</p>
-			                    </td>
-			                </tr>
-			            </table>-->  
+			              <tr valign="top">
+			               	<th scope="row">Enforce State Parameter:</th>
+			                  <td>
+			                  	<input type="checkbox" name="<?php echo $this->option_name?>[enforce_state]" value="1" <?php echo $options["enforce_state"] == "1" ? "checked='checked'" : ""; ?> />
+			                  	<p class="description">Enable if the "state" paramter is required when authenticating. </p>
+			              	  </td>
+			              </tr>
+									</table>
 							  </div>
 
 							  <!-- CLIENTS -->
@@ -212,6 +172,25 @@ class WPOAuth_Admin {
 									$wp_list_table->prepare_items();
 									$wp_list_table->display();
 									?>
+							  </div>
+
+							  <div id="server-status">
+							  	<h2>Server Status</h2>
+							  	<p>
+							  		The following information is a guide. 
+							  	</p>
+							  	<table>
+							  		<tr>
+							  			<th style="text-align:right;">PHP Version (<?php echo PHP_VERSION; ?>): </th>
+							  			<td>
+							  				<?php echo version_compare(PHP_VERSION, '5.3.9') >= 0 ? " <span style='color:green;'>OK</span>":" <span style='color:red;'>Warning</span>"; ?>
+							  			</td>
+							  		</tr>
+							  		<tr>
+							  			<th style="text-align:right;">Running CGI: </th>
+							  			<td><?php echo substr(php_sapi_name(), 0, 3) != 'cgi' ? " <span style='color:green;'>OK</span>":" <span style='color:orange;'>Notice</span> Header 'Authorization Basic' may not work as expected."; ?></td>
+							  		</tr>
+							  	</table>
 							  </div>
 
 							</div>
@@ -251,8 +230,19 @@ class WPOAuth_Admin {
 	 * @return [type]        [description]
 	 */
 	public function validate($input) {
-	    $input["enabled"] = isset($input["enabled"]) ? $input["enabled"] : 0;
-	    return $input;
+
+		// Check box values
+	  $input["enabled"] = isset($input["enabled"]) ? $input["enabled"] : 0;
+	  $input["auth_code_enabled"] = isset($input["auth_code_enabled"]) ? $input["auth_code_enabled"] : 0;
+	  $input["client_creds_enabled"] = isset($input["client_creds_enabled"]) ? $input["client_creds_enabled"] : 0;
+	  $input["user_creds_enabled"] = isset($input["user_creds_enabled"]) ? $input["user_creds_enabled"] : 0;
+	  $input["refresh_tokens_enabled"] = isset($input["refresh_tokens_enabled"]) ? $input["refresh_tokens_enabled"] : 0;
+	  $input["implicit_enabled"] = isset($input["implicit_enabled"]) ? $input["implicit_enabled"] : 0;
+
+	  $input["require_exact_redirect_uri"] = isset($input["require_exact_redirect_uri"]) ? $input["require_exact_redirect_uri"] : 0;
+	  $input["enforce_state"] = isset($input["enforce_state"]) ? $input["enforce_state"] : 0;
+	  
+	  return $input;
 	}
 }
 WPOAuth_Admin::init();

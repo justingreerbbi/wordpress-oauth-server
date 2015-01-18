@@ -2,84 +2,95 @@
 /**
  * Main API Hook
  *
- * You can read here to understand how this plugin works. 
+ * For now, you can read here to understand how this plugin works. 
  * @link(Github, http://bshaffer.github.io/oauth2-server-php-docs/)
  *
- * @todo Add adittional layer of security to API allow for a generic firewall
- * @todo  Find better way to clean up headers from server
- *
- * PASSWORD
- * curl -u 63Ag2O9Sr0DHwZZQwDcxxOjEdP6AUh:30kEhntqgVrTCYTCOqf0XNOgs16zC0 "http://fancychatter.bbidev.com/oauth/token" -d 'grant_type=password&username=blackbird&password=liamjack'
+ * USER PASSWORD
+ * curl -u 9yJeF4nmXfJZvvqKCdgiR9YMTM2JVX:f5wZjb4Hy1Xh1tNsdpFtIxCGkwsmfo "http://wordpress.dev/oauth/token" -d 'grant_type=password&username=admin&password=liamjack'
  *
  * CLIENT CREDENTIALS
- * curl -u 63Ag2O9Sr0DHwZZQwDcxxOjEdP6AUh:30kEhntqgVrTCYTCOqf0XNOgs16zC0 http://fancychatter.bbidev.com/oauth/token -d 'grant_type=client_credentials'
+ * curl -u 9yJeF4nmXfJZvvqKCdgiR9YMTM2JVX:f5wZjb4Hy1Xh1tNsdpFtIxCGkwsmfo http://wordpress.dev/oauth/token -d 'grant_type=client_credentials'
  *
  * AUTHORIZE AN ACCESS TOKEN
- * curl http://fancychatter.bbidev.com/oauth/me -d 'access_token=6d39c203c65687c939c34f4c0d48dc7df799ebfc'
+ * curl http://wordpress.dev/oauth/me -d 'access_token=6d39c203c65687c939c34f4c0d48dc7df799ebfc'
  *
  * GET ACCESS TOKEN WITH AUTHORIZATION CODE
- * curl -u 63Ag2O9Sr0DHwZZQwDcxxOjEdP6AUh:30kEhntqgVrTCYTCOqf0XNOgs16zC0 http://fancychatter.bbidev.com/oauth/token -d 'grant_type=authorization_code&code=fa742ce7d15012c061790088a056f04b1166abea'
+ * curl -u 9yJeF4nmXfJZvvqKCdgiR9YMTM2JVX:f5wZjb4Hy1Xh1tNsdpFtIxCGkwsmfo http://wordpress.dev/oauth/token -d 'grant_type=authorization_code&code=fa742ce7d15012c061790088a056f04b1166abea'
  */
 if( defined("ABSPATH") === false )
 	die("Illegal use of the API");
 
+do_action('wo_before_api');
 $o = get_option("wo_options");
 if($o["enabled"] == 0)
-	new WO_Error("temporarily_unavailable");
+{
+	do_action('wo_before_unavailable_error');
+	header('Content-Type: application/json');
+	print_r(json_encode(array('error' => 'temporarily_unavailable')));
+	exit;
+}
 
 global $wp_query;
 $method = $wp_query->get("oauth");
-
-// cleanup header sent by the server to the plugin during any API calls
-header_remove('X-Powered-By');
-header_remove('X-pingback');
-header_remove('Server');
-
-// load the server
 require_once(dirname(__FILE__).'/OAuth2/Autoloader.php');
 OAuth2\Autoloader::register();
-
-
-/** SETUP PROPER SCOPES */
-
-$storage = new OAuth2\Storage\Wpo();
-
+$storage = new OAuth2\Storage\Wordpressdb();
 $server = new OAuth2\Server($storage,
-	array(
-    'use_crypto_tokens'        => false,
-    'store_encrypted_token_string' => true,
-    'use_openid_connect'       => false,
-    'id_lifetime'              => 3600,
-    'access_lifetime'          => 3600,
+array(
+    'use_crypto_tokens'        => false, // false (not supported yet)
+    'store_encrypted_token_string' => true, // true
+    'use_openid_connect'       => false, // false (not supported yet)
+    'id_lifetime'              => 3600, // 1 Hour - Crypto (not supported yet)
+    'access_lifetime'          => 86400, // 1 Hour
+    'refresh_token_lifetime'	 => 2419200, // 14 Days
     'www_realm'                => 'Service',
     'token_param_name'         => 'access_token',
     'token_bearer_header_name' => 'Bearer',
-    'enforce_state'            => false,
-    'require_exact_redirect_uri' => true,
-    'allow_implicit'           => true,
+    'enforce_state'            => $o['enforce_state'] == '1' ? true:false, // false
+    'require_exact_redirect_uri' => $o['require_exact_redirect_uri'] == '1' ? true:false, // true
+    'allow_implicit'           => $o['implicit_enabled'] == '1' ? true:false, // false
     'allow_credentials_in_request_body' => true,
-    'allow_public_clients'     => false,
-    'always_issue_new_refresh_token' => false,
+    'allow_public_clients'     => false, // false
+    'always_issue_new_refresh_token' => true, // true
 ));
 		
-/**
- * SET THE GRANT TYPES AVALIABLE FOR THE SERVER
- *
- * Supported Grant Types
- * - Client Credentials
- * - Authorization Code
- * - User Credentials
- * - Refresh Token
- *
- * Currently NOT Supported
- * - Jwt Bearer (Signed Access to server using certificates)
- */
-$server->addGrantType(new OAuth2\GrantType\ClientCredentials($storage));
-$server->addGrantType(new OAuth2\GrantType\AuthorizationCode($storage));
-$server->addGrantType(new OAuth2\GrantType\UserCredentials($storage));
-$server->addGrantType(new OAuth2\GrantType\RefreshToken($storage));
+/*
+|--------------------------------------------------------------------------
+| SUPPORTED GRANT TYPES
+|--------------------------------------------------------------------------
+|
+| Authorization Code will always be on. This may be a bug or a f@#$ up on
+| my end. None the less, these are controlled in the server settings page.
+|
+*/
+if($o['auth_code_enabled'] == '1')
+{
+	$server->addGrantType(new OAuth2\GrantType\AuthorizationCode($storage));
+}
+if($o['client_creds_enabled'] == '1')
+{
+	$server->addGrantType(new OAuth2\GrantType\ClientCredentials($storage));
+}
+if($o['user_creds_enabled'] == '1')
+{
+	$server->addGrantType(new OAuth2\GrantType\UserCredentials($storage));
+}
+if($o['refresh_tokens_enabled'] == '1')
+{
+	$server->addGrantType(new OAuth2\GrantType\RefreshToken($storage));
+}
 
-// configure your available scopes
+/*
+|--------------------------------------------------------------------------
+| DEFAULT SCOPES
+|--------------------------------------------------------------------------
+|
+| For the time being, the plugin will not fully support scopes. This is where
+| the scopes can be registered. This will be extended to be a filter in 
+| upcomming release. Modify at your own risk.. This will be wiped unpon
+| a plugin update to newer versions.
+|
+*/
 $defaultScope = 'basic';
 $supportedScopes = array(
   'basic',
@@ -91,71 +102,81 @@ $memory = new OAuth2\Storage\Memory(array(
   'supported_scopes' => $supportedScopes
 ));
 $scopeUtil = new OAuth2\Scope($memory);
-
 $server->setScopeUtil($scopeUtil);
 
-/**
- * TOKEN ENDPOINT
- * @var [type]
- */
+/*
+|--------------------------------------------------------------------------
+| TOKEN CATCH
+|--------------------------------------------------------------------------
+|
+| The followng code is ran when a request is made to the server using the
+| Authorization Code (implicit) Grant Type as well as request tokens
+|
+*/
 if($method == 'token')
 {
+	do_action('wo_before_token_method');
 	$server->handleTokenRequest(OAuth2\Request::createFromGlobals())->send();
 }
 
-/**
- * BROWSER AUTHORIZE
- * The code checks to see if the user is logged in and authorize. If the user is not logged in, the user is 
- * presented with the WP login screen. Upon successfull log in, the user then aknoledges wether it not to
- * authorize the requester access to thier information.
- *
- * @todo Not Working Just Yet. There is something with the expires. May be becuase the authorization code is 
- * not being stored. Check out Wpo object
- */
+/*
+|--------------------------------------------------------------------------
+| AUTHORIZATION CODE CATCH
+|--------------------------------------------------------------------------
+|
+| The followng code is ran when a request is made to the server using the
+| Authorization Code (not implicit) Grant Type. 
+|
+| 1. Check if the user is logged in (redirect if not)
+| 2. Validate the request (client_id, redirect_uri)
+| 3. Create the authorization request using the authentication user's user_id
+|
+*/
 if($method == 'authorize')
 {
 	$request = OAuth2\Request::createFromGlobals();
 	$response = new OAuth2\Response();
-
-	// validate the authorize request
-	if (!$server->validateAuthorizeRequest($request, $response)) {
+	if (!$server->validateAuthorizeRequest($request, $response)){
 	    $response->send();
 	    die;
 	}
-
-	// if the user is not logged in, redirect them to the WP login screen
-	if(!is_user_logged_in())
+	do_action('wo_before_authorize_method');
+	if(!is_user_logged_in()) {
 		wp_redirect(wp_login_url(site_url().$_SERVER['REQUEST_URI']));
-	
-	// display an authorization form
-	if (empty($_POST)) {
-	  exit('
-	<form method="post">
-	  <label>Do You Authorize TestClient?</label><br />
-	  <input type="submit" name="authorized" value="yes">
-	  <input type="submit" name="authorized" value="no">
-	</form>');
+		exit;
 	}
-
-	// print the authorization code if the user has authorized your client
-	$is_authorized = ($_POST['authorized'] === 'yes');
-	$server->handleAuthorizeRequest($request, $response, $is_authorized);
-	if ($is_authorized) {
-	  // this is only here so that you get to see your code in the cURL request. Otherwise, we'd redirect back to the client
-	  $code = substr($response->getHttpHeader('Location'), strpos($response->getHttpHeader('Location'), 'code=')+5, 40);
-	}
+	$server->handleAuthorizeRequest($request, $response, true, get_current_user_id());
 	$response->send();
+	exit;
 }
 
-/**
- * DEFAULT PROTECTED RESOURCE ENDPOINT
- * @var [type]
- */
-if($method == 'me')
-{
-	if (!$server->verifyResourceRequest(OAuth2\Request::createFromGlobals())) {
+/*
+|--------------------------------------------------------------------------
+| EXTENDABLE RESOURCE SERVER METHODS
+|--------------------------------------------------------------------------
+|
+| Below this line is part of the developer API. Do not edit directly. 
+| Refer to the developer documentation for exstending the WordPress OAuth 
+| Server plugin core functionality. 
+| 
+| @todo all resource calls should have an access token. Lets validate it
+| and if it fails send error back to the client.
+|
+*/
+$ext_methods = apply_filters('wo_endpoints', null);
+if(array_key_exists($method, $ext_methods)){
+	if (!$server->verifyResourceRequest(OAuth2\Request::createFromGlobals())){
 	    $server->getResponse()->send();
 	    die;
 	}
-	echo json_encode(array('success' => true, 'message' => 'You accessed my APIs!'));
+	$token = $server->getAccessTokenData(OAuth2\Request::createFromGlobals());
+	if(is_null($token)) {
+		$server->getResponse()->send();
+		exit;
+	}
+	call_user_func_array($ext_methods[$method]['func'], array($token));
+	exit;
 }
+
+// Loaner
+exit;

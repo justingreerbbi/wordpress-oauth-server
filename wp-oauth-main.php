@@ -1,22 +1,20 @@
 <?php
 class WO_Server
 {
-	public static $version = "2.0.0";
+	public static $version = "3.0.1";
 	public static $_instance = null;
 	protected $defualt_settings = array(
 		"enabled" 											=> 1,
-		"refresh_tokens_enabled" 				=> 1,
-		"refresh_token_lifespan" 				=> 1,
-		"refresh_token_lifespan_unit" 	=> "year",
-		"auth_code_expiration_time" 		=> 10,
-		"access_token_lifespan"	 				=> 3600,
-		"client_id_length"							=> 30,
-		"license"												=> null
+		"client_id_length" 							=> 30,
+		"auth_code_enabled" 						=> 1,
+		"client_creds_enabled" 					=> 0,
+		"user_creds_enabled" 						=> 0,
+		"refresh_tokens_enabled"	 			=> 0,
+		"implicit_enabled"							=> 0,
+		"require_exact_redirect_uri"		=> 0,
+		"enforce_state"									=> 0
 		);
 
-	/**
-	 * [__construct description]
-	 */
 	function __construct ()
 	{
 		if (! defined( "WOABSPATH" ) )
@@ -32,12 +30,9 @@ class WO_Server
 		/** load all dependants */
 		add_action("init", array(__CLASS__, "includes"));
 
-		/** register plugin styles and scripts */
-		add_action("wp_loaded", array(__CLASS__, "register_scripts"));
-		add_action("wp_loaded", array(__CLASS__, "register_styles"));
-
-		/** activation hook for plugin - This may need to be moved. Not sure wh it is not running here. It does work in the main plugin file but that is not want I want */
-		register_activation_hook( WPOAUTH_FILE, array($this,'setup'));
+		/** check if permalinks are set */
+    if (! get_option('permalink_structure') )
+        add_action('admin_notices', array(__CLASS__, 'permalink_notice'));
 	}
 
 	/**
@@ -81,7 +76,6 @@ class WO_Server
 	public static function includes ()
 	{
 		require_once( dirname(__FILE__) . '/includes/functions.php');
-		require_once( dirname(__FILE__) . '/includes/upgrade.php');
 		require_once( dirname(__FILE__) . '/includes/admin-options.php');
 		require_once( dirname(__FILE__) . '/includes/rewrites.php');
 		require_once( dirname(__FILE__) . '/includes/filters.php');
@@ -92,37 +86,25 @@ class WO_Server
 	}
 
 	/**
-	 * register plugin styles
-	 * @return void
-	 */
-	public function register_styles ()
-	{
-		wp_register_style( 'wo_admin', plugins_url( '/assets/css/admin.css', __FILE__ )  );
-	}
-
-	/**
-	 * register plugin scripts
-	 * @return void
-	 */
-	public function register_scripts ()
-	{
-		wp_register_script( 'wo_admin', plugins_url( '/assets/js/admin.js', __FILE__ ) );
-	}
-
-	/**
 	 * plugin setup. this is only ran on activation
 	 * @return [type] [description]
 	 */
 	public function setup ()
 	{
 		$options = get_option("wo_options");
-		if(! isset($options["enabled"]) )
+		if(!isset($options["enabled"]) )
 			update_option("wo_options", $this->defualt_settings);
 
-		/** check if we need to install or upgrade */
-		//if(get_option("wpoauth_version") != self::$version)
-			$this->install();
+		$this->install();
+	}
 
+	/** 
+	 * Error is the permalinks are not set
+	 * @return [type] [description]
+	 */
+	public function permalink_notice ()
+	{
+		 echo '<div id="message" class="error"><p>WordPress OAuth Server Requires <a href="options-permalink.php">Permalinks</a> other than <strong>Default</strong>.</p></div>';
 	}
 
 	/**

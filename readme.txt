@@ -1,82 +1,103 @@
-Contributors: Justin Greer
+=== WordPress OAuth Server ===
+
+Contributors: justingreerbbi
 Donate link: http://justin-greer.com/
-Tags: mobile oauth, oauth
-Requires at least: 3.8
+Tags: oauth2, OAuth provider, Provider, OAuth, OAuth client, Single Sign On, SSO
+Requires at least: 3.9
 Tested up to: 4.1
-Stable tag: 2.0.0
+Stable tag: 3.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-{NO COMPLETE}
-
-A Complete OAuth Server for WordPress
+This project is an OAuth 2.0 compatible authentication provider using WordPress.
 
 == Description ==
 
-WP OAuth allows your WordPress site become a SSO authitication endpoint as well has allow to you tie
-in 3rd party apps and software that requires login.
+WordPress OAuth Server allows your WordPress site to become an authentication endpoint as well has allowing to you tie in 3rd party apps and software that requires login.
 
 = Supported Grant Types =
-* Authorization Code Grant
-* Implicit Grant
+
+* Authentication Code/Implicit
+* User Credentials
+* Client Credentials
+* Refresh Token
+
+WordPress OAuth Server does not currently support `Jwt Bearer` or `Crypto Tokens`.
 
 == Installation ==
 
-This section describes how to install the plugin and get it working.
-
-e.g.
-
-1. Upload `plugin-name.php` to the `/wp-content/plugins/` directory
+1. Upload `oauth-provider` to the `/wp-content/plugins/` directory or use the built in plugin install by WordPress
 1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Place `<?php do_action('plugin_name_hook'); ?>` in your templates
+1. Click 'Settings' and then 'permalinks'. Then simply click 'Save Changes' to flush the rewrite rules so that OAuth2 Provider
+1. Your Ready to Rock
 
 == Frequently Asked Questions ==
 
-= Some Question Here =
+= How do I add a APP/Client? =
 
-Some anser to the question will go here.
+Click on `Settings->OAuth Server`. Click on the `Clients` tab and then `Add New Client`. Enter the client information and your are done.
+
+= Does WordPress OAuth Server Support SSO (Single Sign On) =
+
+Yes, WordPress OAuth Server does support Single Sign On.
+
+= Is there support for this plugin? Can you help me? =
+
+You can visit our <a href="http://wp-oauth.com/forums/" title="WordPress OAuth Server">support forum</a> for support.
+
+= Can you set this up for me on my current website? =
+
+* DRINKS COFFEE * Can I? "YES". You are more than welcome to contact us with if you should ever need assistance.
+
+= How do I use WordPress OAuth Server? =
+
+You can visit <a href="http://wp-oauth.com">http://wp-oauth.com</a>. You will find in-depth documentation as well as examples of how to get started.
+
+== Upgrade Notice ==
+
+Version 2.0.0 and lower are not compatiable with version 3.0.0. If you have built your service using version 2.0.0 or lower, visit <a href="http://wp-oauth.com">http://wp-oauth.com</a> support forums.
+
+For any upgrade, PLEASE PLEASE PLEASE make a full backup of your data. 
 
 == Screenshots ==
 
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the /assets directory or the directory that contains the stable readme.txt (tags or trunk). Screenshots in the /assets 
-directory take precedence. For example, `/assets/screenshot-1.png` would win over `/tags/4.3/screenshot-1.png` 
-(or jpg, jpeg, gif).
-2. This is the second screen shot
+1. Adding a Client
 
 == Changelog ==
 
-= 1.0 =
-* A change since the previous version.
-* Another change.
+= 1.0.0 =
+* INITIAL BUILD
 
-== Arbitrary section ==
+= 1.0.1 =
+* Re-worked Readme.txt
+* Fixed absolute paths causing 404 Error when WordPress is running under a sub directory (Using admin_url() currently)
 
-You may provide arbitrary sections, in the same format as the ones above.  This may be of use for extremely complicated
-plugins where more information needs to be conveyed that doesn't fit into the categories of "description" or
-"installation."  Arbitrary sections will be shown below the built-in sections outlined above.
+= 1.0.2 = 
+* Fixed Broken login redirect
 
-== A brief Markdown Example ==
+= 1.0.3 =
+* Fixed Admin URL links for plugin dashboard
 
-Ordered list:
+= 2.0.0 =
+* Rebuild init plugin code structure for more flexibility and scalability.
+* Added prefix to all DB connections
+* Changed install query to use the InnoDB engine for better support and performance.
+* Fixed improper loading of plugin stylesheet.
+* Removed garbage data when plugin is activated. It was not being used and cluttering the codebase as well as the database.
+* Move action template_redirect to rewrites file
+* Added login form support for installs that are installed in sub directory
+* Added missing in documentation for when calling requesting_token
+* Suppressed some errors that was preventing a proper JSON return when `WP_DEBUG` was enabled.
+* Added a client sample script to help learn the basics of connecting to the provider plugin.
+* Add legacy installer that will hopefully keep old data in tacked while updating to the new structure with no data loss.
+* Removed plugin logging as it was not really needed and caused more issues that it was worth.
 
-1. Some feature
-1. Another feature
-1. Something else about the plugin
+= 3.0.0 =
+* Updated and rebuilt structure.
+* Visit <a href="http://wp-oauth.com">http://wp-oauth.com</a> for documentation and more information.
 
-Unordered list:
-
-* something
-* something else
-* third thing
-
-Here's a link to [WordPress](http://wordpress.org/ "Your favorite software") and one to [Markdown's Syntax Documentation][markdown syntax].
-Titles are optional, naturally.
-
-[markdown syntax]: http://daringfireball.net/projects/markdown/syntax
-            "Markdown is what the parser uses to process much of the readme file"
-
-Markdown uses email style notation for blockquotes and I've been told:
-> Asterisks for *emphasis*. Double it up  for **strong**.
-
-`<?php code(); // goes in backticks ?>`
+= 3.0.1 =
+* Updated cover image.
+* Fixed documentation links.
+* Added "Server Status" tab
+* Cleaned up "Advanced Configuration" contents.

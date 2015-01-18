@@ -121,6 +121,7 @@ a:active {
       display: block;
       padding: 10px;
       margin: 6px 0px;
+      width: 100%;
     }
 
     .wo-popup-inner textarea {
