@@ -44,6 +44,19 @@ function _wo_method_me ( $token=null )
   unset($me_data['user_pass']);
   unset($me_data['user_activation_key']);
   unset($me_data['user_url']);
+
+  // add user metadata
+  $infometa = $wpdb->get_results("SELECT meta_key, meta_value FROM {$wpdb->prefix}usermeta WHERE user_id = ".$user_id."");
+  foreach ($infometa as $metarow) {
+    // exclude sensitive data
+    if (1 === preg_match( "/pmpro_|token|wp_|theme_my_login_security|credit|card|password/i", + $metarow->meta_key)) {
+      continue;
+    }
+       
+    $key = $metarow->meta_key;
+    $me_data[$key] = unserialize($metarow->meta_value);
+  }
+
   $response = new OAuth2\Response($me_data);
   $response->send();
   exit;
