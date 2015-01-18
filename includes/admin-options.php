@@ -91,13 +91,13 @@ class WPOAuth_Admin {
 			            <p>Control which Grant Types that the server will accept.</p>
 									<table class="form-table">
 			              
-			              <!--<tr valign="top">
+			              <tr valign="top">
 			               	<th scope="row">Authorization Code:</th>
 			                  <td>
 			                  	<input type="checkbox" name="<?php echo $this->option_name?>[auth_code_enabled]" value="1" <?php echo $options["auth_code_enabled"] == "1" ? "checked='checked'" : ""; ?> />
 			                  	<p class="description">HTTP redirects and WP login form when authenticating.</p>
 			              	  </td>
-			              </tr>-->
+			              </tr>
 			              
 			              <tr valign="top">
 			               	<th scope="row">Client Credentials:</th>
