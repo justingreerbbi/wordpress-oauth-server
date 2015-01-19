@@ -82,6 +82,7 @@ Before you actually start, there is a few things that should be mentioned as it 
 
 * Look into cleaning up the headers when the server is responding.
 * Clean up All un needed classes and abstracts in the original OAuth Server.
+* Handle unavaliable error with $resopnse
 
 ## Exstentions
 
