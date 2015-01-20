@@ -6,10 +6,10 @@
  * @link(Github, http://bshaffer.github.io/oauth2-server-php-docs/)
  *
  * USER PASSWORD
- * curl -u 9yJeF4nmXfJZvvqKCdgiR9YMTM2JVX:f5wZjb4Hy1Xh1tNsdpFtIxCGkwsmfo "http://wordpress.dev/oauth/token" -d 'grant_type=password&username=admin&password=liamjack'
+ * curl -u MN3O5jSEEIzWGJfT7YR6sgHIYtOgLK:txyxmEQejuWSqCBGvIEnP7DwQB0ESL "http://wordpress.dev/oauth/token" -d 'grant_type=password&username=admin&password=xxx'
  *
  * CLIENT CREDENTIALS
- * curl -u 9yJeF4nmXfJZvvqKCdgiR9YMTM2JVX:f5wZjb4Hy1Xh1tNsdpFtIxCGkwsmfo http://wordpress.dev/oauth/token -d 'grant_type=client_credentials'
+ * curl -u MN3O5jSEEIzWGJfT7YR6sgHIYtOgLK:txyxmEQejuWSqCBGvIEnP7DwQB0ESL http://wordpress.dev/oauth/token -d 'grant_type=client_credentials'
  *
  * AUTHORIZE AN ACCESS TOKEN
  * curl http://wordpress.dev/oauth/me -d 'access_token=6d39c203c65687c939c34f4c0d48dc7df799ebfc'
@@ -21,19 +21,21 @@ if( defined("ABSPATH") === false )
 	die("Illegal use of the API");
 
 do_action('wo_before_api');
+require_once(dirname(__FILE__).'/OAuth2/Autoloader.php');
+OAuth2\Autoloader::register();
+
+// Grab the options
 $o = get_option("wo_options");
 if($o["enabled"] == 0)
 {
 	do_action('wo_before_unavailable_error');
-	header('Content-Type: application/json');
-	print_r(json_encode(array('error' => 'temporarily_unavailable')));
+	$response = new OAuth2\Response(array('error' => 'temporarily_unavailable'));
+	$response->send();
 	exit;
 }
 
 global $wp_query;
 $method = $wp_query->get("oauth");
-require_once(dirname(__FILE__).'/OAuth2/Autoloader.php');
-OAuth2\Autoloader::register();
 $storage = new OAuth2\Storage\Wordpressdb();
 $server = new OAuth2\Server($storage,
 array(
@@ -159,15 +161,18 @@ if($method == 'authorize')
 | Refer to the developer documentation for exstending the WordPress OAuth 
 | Server plugin core functionality. 
 | 
-| @todo all resource calls should have an access token. Lets validate it
-| and if it fails send error back to the client.
+| @todo Document and tighten up error messages. All error messages will soon be
+| controlled through apply_filters so start planning for a filter error list to 
+| allow for developers to customize error messages.
 |
 */
 $ext_methods = apply_filters('wo_endpoints', null);
 if(array_key_exists($method, $ext_methods)){
+	$response = new OAuth2\Response();
 	if (!$server->verifyResourceRequest(OAuth2\Request::createFromGlobals())){
-	    $server->getResponse()->send();
-	    die;
+    	$response->setError(400, 'invalid_request', 'Missinng or invalid paramter(s)');
+    	$response->send();
+  	  die;
 	}
 	$token = $server->getAccessTokenData(OAuth2\Request::createFromGlobals());
 	if(is_null($token)) {
