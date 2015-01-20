@@ -144,6 +144,7 @@ class AuthorizeController implements AuthorizeControllerInterface {
 		// @see http://tools.ietf.org/html/rfc6749#section-4.1.2.1
 		// @see http://tools.ietf.org/html/rfc6749#section-4.2.2.1
 		if ($supplied_redirect_uri = $request->query('redirect_uri')) {
+
 			// validate there is no fragment supplied
 			$parts = parse_url($supplied_redirect_uri);
 			if (isset($parts['fragment']) && $parts['fragment']) {
@@ -159,17 +160,16 @@ class AuthorizeController implements AuthorizeControllerInterface {
 				return false;
 			}
 			$redirect_uri = $supplied_redirect_uri;
+
 		} else {
 			// use the registered redirect_uri if none has been supplied, if possible
 			if (!$registered_redirect_uri) {
 				$response->setError(400, 'invalid_uri', 'No redirect URI was supplied or stored');
-
 				return false;
 			}
 
 			if (count(explode(' ', $registered_redirect_uri)) > 1) {
 				$response->setError(400, 'invalid_uri', 'A redirect URI must be supplied when multiple redirect URIs are registered', '#section-3.1.2.3');
-
 				return false;
 			}
 			$redirect_uri = $registered_redirect_uri;
@@ -312,9 +312,10 @@ class AuthorizeController implements AuthorizeControllerInterface {
 	 * @todo Add action here to handle redirect URI validation
 	 */
 	private function validateRedirectUri($inputUri, $registeredUriString) {
-
-		/** Added version 3.0.3 for handling redirect URI calidation */
-		do_action('wo_redirect_uri_validation', $inputUri, $registeredUriString);
+		$validation_bypass = apply_filters('wo_redirect_uri_validation', $inputUri, $registeredUriString);
+		if ($validation_bypass == 'true') {
+			return true;
+		}
 
 		if (!$inputUri || !$registeredUriString) {
 			return false; // if either one is missing, assume INVALID
