@@ -35,6 +35,14 @@ function wo_default_endpoints ()
  */
 function _wo_method_me ( $token=null )
 {
+  /** added 3.0.2 to handle access tokens not asigned to user */
+  if(!isset($token['user_id']) || $token['user_id'] == 0)
+  {
+    $response = new OAuth2\Response();
+    $response->setError(400, 'invalid_request', 'Missinng or invalid access token');
+    $response->send();
+    exit;
+  }
   $user_id = &$token['user_id'];
 
   global $wpdb;
