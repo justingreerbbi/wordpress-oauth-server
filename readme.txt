@@ -5,7 +5,7 @@ Donate link: http://justin-greer.com/
 Tags: oauth2, OAuth provider, Provider, OAuth, OAuth client, Single Sign On, SSO
 Requires at least: 3.9
 Tested up to: 4.1
-Stable tag: 3.0.1
+Stable tag: 3.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -101,3 +101,8 @@ For any upgrade, PLEASE PLEASE PLEASE make a full backup of your data.
 * Fixed documentation links.
 * Added "Server Status" tab
 * Cleaned up "Advanced Configuration" contents.
+
+= 3.0.2 =
+* Readded Authorization Code Enable Option
+* API unavaliable error now uses OAuth Response object
+* API now reports when access token is not provided during resource calls
