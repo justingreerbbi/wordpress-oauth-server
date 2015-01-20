@@ -1,6 +1,6 @@
 # WordPress OAuth Server
 
-Current Version: 3.0.1
+Current Version: 3.0.2
 
 This project is an OAuth 2.0 compatible authentication method for WordPress. The goal of WP OAuth Server 
 (WordPress Open Authentication) is to provide an easy to use authentication method that 3rd party services can use to securely connect to any server running WordPress site.
@@ -92,3 +92,5 @@ Before you actually start, there is a few things that should be mentioned as it 
 ## 3rd Party Exstension Examples
 
 * [OAuth2 Complete For WordPress strategy for Passport](https://www.npmjs.com/package/passport-oauth2-complete-for-wordpress) - Author: [Ido Ran](http://github.com/ido-ran).
+
+## Changelog
