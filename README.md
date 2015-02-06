@@ -1,5 +1,7 @@
 # WordPress OAuth Server
 
+*SUPPORT FOR THIS PROJECT HAS BEEN MOVED TO HTTP://WP-OAUTH.COM. THERE WILL NO LONGER BE ANY UPDATES TO THIS REPO. AGAIN. PLEASE HTTP://WP-OAUTH.COM FOR MORE DETAILS.*
+
 Current Version: 3.0.2
 
 This project is an OAuth 2.0 compatible authentication method for WordPress. The goal of WP OAuth Server 
