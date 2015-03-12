@@ -85,7 +85,7 @@ class WPOAuth_Admin {
 							  <!-- ADVANCED CONFIGURATION -->
 							  <div id="advanced-configuration">
 							  	<h2>Advanced Configuration</h2>
-							  	<p>Need Help? Check out the <a href="http://wp-oauth.com/documentation/getting-started/configuring/advanced-configuration/" target="_blank">Advanced Configuration Docunentation</a></p>
+							  	<p>Need Help? Check out the <a href="http://wp-oauth.com/documentation/getting-started/configuring/advanced-configuration/" target="_blank">Advanced Configuration Documentation</a></p>
 
 			            <h3>Grant Types <hr></h3>
 			            <p>Control which Grant Types that the server will accept.</p>
