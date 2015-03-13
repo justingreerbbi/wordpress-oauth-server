@@ -60,3 +60,12 @@ function wo_remove_client (client_id)
     }
   });
 }
+
+/**
+ * Update a Client
+ * @param  {[type]} form [description]
+ * @return {[type]}      [description]
+ */
+function wo_update_client(form){
+  alert('Submit the form');
+}

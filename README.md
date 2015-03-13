@@ -1,8 +1,10 @@
 # WordPress OAuth Server
 
-*SUPPORT FOR THIS PROJECT HAS BEEN MOVED TO HTTP://WP-OAUTH.COM. THERE WILL LONGER BE ANY UPDATES TO THIS REPO. AGAIN. PLEASE HTTP://WP-OAUTH.COM FOR MORE DETAILS.*
+The WordPress OAuth Server package is a fully functional OAuth 2 server that integrates into WordPress in just a few minutes. The plugin allows you to use WordPress as a Single Sign On authenticator to extend your user base to other platforms and system no matter the program language.
 
-Current Version: 3.0.2
+The plugin is highly extendable which makes it extremely flexible so that it can be implanted and used by even the novice developer.
+
+Current Version: 3.0.4
 
 This project is an OAuth 2.0 compatible authentication method for WordPress. The goal of WP OAuth Server 
 (WordPress Open Authentication) is to provide an easy to use authentication method that 3rd party services can use to securely connect to any server running WordPress site.

@@ -1,15 +1,15 @@
-=== WordPress OAuth Server ===
+=== WP OAuth Server ===
 
 Contributors: justingreerbbi
 Donate link: http://justin-greer.com/
 Tags: oauth2, OAuth provider, Provider, OAuth, OAuth client, Single Sign On, SSO
 Requires at least: 3.9
-Tested up to: 4.1
-Stable tag: 3.0.2
+Tested up to: 4.2-alpha
+Stable tag: 3.0.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-This project is an OAuth 2.0 compatible authentication provider using WordPress.
+Use WordPress to Power Your OAuth Server
 
 == Description ==
 
@@ -22,7 +22,24 @@ WordPress OAuth Server allows your WordPress site to become an authentication en
 * Client Credentials
 * Refresh Token
 
+= How to Use =
+
+Visit https://wp-oauth.com/knowledge-base/ detailed documentation on installing, configuring and using WordPress Oauth Server.
+
+= Licensing =  
+Visit https://wp-oauth.com for more information about WordPress OAuth Server licensing.
+
+= Minimum Requirements =
+* PHP 5.3.9 or greater *(5.4+ recommended)*
+
+= Other Information =
+
 WordPress OAuth Server does not currently support `Jwt Bearer` or `Crypto Tokens`.
+
+*NOTE: As of 3.0.0, there are no backward compatiability for any version older than 3.0.0. We are working on a migration tool, but as of now any upgrade from 2.x to 3.x will need to be done manaully.*
+
+= Support =
+Support requests should be made by opening a support request at https://wp-oauth.com/account/submit-ticket/.
 
 == Installation ==
 
@@ -43,7 +60,7 @@ Yes, WordPress OAuth Server does support Single Sign On.
 
 = Is there support for this plugin? Can you help me? =
 
-You can visit our <a href="http://wp-oauth.com/forums/" title="WordPress OAuth Server">support forum</a> for support.
+You can visit our https://wp-oauth.com/account/submit-ticket/ to open up a support request directly with developers.
 
 = Can you set this up for me on my current website? =
 
@@ -51,13 +68,13 @@ You can visit our <a href="http://wp-oauth.com/forums/" title="WordPress OAuth S
 
 = How do I use WordPress OAuth Server? =
 
-You can visit <a href="http://wp-oauth.com">http://wp-oauth.com</a>. You will find in-depth documentation as well as examples of how to get started.
+You can visit https://wp-oauth.com/account/submit-ticket/. You will find in-depth documentation as well as examples of how to get started.
 
 == Upgrade Notice ==
 
-Version 2.0.0 and lower are not compatiable with version 3.0.0. If you have built your service using version 2.0.0 or lower, visit <a href="http://wp-oauth.com">http://wp-oauth.com</a> support forums.
+Version 2.0.0 and lower are not compatiable with version 3.0.0. If you have built your service using version 2.0.0 or lower, visit https://wp-oauth.com/account/submit-ticket/ to open a new request support request.
 
-For any upgrade, PLEASE PLEASE PLEASE make a full backup of your data. 
+For any upgrade or modification, PLEASE PLEASE PLEASE make a full backup of your data. 
 
 == Screenshots ==
 
@@ -106,3 +123,16 @@ For any upgrade, PLEASE PLEASE PLEASE make a full backup of your data.
 * Readded Authorization Code Enable Option
 * API unavaliable error now uses OAuth Response object
 * API now reports when access token is not provided during resource calls
+
+= 3.0.3 =
+* Modified how clients are added and edited
+* Add Pro Features
+* Added additional information to "Server Status" Tab
+* Minor Clean Up
+
+= 3.0.4 = 
+* Updated Readme.txt content
+* Add more descriptive text during PHP version check
+* Fixed license links
+* Added Access Token and Refresh Token lifetime settings
+* Added upgrade method to ensure proper installing of new features

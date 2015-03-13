@@ -111,9 +111,9 @@ a:active {
   }
   .wo-popup-inner form {
   }
-    .wo-popup-inner form label {
+    .wo-popup-inner label {
       font-weight: bold;
-      margin-top: 20px;
+      margin-top: 15px;
       display: block;
       font-size: 14px;
     }
@@ -125,10 +125,18 @@ a:active {
     }
 
     .wo-popup-inner textarea {
+      margin-top: 10px;
       width: 100%;
-      resize: vertical;
+      resize: none;
       min-height: 150px;
+      box-sizing: border-box;
+      padding: 10px;
     }
+
+    .wo-popup-inner input[type="submit"]{
+      margin-top: 20px;
+    }
+
 #TB_title {
   background: #0074a2 !important;
   color: #FFF !important;
@@ -141,4 +149,25 @@ a:active {
 
 #the-list tr:nth-child(odd) {
   background: #f9f9f9;
+}
+
+.wo-badge {
+  background: #0074a2 url(../images/logo.png) no-repeat center 24px;
+  -webkit-background-size: 85px 85px;
+  background-size: 85px 85px;
+  color: #78c8e6;
+  font-size: 14px;
+  text-align: center;
+  font-weight: 600;
+  margin: 5px 0 0;
+  padding-top: 120px;
+  height: 40px;
+  display: inline-block;
+  width: 150px;
+  text-rendering: optimizeLegibility;
+  -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.2);
+  box-shadow: 0 1px 3px rgba(0,0,0,.2);
+  position: absolute;
+  top: 0;
+  right: 0;
 }

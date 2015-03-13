@@ -1,5 +1,4 @@
 <?php
-
 class WO_Table extends WP_List_Table {
 
   /**
@@ -58,7 +57,8 @@ class WO_Table extends WP_List_Table {
       'name'=>__('Name'),
       'description' => __('Description'),
       //'user_id' => __('User ID'),
-      'client_id' => __('Client ID')
+      'client_id' => __('Client ID'),
+      'redirect_uri' => __('Redirect URI')
     );
   }
 
@@ -153,10 +153,11 @@ class WO_Table extends WP_List_Table {
 
         //Display the cell
         switch ( $column_name ) {
-          case "name": echo '<td '.$attributes.'><strong><a href="'.$editlink.'" title="Edit">'.stripslashes($rec->name).'</a></strong><div class="row-actions"><span class="edit"><a href="#" title="Edit this Client">edit</a> | </span><span class="trash"><a class="submitdelete" title="Delete this Client permanently" onclick="wo_remove_client(\''.str_replace(" ","",$rec->client_id).'\');" href="#">delete</a> | </span><span class="view"><a href="#TB_inline?width=300&height=100&inlineId=show_secret_'.$rec->client_id.'" class="thickbox" title="Viewing Secret for '.$rec->name.'">show secret</a></span></div> <div id="show_secret_'.$rec->client_id.'" style="display:none;"><h3 style="text-align:center;margin-top:40px;">'.$rec->client_secret.'</h3></div></td>'; break;
+          case "name": echo '<td '.$attributes.'><strong><a href="'.$editlink.'" title="Edit">'.stripslashes($rec->name).'</a></strong><div class="row-actions"><span class="edit"><a class="thickbox" href="'.WOURI.'library/content/edit-client.php?client_id='.$rec->client_id.'&TB_iframe=true&width=600&height=420" title="Edit Client">Edit</a> | </span><span class="trash"><a class="submitdelete" title="Delete this Client permanently" onclick="wo_remove_client(\''.str_replace(" ","",$rec->client_id).'\');" href="#">Delete</a> | </span><span class="view"><a href="#TB_inline?width=300&height=100&inlineId=show_secret_'.$rec->client_id.'" class="thickbox" title="Viewing Secret for '.$rec->name.'">Show Secret</a></span></div> <div id="show_secret_'.$rec->client_id.'" style="display:none;"><h3 style="text-align:center;margin-top:40px;">'.$rec->client_secret.'</h3></div>'; break;
           case "description": echo '<td '.$attributes.'>'.stripslashes($rec->description).'</td>'; break;
           //case "user_id": echo '<td '.$attributes.'>'.stripslashes($rec->user_id).'</td>';  break;
           case "client_id": echo '<td '.$attributes.'>'.$rec->client_id.'</td>'; break;
+          case "redirect_uri": echo '<td '.$attributes.'>'.$rec->redirect_uri.'</td>'; break;
           case "col_link_visible": echo '<td '.$attributes.'>'.$rec->link_visible.'</td>'; break;
         }
       }

@@ -1,48 +1,65 @@
 <?php
-class WO_Server
-{
-	public static $version = "3.0.2";
+/**
+ * WordPress OAuth Server Mian Class
+ * Responsible for being the main handler
+ *
+ * @author Justin Greer <justin@justin-greer.com>
+ * @package WordPress OAuth Server
+ */
+class WO_Server {
+
+	/** Version */
+	public $version = "3.0.4";
+
+	/** Server Instance */
 	public static $_instance = null;
+
+	/** Default Settings */
 	protected $defualt_settings = array(
-		"enabled" 											=> 1,
-		"client_id_length" 							=> 30,
-		"auth_code_enabled" 						=> 1,
-		"client_creds_enabled" 					=> 0,
-		"user_creds_enabled" 						=> 0,
-		"refresh_tokens_enabled"	 			=> 0,
-		"implicit_enabled"							=> 0,
-		"require_exact_redirect_uri"		=> 0,
-		"enforce_state"									=> 0
-		);
+		"enabled" => 1,
+		"client_id_length" => 30,
+		"auth_code_enabled" => 1,
+		"client_creds_enabled" => 0,
+		"user_creds_enabled" => 0,
+		"refresh_tokens_enabled" => 0,
+		"implicit_enabled" => 0,
+		"require_exact_redirect_uri" => 0,
+		"enforce_state" => 0,
+		"refresh_token_lifetime" => 3600, // 1 Hour
+		"access_token_lifetime"	=> 86400 // 24 Hours 
+	);
 
-	function __construct ()
-	{
-		if (! defined( "WOABSPATH" ) )
-			define("WOABSPATH", dirname( __FILE__ ) );
-		if (! defined( "WOURI" ) )
-				define( "WOURI", plugins_url("/", __FILE__) );
+	/**
+	 * [__construct description]
+	 */
+	function __construct() {
 
-		if ( function_exists( "__autoload" ) ) {
-			spl_autoload_register( "__autoload" );
+		if (!defined("WOABSPATH")) {
+			define("WOABSPATH", dirname(__FILE__));
 		}
-		spl_autoload_register( array( $this, 'autoload' ) );
-		
+
+		if (!defined("WOURI")) {
+			define("WOURI", plugins_url("/", __FILE__));
+		}
+
+		if (function_exists("__autoload")) {
+			spl_autoload_register("__autoload");
+		}
+		spl_autoload_register(array($this, 'autoload'));
+
 		/** load all dependants */
 		add_action("init", array(__CLASS__, "includes"));
 
-		/** check if permalinks are set */
-    if (! get_option('permalink_structure') )
-        add_action('admin_notices', array(__CLASS__, 'permalink_notice'));
 	}
 
 	/**
 	 * populate the instance if the plugin for exstendability
 	 * @return object plugin instance
 	 */
-	public static function instance ()
-	{
-		if ( is_null( self::$_instance ) ) 
+	public static function instance() {
+		if (is_null(self::$_instance)) {
 			self::$_instance = new self();
+		}
 
 		return self::$_instance;
 	}
@@ -51,20 +68,17 @@ class WO_Server
 	 * setup plugin class autoload
 	 * @return void
 	 */
-	public function autoload ($class)
-	{
-		$path  = null;
-		$class = strtolower( $class );
-		$file = 'class-' . str_replace( '_', '-', $class ) . '.php';
+	public function autoload($class) {
+		$path = null;
+		$class = strtolower($class);
+		$file = 'class-' . str_replace('_', '-', $class) . '.php';
 
-		if( strpos( $class, "wo_") === 0 )
-		{
-			$path = dirname( __FILE__ ) . '/library/' . trailingslashit(substr(str_replace( '_', '-', $class ), 18));
+		if (strpos($class, "wo_") === 0) {
+			$path = dirname(__FILE__) . '/library/' . trailingslashit(substr(str_replace('_', '-', $class), 18));
 		}
 
-		if ( $path && is_readable( $path . $file ) ) 
-		{
-			include_once( $path . $file );
+		if ($path && is_readable($path . $file)) {
+			include_once $path . $file;
 			return;
 		}
 	}
@@ -73,60 +87,152 @@ class WO_Server
 	 * plugin includes called during load of plugin
 	 * @return void
 	 */
-	public static function includes ()
-	{
-		require_once( dirname(__FILE__) . '/includes/functions.php');
-		require_once( dirname(__FILE__) . '/includes/admin-options.php');
-		require_once( dirname(__FILE__) . '/includes/rewrites.php');
-		require_once( dirname(__FILE__) . '/includes/filters.php');
-		
+	public static function includes() {
+		require_once dirname(__FILE__) . '/includes/functions.php';
+		require_once dirname(__FILE__) . '/includes/admin-options.php';
+		require_once dirname(__FILE__) . '/includes/rewrites.php';
+		require_once dirname(__FILE__) . '/includes/filters.php';
+
 		/** include the ajax class if DOING_AJAX is defined */
-		if ( defined( 'DOING_AJAX' ) )
-			require_once( dirname(__FILE__) . '/includes/ajax/class-wo-ajax.php');
+		if (defined('DOING_AJAX')) {
+			require_once dirname(__FILE__) . '/includes/ajax/class-wo-ajax.php';
+		}
+
 	}
 
 	/**
 	 * plugin setup. this is only ran on activation
 	 * @return [type] [description]
 	 */
-	public function setup ()
-	{
+	public function setup() {
 		$options = get_option("wo_options");
-		if(!isset($options["enabled"]) )
+		if (!isset($options["enabled"])) {
 			update_option("wo_options", $this->defualt_settings);
+		}
 
 		$this->install();
 	}
 
-	/** 
-	 * Error is the permalinks are not set
+	/**
+	 * Plugin Init
+	 * Runs checks and rgisters welcome screen
 	 * @return [type] [description]
 	 */
-	public function permalink_notice ()
+	public function plugin_init () {
+		add_dashboard_page(
+			__( 'About WP OAuth',  'wp-oauth' ),
+			__( 'About WP OAuth',  'wp-oauth' ),
+			'read',
+			'wpo-about',
+			array( $this, 'about_screen' )
+		);
+	}
+
+	/**
+	 * About Screen
+	 * Page loaded when plugin activation hook
+	 * @return [type] [description]
+	 */
+	public function about_screen ()
 	{
-		 echo '<div id="message" class="error"><p>WordPress OAuth Server Requires <a href="options-permalink.php">Permalinks</a> other than <strong>Default</strong>.</p></div>';
+		wp_enqueue_style('wo_admin');
+		?>
+		<div class="wrap about-wrap">
+			<h1><?php printf( esc_html__( 'Welcome to WP OAuth Server %s', 'wp-oauth' ), $this->version ); ?></h1>
+			<div class="about-text"><?php printf( esc_html__( 'Thank You for using WP OAuth Server %s! WordPress OAuth Server is bundled with everything you need to run your own OAuth 2.0 Provider Server.', 'wp-oauth' ), $this->version ); ?></div>
+			<div class="wo-badge">Version <?php echo $this->version; ?></div>
+
+			<h2 class="nav-tab-wrapper">
+				<a class="nav-tab nav-tab-active" href="<?php echo esc_url( admin_url( add_query_arg( array( 'page' => 'wpo-about' ), 'index.php' ) ) ); ?>">
+					<?php esc_html_e( 'What&#39;s New', 'wp-oauth' ); ?>
+				</a>
+				<a class="nav-tab" href="https://wp-oauth.com/knowledge-base/" target="_blank">
+					<?php esc_html_e( 'Documentation', 'wp-oauth' ); ?>
+				</a>
+				<a class="nav-tab" href="https://wordpress.org/support/view/plugin-reviews/oauth2-provider#rate-response" target="_blank">
+					<span class="dashicons dashicons-star-filled"></span>
+					<?php esc_html_e( 'Rate Plugin', 'wp-oauth' ); ?>
+				</a>
+				<a class="nav-tab" href="https://wp-oauth.com/" target="_blank">
+					<?php esc_html_e( 'Purchase License', 'wp-oauth' ); ?>
+				</a>
+			</h2>
+
+			<div class="changelog">
+
+				<!-- Feature Headline -->
+				<div class="changelog headline-feature">
+					<h2>So What's New?</h2>
+
+					<div class="feature-section">
+						<div class="col">
+							<h3>Version <?php echo $this->version; ?> is a Minor Release...</h3>
+							<p>
+								<ul>
+									<li>
+										- Server Status provides better information.
+									</li>
+									<li>
+										- Updated references thoughout plugin.
+									</li>
+									<li>
+										- Added <code>Token Lifetime</code> settings.
+									</li>
+									<li>
+										- More stable upgrade functonality.
+									</li>
+									<li>
+										- Minor cleanup and bug fixes.
+									</li>
+								</ul>
+							</p>
+						</div>
+						<div class="col">
+							<h3>Whiteboard</h3>
+							<p>
+								The next release is planned to be another minor release. It will address giving more control
+								the Server API, Bad Bot logic (firewall), and some additions to the actions and filters API 
+								hough out the plugin core.
+							</p>
+						</div>
+					</div>
+
+					<div class="clear"></div>
+				</div>
+
+				<hr />
+				<div class="changelog feature-list">
+					<hr>
+					<div class="return-to-dashboard">
+								<a href="<?php echo esc_url( admin_url("plugins.php")); ?>">Return to Plugins</a> |
+								<a href="<?php echo esc_url( admin_url( add_query_arg( array( 'page' => 'wo_settings' ), 'options-general.php' ) ) ); ?>">Go to Dashboard → OAuth Server</a>
+					</div>
+				</div>
+
+		<?php
 	}
 
 	/**
 	 * plugin update check
 	 * @return [type] [description]
 	 */
-	public function install ()
-	{
-		/** install the required tables in the database */
+	public function install() {
+		/** Install the required tables in the database */
 		global $wpdb;
 		$charset_collate = '';
-		
-		/** set charset to current wp option */
-		if ( ! empty( $wpdb->charset ) )
-  		$charset_collate = "DEFAULT CHARACTER SET {$wpdb->charset}";
 
-  	/** set collate to current wp option */
-		if ( ! empty( $wpdb->collate ) )
-  		$charset_collate .= " COLLATE {$wpdb->collate}";
+		/** Set charset to current wp option */
+		if (!empty($wpdb->charset)) {
+			$charset_collate = "DEFAULT CHARACTER SET {$wpdb->charset}";
+		}
 
-		/** update the plugin version in the database */
-		update_option("wpoauth_version", self::$version);
+		/** Set collate to current wp option */
+		if (!empty($wpdb->collate)) {
+			$charset_collate .= " COLLATE {$wpdb->collate}";
+		}
+
+		/** Update the version in the database */
+		update_option("wpoauth_version", $this->version);
 
 		$sql1 = "
 			CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_clients (
@@ -141,8 +247,8 @@ class WO_Server
         PRIMARY KEY (client_id)
       );
 			";
-			
-			$sql2 = "
+
+		$sql2 = "
 			CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_access_tokens (
 				access_token         VARCHAR(40)    NOT NULL,
         client_id            VARCHAR(80)    NOT NULL,
@@ -152,8 +258,8 @@ class WO_Server
         PRIMARY KEY (access_token)
       );
 			";
-			
-			$sql3 = "
+
+		$sql3 = "
 			CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_refresh_tokens (
 				refresh_token       VARCHAR(40)    NOT NULL,
         client_id           VARCHAR(80)    NOT NULL,
@@ -164,7 +270,7 @@ class WO_Server
       );
 			";
 
-			$sql4 = "
+		$sql4 = "
 			CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_authorization_codes (
         authorization_code  VARCHAR(40)    NOT NULL,
         client_id           VARCHAR(80)    NOT NULL,
@@ -176,8 +282,8 @@ class WO_Server
         PRIMARY KEY (authorization_code)
       );
 			";
-			
-			$sql5 = "
+
+		$sql5 = "
 			CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_scopes (
         scope               VARCHAR(80)  NOT NULL,
         is_default          BOOLEAN,
@@ -185,7 +291,7 @@ class WO_Server
       );
 			";
 
-			$sql6 = "
+		$sql6 = "
 			CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_jwt (
         client_id           VARCHAR(80)   NOT NULL,
         subject             VARCHAR(80),
@@ -194,7 +300,7 @@ class WO_Server
       );
 			";
 
-			$sql6 = "
+		$sql6 = "
 			CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_public_keys (
         client_id            VARCHAR(80),
         public_key           VARCHAR(2000),
@@ -203,20 +309,37 @@ class WO_Server
         PRIMARY KEY (client_id)
       );
 			";
-			
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-		dbDelta( $sql1 );	
-		dbDelta( $sql2 );	
-		dbDelta( $sql3 );	
-		dbDelta( $sql4 );	
-		dbDelta( $sql5 );	
-		dbDelta( $sql6 );	
+
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		dbDelta($sql1);
+		dbDelta($sql2);
+		dbDelta($sql3);
+		dbDelta($sql4);
+		dbDelta($sql5);
+		dbDelta($sql6);
+	}
+
+	/**
+	 * Upgrade method
+	 * Any time there is something new in the plugin
+	 * @return [type] [description]
+	 */
+	public function upgrade () {
+		$options = get_option('wo_options');
+
+		if(!$options['access_token_lifetime'])
+			$options['access_token_lifetime'] = 3600;
+
+		if(!$options['refresh_token_lifetime'])
+			$options['refresh_token_lifetime'] = 86400;
+
+		// Update new options
+		update_option('wo_options', $options);
 	}
 
 }
 
-function _WO ()
-{
+function _WO() {
 	return WO_Server::instance();
 }
 $GLOBAL['WO'] = _WO();

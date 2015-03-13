@@ -6,18 +6,18 @@
  * @link(Github, http://bshaffer.github.io/oauth2-server-php-docs/)
  *
  * USER PASSWORD
- * curl -u MN3O5jSEEIzWGJfT7YR6sgHIYtOgLK:txyxmEQejuWSqCBGvIEnP7DwQB0ESL "http://wordpress.dev/oauth/token" -d 'grant_type=password&username=admin&password=xxx'
+ * curl -u 0mc4J1M7alZ4SuDu0kvHKZy3gHPIF2:eGoqK8rwfCSeGLIjfJELroKZr1HgKm "http://wordpress.dev/oauth/token" -d 'grant_type=password&username=admin&password=liamjack'
  *
  * CLIENT CREDENTIALS
- * curl -u MN3O5jSEEIzWGJfT7YR6sgHIYtOgLK:txyxmEQejuWSqCBGvIEnP7DwQB0ESL http://wordpress.dev/oauth/token -d 'grant_type=client_credentials'
+ * curl -u 0mc4J1M7alZ4SuDu0kvHKZy3gHPIF2:eGoqK8rwfCSeGLIjfJELroKZr1HgKm http://wordpress.dev/oauth/token -d 'grant_type=client_credentials'
  *
  * AUTHORIZE AN ACCESS TOKEN
  * curl http://wordpress.dev/oauth/me -d 'access_token=6d39c203c65687c939c34f4c0d48dc7df799ebfc'
  *
  * GET ACCESS TOKEN WITH AUTHORIZATION CODE
- * curl -u 9yJeF4nmXfJZvvqKCdgiR9YMTM2JVX:f5wZjb4Hy1Xh1tNsdpFtIxCGkwsmfo http://wordpress.dev/oauth/token -d 'grant_type=authorization_code&code=fa742ce7d15012c061790088a056f04b1166abea'
+ * curl -u 0mc4J1M7alZ4SuDu0kvHKZy3gHPIF2:eGoqK8rwfCSeGLIjfJELroKZr1HgKm http://wordpress.dev/oauth/token -d 'grant_type=authorization_code&code=fa742ce7d15012c061790088a056f04b1166abea'
  */
-if (defined("ABSPATH") === false) {
+if ( defined("ABSPATH") === false ) {
 	die("Illegal use of the API");
 }
 
@@ -43,8 +43,8 @@ $server = new OAuth2\Server($storage,
 		'store_encrypted_token_string' => true,
 		'use_openid_connect' => false,
 		'id_lifetime' => 3600,
-		'access_lifetime' => 86400,
-		'refresh_token_lifetime' => 2419200,
+		'access_lifetime' => $o['access_token_lifetime'] == '' ? 3600 : $o['access_token_lifetime'],
+		'refresh_token_lifetime' => $o['refresh_token_lifetime'] == '' ? 86400 : $o['refresh_token_lifetime'],
 		'www_realm' => 'Service',
 		'token_param_name' => 'access_token',
 		'token_bearer_header_name' => 'Bearer',
