@@ -4,18 +4,6 @@
  *
  * For now, you can read here to understand how this plugin works.
  * @link(Github, http://bshaffer.github.io/oauth2-server-php-docs/)
- *
- * USER PASSWORD
- * curl -u 0mc4J1M7alZ4SuDu0kvHKZy3gHPIF2:eGoqK8rwfCSeGLIjfJELroKZr1HgKm "http://wordpress.dev/oauth/token" -d 'grant_type=password&username=admin&password=liamjack'
- *
- * CLIENT CREDENTIALS
- * curl -u 0mc4J1M7alZ4SuDu0kvHKZy3gHPIF2:eGoqK8rwfCSeGLIjfJELroKZr1HgKm http://wordpress.dev/oauth/token -d 'grant_type=client_credentials'
- *
- * AUTHORIZE AN ACCESS TOKEN
- * curl http://wordpress.dev/oauth/me -d 'access_token=6d39c203c65687c939c34f4c0d48dc7df799ebfc'
- *
- * GET ACCESS TOKEN WITH AUTHORIZATION CODE
- * curl -u 0mc4J1M7alZ4SuDu0kvHKZy3gHPIF2:eGoqK8rwfCSeGLIjfJELroKZr1HgKm http://wordpress.dev/oauth/token -d 'grant_type=authorization_code&code=fa742ce7d15012c061790088a056f04b1166abea'
  */
 if ( defined("ABSPATH") === false ) {
 	die("Illegal use of the API");
@@ -40,9 +28,10 @@ $storage = new OAuth2\Storage\Wordpressdb();
 $server = new OAuth2\Server($storage,
 	array(
 		'use_crypto_tokens' => false,
-		'store_encrypted_token_string' => true,
-		'use_openid_connect' => false,
-		'id_lifetime' => 3600,
+		'store_encrypted_token_string' => false,
+		'use_openid_connect' => $o['use_openid_connect'] == '' ? false : $o['use_openid_connect'],
+		'issuer' => 'wpoauth',
+		'id_lifetime' => $o['id_token_lifetime'] == '' ? 3600 : $o['id_token_lifetime'],
 		'access_lifetime' => $o['access_token_lifetime'] == '' ? 3600 : $o['access_token_lifetime'],
 		'refresh_token_lifetime' => $o['refresh_token_lifetime'] == '' ? 86400 : $o['refresh_token_lifetime'],
 		'www_realm' => 'Service',
@@ -51,9 +40,10 @@ $server = new OAuth2\Server($storage,
 		'enforce_state' => $o['enforce_state'] == '1' ? true : false,
 		'require_exact_redirect_uri' => $o['require_exact_redirect_uri'] == '1' ? true : false,
 		'allow_implicit' => $o['implicit_enabled'] == '1' ? true : false,
-		'allow_credentials_in_request_body' => true,
+		'allow_credentials_in_request_body' => true, // Must be set to true for openID to work in most cases
 		'allow_public_clients' => false,
 		'always_issue_new_refresh_token' => true,
+		'redirect_status_code' => 302
 	));
 
 /*
@@ -77,6 +67,7 @@ if ($o['user_creds_enabled'] == '1') {
 if ($o['refresh_tokens_enabled'] == '1') {
 	$server->addGrantType(new OAuth2\GrantType\RefreshToken($storage));
 }
+//$server->addGrantType(new OAuth2\GrantType\JwtBearer($storage));
 
 /*
 |--------------------------------------------------------------------------
@@ -91,9 +82,9 @@ if ($o['refresh_tokens_enabled'] == '1') {
  */
 $defaultScope = 'basic';
 $supportedScopes = array(
-	'basic',
-	'postonwall',
-	'accessphonenumber',
+	'openid',
+	'profile',
+	'email',
 );
 $memory = new OAuth2\Storage\Memory(array(
 	'default_scope' => $defaultScope,
@@ -128,22 +119,42 @@ if ($method == 'token') {
 | 2. Validate the request (client_id, redirect_uri)
 | 3. Create the authorization request using the authentication user's user_id
 |
- */
+*/
 if ($method == 'authorize') {
 	$request = OAuth2\Request::createFromGlobals();
 	$response = new OAuth2\Response();
+
 	if (!$server->validateAuthorizeRequest($request, $response)) {
 		$response->send();
 		die;
 	}
+
 	do_action('wo_before_authorize_method');
 	if (!is_user_logged_in()) {
 		wp_redirect(wp_login_url(site_url() . $_SERVER['REQUEST_URI']));
 		exit;
 	}
+
 	$server->handleAuthorizeRequest($request, $response, true, get_current_user_id());
 	$response->send();
 	exit;
+}
+
+/*
+|--------------------------------------------------------------------------
+| PUBLIC KEY
+|--------------------------------------------------------------------------
+|
+| Presents the generic public key for signing.
+|	@since 3.0.5
+*/
+if ($method == 'public_cert') {
+	$publicKey = file_get_contents(dirname(__FILE__). '/keys/id_rsa.pub');
+	$response = new OAuth2\Response(array(
+		'success' => true,
+		'cert' => $publicKey
+	));
+	$response->send();
 }
 
 /*
@@ -159,7 +170,7 @@ if ($method == 'authorize') {
 | controlled through apply_filters so start planning for a filter error list to
 | allow for developers to customize error messages.
 |
- */
+*/
 $ext_methods = apply_filters('wo_endpoints', null);
 if (array_key_exists($method, $ext_methods)) {
 	$response = new OAuth2\Response();

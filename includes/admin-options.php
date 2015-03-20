@@ -72,7 +72,6 @@ class WPOAuth_Admin {
 	            		<th scope="row">License Key:</th>
 	                <td>
 	                 	<input type="text" name="<?php echo $this->option_name?>[license]" value="<?php echo $options["license"];?>" length="40" style="width:300px;"/>
-	                 	
 	                 	<?php echo license_status(); ?>
 	                  <?php if (!_vl()): ?>
 	                  	<p class="description">Get a license by visiting <a href="https://wp-oauth.com/knowledge-base/" target="_blank">http://wp-oauth.com/pro-license</a>.</p>
@@ -162,7 +161,15 @@ class WPOAuth_Admin {
 	               	<th scope="row">Enforce State Parameter:</th>
 	                  <td>
 	                  	<input type="checkbox" name="<?php echo $this->option_name?>[enforce_state]" value="1" <?php echo $options["enforce_state"] == "1" ? "checked='checked'" : "";?>/>
-	                  	<p class="description">Enable if the "state" paramter is required when authenticating. </p>
+	                  	<p class="description">Enable if the "state" parameter is required when authenticating. </p>
+	              	  </td>
+	              </tr>
+
+	              <tr valign="top">
+	               	<th scope="row">Use OpenID Connect:</th>
+	                  <td>
+	                  	<input type="checkbox" name="<?php echo $this->option_name?>[use_openid_connect]" value="1" <?php echo $options["use_openid_connect"] == "1" ? "checked='checked'" : "";?>/>
+	                  	<p class="description">Enable if your server should generate a id_token when OpenID request is made.</p>
 	              	  </td>
 	              </tr>
 							</table>
@@ -186,6 +193,13 @@ class WPOAuth_Admin {
 	                  <td>
 	                  	<input type="number" name="<?php echo $this->option_name?>[refresh_token_lifetime]" value="<?php echo $options["refresh_token_lifetime"];?>" placeholder="86400"/>
 	                  	<p class="description">How long a refresh token is valid (seconds)- Leave blank for default (24 hours)</p>
+	              	  </td>
+	              </tr>
+	              <tr valign="top">
+	               	<th scope="row">ID Token Lifetime</th>
+	                  <td>
+	                  	<input type="number" name="<?php echo $this->option_name?>[id_token_lifetime]" value="<?php echo $options["id_token_lifetime"];?>" placeholder="3600" />
+	                  	<p class="description">How long an id_token is valid (seconds) - Leave blank for default (1 hour). Only applies if "Use OpenID Connect" is enabled</p>
 	              	  </td>
 	              </tr>
 							</table>
@@ -297,6 +311,16 @@ class WPOAuth_Admin {
 
 		$input["require_exact_redirect_uri"] = isset($input["require_exact_redirect_uri"]) ? $input["require_exact_redirect_uri"] : 0;
 		$input["enforce_state"] = isset($input["enforce_state"]) ? $input["enforce_state"] : 0;
+		$input["use_openid_connect"] = isset($input["use_openid_connect"]) ? $input["use_openid_connect"] : 0;
+
+		if(!isset($input['id_token_lifetime']))
+			$input['id_token_lifetime'] = 3600;
+
+		if(!isset($input['access_token_lifetime']))
+			$input['access_token_lifetime'] = 3600;
+
+		if(!isset($input['refresh_token_lifetime']))
+			$input['refresh_token_lifetime'] = 86400;
 
 		// Only run with valid license
 		$input["blacklist_ip_range_enabled"] = isset($input["blacklist_ip_range_enabled"]) ? $input["blacklist_ip_range_enabled"] : 0;

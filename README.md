@@ -1,6 +1,6 @@
 # WordPress OAuth Server
 
-Current Version: 3.0.4
+Current Version: 3.0.5
 
 This project is an OAuth 2.0 compatible authentication method for WordPress. The goal of WP OAuth Server 
 (WordPress Open Authentication) is to provide an easy to use authentication method that 3rd party services can use to securely connect to any server running WordPress site.
@@ -12,7 +12,7 @@ You can find online documentation by visiting [http://wp-oauth.com](http://wp-oa
 
 * WordPress 3.9 or Higher
 * PHP 5.3.9 or Higher
-* (recomended by not required) PHP Apache Module. When using PHP CGI, authentication headers may not work as expected. Please refer to common issues at [http://wp-oauth.com/forums/topic/common-issues/](http://wp-oauth.com/forums/topic/common-issues/).
+* OpenSSL if you choose to use OpenID Connect
 
 
 ### Framework
@@ -25,6 +25,7 @@ This project is built on top of [Brent Shaffer's](https://github.com/bshaffer) P
 * User Credentials
 * Client Credentials
 * Refresh Token
+* OpenID Connect
 
 WP OAuth Server does not currently support `Jwt Bearer` or `Crypto Tokens`.
 
@@ -42,9 +43,9 @@ Visit the dashboard by clicking `Provider` in the WordPress admin panel under `S
 
 ## Authentication Documentation
 
-*The following documentation assumes that you are famialr with PHP and at least a basic understand the workflow for OAuth 2.0 works.*
+*The following documentation assumes that you are familiar with PHP and at least a basic understand the work flow for OAuth 2.0 works.*
 
-Since the main framework of this plugin was built on Brent Shaffers sevrver, you can follow his documentation. The only difference is the endpoints. The plugin endpoints are below:
+Since the main framework of this plugin was built on Brent Shaffers server, you can follow his documentation. The only difference is the endpoints. The plugin endpoints are below:
 
 - `/oauth/authorize`
 - `oauth/token`
@@ -64,33 +65,33 @@ homepage of this documentation [here](http://bshaffer.github.io/oauth2-server-ph
 
 Before you actually start, there is a few things that should be mentioned as it mat just make your day easier.
 
-* This plugin uses `register_styles` and `register_scripts` within the main plugin class. This will throw strict warnings when using PHP 5.4 or higher. This is enterfere with the header responses and will cause output errors all over the place. For the time being, turn Strict Mode off for the server. 
+* This plugin uses `register_styles` and `register_scripts` within the main plugin class. This will throw strict warnings when using PHP 5.4 or higher. This is interfere with the header responses and will cause output errors all over the place. For the time being, turn Strict Mode off for the server. 
 
 * This one goes hand in hand with the previous note. Ensure the WP_DEGUG is set to `false` to prevent headache.
 
 ## Development / Developer Notes
 
-* Clients in the oauth_clients table that have the ID of `0` belong to the OAuth server. These clients should be treated as a private resource and not used for more than one client type. DO NOT use the same client id for multiple clients. Each device, plaform, software using the OAuth Server level client_id should have their own client_id.
+* Clients in the oauth_clients table that have the ID of `0` belong to the OAuth server. These clients should be treated as a private resource and not used for more than one client type. DO NOT use the same client id for multiple clients. Each device, platform, software using the OAuth Server level client_id should have their own client_id.
 
 * It is solely the responsibility of the client to store user sessions. The OAuth server currently does not store any sessions for you.
 
-* Auth Code Life Time - 30 Secounds (this will not change for security reasons)
+* Auth Code Life Time - 30 Seconds (this will not change for security reasons)
 
 * 
 
 ## TODO
 
 * Look into cleaning up the headers when the server is responding.
-* Clean up All un needed classes and abstracts in the original OAuth Server.
-* Handle unavaliable error with $resopnse
+* Clean up All unneeded classes and abstracts in the original OAuth Server.
+* Handle unavailable error with $response
 
-## Exstentions
+## Extensions
 
 * API Firewall
 * JSON-API Hook
 
-## 3rd Party Exstension Examples
+## 3rd Party Extension Examples
 
 * [OAuth2 Complete For WordPress strategy for Passport](https://www.npmjs.com/package/passport-oauth2-complete-for-wordpress) - Author: [Ido Ran](http://github.com/ido-ran).
 
-## Changelog
+## Change log
