@@ -3,6 +3,8 @@
 namespace OAuth2\OpenID\Controller;
 
 use OAuth2\Controller\AuthorizeController as BaseAuthorizeController;
+use OAuth2\Storage\PublicKeyInterface;
+
 use OAuth2\RequestInterface;
 use OAuth2\ResponseInterface;
 
@@ -12,6 +14,8 @@ use OAuth2\ResponseInterface;
 class AuthorizeController extends BaseAuthorizeController implements AuthorizeControllerInterface
 {
     private $nonce;
+
+   
 
     protected function setNotAuthorizedResponse(RequestInterface $request, ResponseInterface $response, $redirect_uri, $user_id = null)
     {
@@ -32,15 +36,15 @@ class AuthorizeController extends BaseAuthorizeController implements AuthorizeCo
         $response->setRedirect($this->config['redirect_status_code'], $redirect_uri, $this->getState(), $error, $error_message);
     }
 
-    protected function buildAuthorizeParameters($request, $response, $user_id)
+    protected function buildAuthorizeParameters($request, $response, $user_id,  $userClaims = null)
     {
         if (!$params = parent::buildAuthorizeParameters($request, $response, $user_id)) {
             return;
         }
 
         // Generate an id token if needed.
-        if ($this->needsIdToken($this->getScope()) && $this->getResponseType() == self::RESPONSE_TYPE_AUTHORIZATION_CODE) {
-            $params['id_token'] = $this->responseTypes['id_token']->createIdToken($this->getClientId(), $user_id, $this->nonce);
+        if ($this->needsIdToken($this->getScope()) && $this->getResponseType() == self::RESPONSE_TYPE_AUTHORIZATION_CODE && $this->config['use_openid_connect']) {
+            $params['id_token'] = $this->responseTypes['id_token']->createIdToken($this->getClientId(), $user_id, $this->nonce, $userClaims);  
         }
 
         // add the nonce to return with the redirect URI
@@ -57,8 +61,8 @@ class AuthorizeController extends BaseAuthorizeController implements AuthorizeCo
 
         $nonce = $request->query('nonce');
 
-        // Validate required nonce for "id_token" and "token id_token"
-        if (!$nonce && in_array($this->getResponseType(), array(self::RESPONSE_TYPE_ID_TOKEN, self::RESPONSE_TYPE_TOKEN_ID_TOKEN))) {
+        // Validate required nonce for "id_token" and "id_token token"
+        if (!$nonce && in_array($this->getResponseType(), array(self::RESPONSE_TYPE_ID_TOKEN, self::RESPONSE_TYPE_ID_TOKEN_TOKEN))) {
             $response->setError(400, 'invalid_nonce', 'This application requires you specify a nonce parameter');
 
             return false;
@@ -75,7 +79,7 @@ class AuthorizeController extends BaseAuthorizeController implements AuthorizeCo
             self::RESPONSE_TYPE_ACCESS_TOKEN,
             self::RESPONSE_TYPE_AUTHORIZATION_CODE,
             self::RESPONSE_TYPE_ID_TOKEN,
-            self::RESPONSE_TYPE_TOKEN_ID_TOKEN,
+            self::RESPONSE_TYPE_ID_TOKEN_TOKEN,
         );
     }
 

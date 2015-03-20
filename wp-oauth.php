@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WordPress OAuth Server
  * Plugin URI: http://wp-oauth.com
- * Version: 3.0.4
+ * Version: 3.0.5
  * Description: Use WordPress to power your OAuth Server. Provide Single Sign On and other OAuth functionality.
  * Author: Justin Greer
  * Author URI: http://wp-oauth.com
@@ -21,14 +21,12 @@
  * @package WordPress OAuth Server
  */
 
-/** kill all if there if WP is missing */
 if (!function_exists('add_filter')) {
 	header('Status: 403 Forbidden');
 	header('HTTP/1.1 403 Forbidden');
 	exit();
 }
 
-/** define the root directory */
 if (!defined('WPOAUTH_FILE')) {
 	define('WPOAUTH_FILE', __FILE__);
 }
@@ -36,7 +34,7 @@ if (!defined('WPOAUTH_FILE')) {
 /** 
  * 5.4 Strict Mode Temp Patch
  *
- * Since PHP 5.4, WP will through notices due to the way WP calls staticly
+ * Since PHP 5.4, WP will through notices due to the way WP calls statically
  */
 add_action("wp_loaded", '_wo_register_files');
 function _wo_register_files() {
@@ -50,8 +48,6 @@ require_once dirname(__FILE__) . '/wp-oauth-main.php';
 /** some needed adjustments but it is needed */
 add_action('admin_init', 'wo_plugin_redirect');
 add_action('admin_menu', array(new WO_Server, 'plugin_init'));
-if (!get_option('permalink_structure'))
-	add_action('admin_notices', 'wo_permalink_notice');
 
 register_activation_hook(__FILE__, array(new WO_Server, 'setup'));
 register_activation_hook(__FILE__, array(new WO_Server, 'upgrade'));
@@ -72,7 +68,3 @@ function wo_plugin_redirect() {
   }
 }
 
-/** [permalink_notice description] */
-function wo_permalink_notice() {
-	echo '<div id="message" class="error"><p>WordPress OAuth Server Requires <a href="options-permalink.php">Permalinks</a> other than <strong>Default</strong>.</p></div>';
-}

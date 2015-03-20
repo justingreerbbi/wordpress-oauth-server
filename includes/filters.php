@@ -13,7 +13,20 @@ function wo_api_error_setup($errors) {
 	$errors["invalid_access_token"] = "The access token is invalid or has expired";
 	$errors["invalid_refresh_token"] = "The refresh token is invalid or has expired";
 	$errors["invalid_credentials"] = "Invalid user credentials";
+
 	return $errors;
+}
+
+/**
+ * Server Key Locations Filter
+ * @since  3.0.5
+ */
+add_filter('wo_server_keys', 'wo_server_key_location', 1);
+function wo_server_key_location($keys) {
+	$keys['public'] = WOABSPATH . '/library/keys/id_rsa.pub';
+	$keys['private'] = WOABSPATH . '/library/keys/id_rsa';
+
+	return $keys;
 }
 
 /**
@@ -36,36 +49,20 @@ function wo_extend_tabs($tabs) {
 add_filter('wo_endpoints', 'wo_default_endpoints', 1);
 function wo_default_endpoints() {
 	$endpoints = array(
-		'me' => array('func' => '_wo_method_me'),
-		'jsonapi' => array('func' => '_wo_method_json_api_bridge')
+		'me' => array('func' => '_wo_method_me')
 	);
 	return $endpoints;
 }
-
-/**
- * [_wo_method_json_api_bridge description]
- * Birdge for JSON API using OAuth 2.0. This is experemental for the time being
- * @return [type] [description]
- */
-
-function _wo_method_json_api_bridge(){
-
-	// ensure that JSON API is loaded
-	//if ( empty( $GLOBALS['wp']->query_vars['json_oauth_route'] ) )
-	//	return;
-	print_r(apply_filters('json_authentication_errors', null));
-	//print_r( $GLOBALS['wp']->query_vars['json_oauth_route']);
-	exit;
-}
-
-
 
 /**
  * DEFAULT ME METHOD - DO NOT REMOVE DIRECTLY
  * This is the default resource call "/oauth/me". Do not edit nor remove.
  */
 function _wo_method_me($token = null) {
-	/** added 3.0.2 to handle access tokens not asigned to user */
+
+	/** 
+	 * Added 3.0.2 to handle access tokens not asigned to user
+	 */
 	if (!isset($token['user_id']) || $token['user_id'] == 0) {
 		$response = new OAuth2\Response();
 		$response->setError(400, 'invalid_request', 'Missinng or invalid access token');
@@ -81,6 +78,14 @@ function _wo_method_me($token = null) {
 	unset($me_data['user_pass']);
 	unset($me_data['user_activation_key']);
 	unset($me_data['user_url']);
+
+	/**
+	 * @since  3.0.5 
+	 * OpenID Connect looks for the field "email".
+	 * Sooooo. We shall provide it. (at least for Moodle)
+	 */
+	$me_data['email'] = $me_data['user_email'];
+
 	$response = new OAuth2\Response($me_data);
 	$response->send();
 	exit;

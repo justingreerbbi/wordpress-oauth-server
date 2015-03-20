@@ -35,7 +35,6 @@ class Wordpressdb implements
     {
         global $wpdb;
         $this->db = $wpdb;
-
         $this->config = array_merge(
             array(
                 'client_table' => $this->db->prefix . 'oauth_clients', 
@@ -44,11 +43,12 @@ class Wordpressdb implements
                 'code_table' => $this->db->prefix . 'oauth_authorization_codes', 
                 'user_table' => $this->db->prefix . 'oauth_users', 
                 'jwt_table' => $this->db->prefix . 'oauth_jwt', 
+                'jwi_table' => $this->db->prefix . 'oauth_jwi', // Needs implanted
                 'scope_table' => $this->db->prefix . 'oauth_scopes', 
                 'public_key_table' => $this->db->prefix . 'oauth_public_keys'
                 ), 
             $config
-            );
+        );
     }
     
     /**
@@ -174,7 +174,8 @@ class Wordpressdb implements
         $stmt = $this->db->prepare("SELECT * from {$this->db->prefix}oauth_authorization_codes WHERE authorization_code = %s", array($code));
         $stmt = $this->db->get_row($stmt, ARRAY_A);
         
-        if (null != $stmt) $stmt['expires'] = strtotime($stmt['expires']);
+        if (null != $stmt) 
+            $stmt['expires'] = strtotime($stmt['expires']);
         
         /**
          * This seems to be an issue and not return correctly. For now, lets return the queried object
@@ -280,31 +281,66 @@ class Wordpressdb implements
      * @param  [type] $claims  [description]
      * @return [type]          [description]
      *
-     * @todo FIND DEVELOPER THAT UNDERSTANDS CLAIM IDENTIFICATION
+     * @since 3.0.5-alpha Claims are handled manually since it just makes more sense this way
      */
-    public function getUserClaims($user_id, $claims) 
-    {
-        if (!$userDetails = $this->getUserDetails($user_id)) {
-            return false;
-        }
+    public function getUserClaims($user_id, $claims) {
         
+        // Grab the user information for the ID
+        $userInfo = get_userdata($user_id);
+
+        // Split up the claims
         $claims = explode(' ', trim($claims));
+
+        // User claims array
         $userClaims = array();
-        
-        // for each requested claim, if the user has the claim, set it in the response
-        $validClaims = explode(' ', self::VALID_CLAIMS);
-        foreach ($validClaims as $validClaim) {
-            if (in_array($validClaim, $claims)) {
-                if ($validClaim == 'address') {
-                    
-                    // address is an object with subfields
-                    $userClaims['address'] = $this->getUserClaim($validClaim, $userDetails['address'] ? : $userDetails);
-                } else {
-                    $userClaims = array_merge($userClaims, $this->getUserClaim($validClaim, $userDetails));
-                }
-            }
+
+        // If the scope "email" is found
+        if (in_array('email', $claims)) {
+            $userClaims += array(
+              'email' => $userInfo->user_email,
+              'email_verified' => ''
+            );
         }
-        
+
+        // If the scope "profile" is found
+        if (in_array('profile', $claims)) {
+            $userClaims += array(
+              'name' => $userInfo->display_name,
+              'family_name' => '',
+              'given_name' => '',
+              'middle_name' => '',
+              'nickname' => '',
+              'preferred_username' => $userInfo->display_name,
+              'profile' => '',
+              'picture' => 'http://www.gravatar.com/avatar/'.md5(strtolower(trim($userInfo->user_email))).'?s=40',
+              'website' => $userInfo->user_url,
+              'gender' => '',
+              'birthdate' => '',
+              'zoneinfo' => get_option('timezone_string'),
+              'updated_at' => $userInfo->user_registered,
+            );
+        }
+
+        // If the scope "address" is found
+        if (in_array('address', $claims)) {
+            $userClaims += array(
+              'formatted' => '',
+              'street_address' => '',
+              'locality' => '',
+              'region' => '',
+              'postal_code' => '',
+              'country' => '',
+            );
+        }
+
+        // If the scope "phone" is found
+        if (in_array('phone', $claims)) {
+            $userClaims += array(
+              'phone_number' => '',
+              'phone_number_verified' => '',
+            );
+        }
+
         return $userClaims;
     }
     
@@ -401,36 +437,11 @@ class Wordpressdb implements
         }
     
         $userInfo = $stmt;
-        return array_merge(
-            array(
-                'user_id' => $userInfo['ID']), 
-            $userInfo
+        return array_merge(array(
+                'user_id' => $userInfo['ID']
+                ), 
+                $userInfo
             );
-    }
-    
-    /**
-     * Create a new user into in WordPress
-     * @param [type] $username  [description]
-     * @param [type] $password  [description]
-     * @param [type] $firstName [description]
-     * @param [type] $lastName  [description]
-     *
-     * @todo Check for Removal
-     */
-    public function setUser($username, $password, $firstName=null, $lastName=null) 
-    {
-        
-        // do not store in plaintext
-        $password = sha1($password);
-        
-        // if it exists, update it.
-        if ($this->getUser($username)) {
-            $stmt = $this->db->prepare($sql = sprintf('UPDATE %s SET password=:password, first_name=:firstName, last_name=:lastName where username=:username', $this->config['user_table']));
-        } else {
-            $stmt = $this->db->prepare(sprintf('INSERT INTO %s (username, password, first_name, last_name) VALUES (:username, :password, :firstName, :lastName)', $this->config['user_table']));
-        }
-        
-        return $stmt->execute(compact('username', 'password', 'firstName', 'lastName'));
     }
     
     /**
@@ -570,7 +581,7 @@ class Wordpressdb implements
         $stmt = $this->db->get_row($stmt, ARRAY_A);
         
         if (null != $stmt) {
-            return $result['private_key'];
+            return $stmt['private_key'];
         }
     }
     
@@ -585,7 +596,7 @@ class Wordpressdb implements
         $stmt = $this->db->get_row($stmt, ARRAY_A);
         
         if (null != $stmt) {
-            return $result['encryption_algorithm'];
+            return $stmt['encryption_algorithm'];
         }
     }
     

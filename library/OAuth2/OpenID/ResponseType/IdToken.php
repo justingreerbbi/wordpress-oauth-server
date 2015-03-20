@@ -39,8 +39,11 @@ class IdToken implements IdTokenInterface
 
         // create the id token.
         list($user_id, $auth_time) = $this->getUserIdAndAuthTime($userInfo);
+
+        // Collect the users claims
         $userClaims = $this->userClaimsStorage->getUserClaims($user_id, $params['scope']);
 
+        // Create the id_token
         $id_token = $this->createIdToken($params['client_id'], $userInfo, $params['nonce'], $userClaims, null);
         $result["fragment"] = array('id_token' => $id_token);
         if (isset($params['state'])) {
@@ -50,11 +53,9 @@ class IdToken implements IdTokenInterface
         return array($params['redirect_uri'], $result);
     }
 
-    public function createIdToken($client_id, $userInfo, $nonce = null, $userClaims = null, $access_token = null)
-    {
-        // pull auth_time from user info if supplied
-        list($user_id, $auth_time) = $this->getUserIdAndAuthTime($userInfo);
+    public function createIdToken($client_id, $userInfo, $nonce = null, $userClaims = null, $access_token = null) {
 
+        list($user_id, $auth_time) = $this->getUserIdAndAuthTime($userInfo);
         $token = array(
             'iss'        => $this->config['issuer'],
             'sub'        => $user_id,
@@ -92,10 +93,18 @@ class IdToken implements IdTokenInterface
 
     protected function encodeToken(array $token, $client_id = null)
     {
-        $private_key = $this->publicKeyStorage->getPrivateKey($client_id);
+        $privateKey = $this->publicKeyStorage->getPrivateKey($client_id);
         $algorithm = $this->publicKeyStorage->getEncryptionAlgorithm($client_id);
 
-        return $this->encryptionUtil->encode($token, $private_key, $algorithm);
+        /**
+         * Overide pulling keys from each client and instead use generic key
+         * for the time being.
+         *
+         * @todo Enable default once we have unique signing for each client in place
+         */
+        $privateKey = get_private_server_key();
+        return $this->encryptionUtil->encode($token, $privateKey);
+        //return $this->encryptionUtil->encode($token, $privateKey, $algorithm);
     }
 
     private function getUserIdAndAuthTime($userInfo)

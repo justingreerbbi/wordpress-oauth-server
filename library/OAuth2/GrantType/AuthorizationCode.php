@@ -95,6 +95,9 @@ class AuthorizationCode implements GrantTypeInterface
         $token = $accessToken->createAccessToken($client_id, $user_id, $scope);
         $this->storage->expireAuthorizationCode($this->authCode['code']);
 
+        if( !empty($this->authCode['id_token']) )
+            $token['id_token'] = $this->authCode['id_token'];
+        
         return $token;
     }
 }

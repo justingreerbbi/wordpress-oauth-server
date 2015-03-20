@@ -9,7 +9,7 @@
 class WO_Server {
 
 	/** Version */
-	public $version = "3.0.4";
+	public $version = "3.0.5";
 
 	/** Server Instance */
 	public static $_instance = null;
@@ -26,7 +26,9 @@ class WO_Server {
 		"require_exact_redirect_uri" => 0,
 		"enforce_state" => 0,
 		"refresh_token_lifetime" => 3600, // 1 Hour
-		"access_token_lifetime"	=> 86400 // 24 Hours 
+		"access_token_lifetime"	=> 86400, // 24 Hours
+		"use_openid_connect" => 0,
+		"id_lifetime" => 3600  
 	);
 
 	/**
@@ -47,13 +49,13 @@ class WO_Server {
 		}
 		spl_autoload_register(array($this, 'autoload'));
 
-		/** load all dependants */
+		/** load all dependents */
 		add_action("init", array(__CLASS__, "includes"));
 
 	}
 
 	/**
-	 * populate the instance if the plugin for exstendability
+	 * populate the instance if the plugin for extendability
 	 * @return object plugin instance
 	 */
 	public static function instance() {
@@ -98,6 +100,10 @@ class WO_Server {
 			require_once dirname(__FILE__) . '/includes/ajax/class-wo-ajax.php';
 		}
 
+		/** Daily Crons */
+		if ( ! wp_next_scheduled( 'wo_daily_tasks_hook' ) ) {
+		  wp_schedule_event( time(), 'hourly', 'wo_daily_tasks_hook' );
+		}
 	}
 
 	/**
@@ -166,20 +172,20 @@ class WO_Server {
 
 					<div class="feature-section">
 						<div class="col">
-							<h3>Version <?php echo $this->version; ?> is a Minor Release...</h3>
+							<h3>Version <?php echo $this->version; ?> is a Feature Release...</h3>
 							<p>
 								<ul>
 									<li>
-										- Server Status provides better information.
+										- WordPress OAuth Server now works without permalinks set.
 									</li>
 									<li>
-										- Updated references thoughout plugin.
+										- Now Supports OpenID Connect.
 									</li>
 									<li>
-										- Added <code>Token Lifetime</code> settings.
+										- Added <code>public_key</code> endpoint. OAuth/public_key
 									</li>
 									<li>
-										- More stable upgrade functonality.
+										- More stable upgrade functionality.
 									</li>
 									<li>
 										- Minor cleanup and bug fixes.
@@ -188,11 +194,16 @@ class WO_Server {
 							</p>
 						</div>
 						<div class="col">
-							<h3>Whiteboard</h3>
+							<h3>White board</h3>
 							<p>
-								The next release is planned to be another minor release. It will address giving more control
-								the Server API, Bad Bot logic (firewall), and some additions to the actions and filters API 
-								hough out the plugin core.
+								3.0.5 was a big feature released. Now that the plugin supports OpenID Connect 1.0a
+								we will be concentrating on making the platform more stable and compatible with common
+								platforms. 
+							</p>
+							<p>
+								Currently in the plugin life cycle, we will be pushing updates each 3 months or when needed
+								for security. Check out <a href="https://wp-oauth.com" target="_blank">https://wp-oauth.com</a>
+								for updates and information.
 							</p>
 						</div>
 					</div>
@@ -250,12 +261,13 @@ class WO_Server {
 
 		$sql2 = "
 			CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_access_tokens (
-				access_token         VARCHAR(40)    NOT NULL,
+				id									 INT 						NOT NULL AUTO_INCREMENT,
+				access_token         VARCHAR(4000) 	NOT NULL,
         client_id            VARCHAR(80)    NOT NULL,
         user_id              VARCHAR(80),
         expires              TIMESTAMP      NOT NULL,
         scope                VARCHAR(4000),
-        PRIMARY KEY (access_token)
+        PRIMARY KEY (id)
       );
 			";
 
@@ -300,7 +312,7 @@ class WO_Server {
       );
 			";
 
-		$sql6 = "
+		$sql7 = "
 			CREATE TABLE IF NOT EXISTS {$wpdb->prefix}oauth_public_keys (
         client_id            VARCHAR(80),
         public_key           VARCHAR(2000),
@@ -317,23 +329,33 @@ class WO_Server {
 		dbDelta($sql4);
 		dbDelta($sql5);
 		dbDelta($sql6);
+		dbDelta($sql7);
 	}
 
 	/**
 	 * Upgrade method
-	 * Any time there is something new in the plugin
+	 * Updagrade Method 
 	 * @return [type] [description]
 	 */
 	public function upgrade () {
 		$options = get_option('wo_options');
 
+		// added 3.0.4
 		if(!$options['access_token_lifetime'])
 			$options['access_token_lifetime'] = 3600;
 
+		// added 3.0.4
 		if(!$options['refresh_token_lifetime'])
 			$options['refresh_token_lifetime'] = 86400;
 
-		// Update new options
+		// added 3.0.5
+		if(!$options['id_token_lifetime'])
+			$options['id_token_lifetime'] = 3600;
+
+		// added 3.0.5
+		if(!$options['use_openid_connect'])
+			$options['use_openid_connect'] = 3600;
+
 		update_option('wo_options', $options);
 	}
 
