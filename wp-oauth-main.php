@@ -1,6 +1,6 @@
 <?php
 /**
- * WordPress OAuth Server Mian Class
+ * WordPress OAuth Server Main Class
  * Responsible for being the main handler
  *
  * @author Justin Greer <justin@justin-greer.com>
@@ -9,7 +9,7 @@
 class WO_Server {
 
 	/** Version */
-	public $version = "3.0.5";
+	public $version = "3.1.5";
 
 	/** Server Instance */
 	public static $_instance = null;
@@ -49,9 +49,55 @@ class WO_Server {
 		}
 		spl_autoload_register(array($this, 'autoload'));
 
-		/** load all dependents */
+		/**
+		 * Custom auth hook
+		 * This MUST run before anything just to be safe. 20 seems to be the highest so we will stay close with 
+		 * priority set to 21
+		 *
+		 * @since 3.1.3
+		 */
+		add_filter( 'determine_current_user', array($this, '_wo_authenicate_bypass'), 10);
+
+		/** 
+		 * load all dependents
+		 *
+		 * @since 1.0.0
+		 */
 		add_action("init", array(__CLASS__, "includes"));
 
+	}
+
+	/**
+	 * Awesomeness for 3rd party support
+	 * 
+	 * Filter; determine_current_user
+	 * Other Filter: check_authentication
+	 *
+	 * This creates a hook in the determine_current_user filter that can check for a valid access_token and 
+	 * user services like WP JSON API and WP REST API.
+	 * @param  [type] $o [description]
+	 * @return [type]    [description]
+	 *
+	 * @author Mauro Constantinescu Modified slightly but still a contribution to the project.
+	 */
+	public function _wo_authenicate_bypass( $user_id ) {
+		if ( $user_id && $user_id > 0 ) 
+			return (int)$user_id;
+
+		/** Extra code but if the user is already logged in, there is no need to re query the DB */
+		$o = get_option( 'wo_options' );
+		if ( $o['enabled'] == 0 ) 
+		return (int)$user_id;
+		
+		require_once( dirname( WPOAUTH_FILE ) . '/library/OAuth2/Autoloader.php');
+		OAuth2\Autoloader::register();
+		$server = new OAuth2\Server( new OAuth2\Storage\Wordpressdb() );
+		$request = OAuth2\Request::createFromGlobals();
+		if ( $server->verifyResourceRequest( $request ) ) {
+			$token = $server->getAccessTokenData( $request );
+			if ( isset( $token['user_id'] ) && $token['user_id'] > 0 )
+				return (int)$token['user_id'];	
+		}
 	}
 
 	/**
@@ -91,9 +137,9 @@ class WO_Server {
 	 */
 	public static function includes() {
 		require_once dirname(__FILE__) . '/includes/functions.php';
+		require_once dirname(__FILE__) . '/includes/filters.php';
 		require_once dirname(__FILE__) . '/includes/admin-options.php';
 		require_once dirname(__FILE__) . '/includes/rewrites.php';
-		require_once dirname(__FILE__) . '/includes/filters.php';
 
 		/** include the ajax class if DOING_AJAX is defined */
 		if (defined('DOING_AJAX')) {
@@ -128,7 +174,7 @@ class WO_Server {
 		add_dashboard_page(
 			__( 'About WP OAuth',  'wp-oauth' ),
 			__( 'About WP OAuth',  'wp-oauth' ),
-			'read',
+			'manage_options',
 			'wpo-about',
 			array( $this, 'about_screen' )
 		);
@@ -145,7 +191,7 @@ class WO_Server {
 		?>
 		<div class="wrap about-wrap">
 			<h1><?php printf( esc_html__( 'Welcome to WP OAuth Server %s', 'wp-oauth' ), $this->version ); ?></h1>
-			<div class="about-text"><?php printf( esc_html__( 'Thank You for using WP OAuth Server %s! WordPress OAuth Server is bundled with everything you need to run your own OAuth 2.0 Provider Server.', 'wp-oauth' ), $this->version ); ?></div>
+			<div class="about-text"><?php printf( esc_html__( 'Thank You for using WP OAuth Server %s. WordPress OAuth Server is bundled with everything you need to run your own OAuth 2.0 Provider Server.', 'wp-oauth' ), $this->version ); ?></div>
 			<div class="wo-badge">Version <?php echo $this->version; ?></div>
 
 			<h2 class="nav-tab-wrapper">
@@ -168,42 +214,55 @@ class WO_Server {
 
 				<!-- Feature Headline -->
 				<div class="changelog headline-feature">
-					<h2>So What's New?</h2>
+					
+					<div style="text-align: center;">
+						<h2 style="text-align: center;">So What's New?</h2>
+						<strong>
+							This release of WP OAuth Server is a big one when it comes to OpenID Connect and some big name OpenID clients. 
+						</strong>
+					</div>
 
 					<div class="feature-section">
 						<div class="col">
-							<h3>Version <?php echo $this->version; ?> is a Feature Release...</h3>
+							<h3>Version <?php echo $this->version; ?> changelog</h3>
 							<p>
 								<ul>
 									<li>
-										- WordPress OAuth Server now works without permalinks set.
+										- Forced all expires_in parameter in JSON to be an integer.
 									</li>
 									<li>
-										- Now Supports OpenID Connect.
-									</li>
-									<li>
-										- Added <code>public_key</code> endpoint. OAuth/public_key
-									</li>
-									<li>
-										- More stable upgrade functionality.
-									</li>
-									<li>
-										- Minor cleanup and bug fixes.
+										- Add determine_current_user hook.
 									</li>
 								</ul>
 							</p>
 						</div>
 						<div class="col">
-							<h3>White board</h3>
+							<h3>WP REST API SUPPORT</h3>
 							<p>
-								3.0.5 was a big feature released. Now that the plugin supports OpenID Connect 1.0a
-								we will be concentrating on making the platform more stable and compatible with common
-								platforms. 
+								<?php echo $this->version; ?> adds authentication support for WP REST API.
 							</p>
+							<img src="<?php echo plugins_url('assets/images/openid-config-json.png', WPOAUTH_FILE ); ?>" />
+						</div>
+					</div>
+
+					<div class="feature-section">
+						<div class="col">
+							<h3>Server Signing</h3>
 							<p>
-								Currently in the plugin life cycle, we will be pushing updates each 3 months or when needed
-								for security. Check out <a href="https://wp-oauth.com" target="_blank">https://wp-oauth.com</a>
-								for updates and information.
+								<?php echo $this->version; ?> adds even more security by signing OpenID tokens. This makes your OAuth Server have its own finger print which then can be verified at any point by a client.
+							</p>
+							<div style="text-align: center">
+								<img src="<?php echo plugins_url('assets/images/cer.png', WPOAUTH_FILE ); ?>" />
+							</div>
+						</div>
+						<div class="col">
+							<h3>Credits</h3>
+							<p>
+								It is never a one person job to make a product like WP OAuth Server. Whether it the core team or the community, we want to make sure that they get the credit they deserve.
+								<ul>
+									<li>- WP OAuth Core Development Team</li>
+									<li>- Mauro Constantinescu WP REST API support.</li>
+								</ul>
 							</p>
 						</div>
 					</div>
@@ -290,7 +349,7 @@ class WO_Server {
         redirect_uri        VARCHAR(2000),
         expires             TIMESTAMP      NOT NULL,
         scope               VARCHAR(4000),
-        id_token            VARCHAR(1000),
+        id_token            VARCHAR(3000),
         PRIMARY KEY (authorization_code)
       );
 			";
@@ -322,6 +381,9 @@ class WO_Server {
       );
 			";
 
+		/** @todo LEGACY id_token PATCH - REMOVE IN VERSION 3.2.0*/
+		$wpdb->query("ALTER TABLE {$wpdb->prefix}oauth_authorization_codes MODIFY id_token VARCHAR(3000)");
+
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		dbDelta($sql1);
 		dbDelta($sql2);
@@ -330,12 +392,29 @@ class WO_Server {
 		dbDelta($sql5);
 		dbDelta($sql6);
 		dbDelta($sql7);
+
+		/**
+		 * Create certificates for signing
+		 *
+		 */
+		if(function_exists('openssl_pkey_new')){
+			$res = openssl_pkey_new(array(
+			    "private_key_bits" => 2048,
+			    "private_key_type" => OPENSSL_KEYTYPE_RSA,
+			));
+			openssl_pkey_export($res, $privKey);
+			file_put_contents(dirname(WPOAUTH_FILE) . '/library/keys/private_key.pem', $privKey);
+
+			$pubKey = openssl_pkey_get_details($res);
+			$pubKey = $pubKey["key"];
+			file_put_contents(dirname(WPOAUTH_FILE) . '/library/keys/public_key.pem', $pubKey);
+		}
+
 	}
 
 	/**
 	 * Upgrade method
-	 * Updagrade Method 
-	 * @return [type] [description]
+	 * 
 	 */
 	public function upgrade () {
 		$options = get_option('wo_options');
@@ -357,6 +436,11 @@ class WO_Server {
 			$options['use_openid_connect'] = 3600;
 
 		update_option('wo_options', $options);
+
+		/** @todo Modification of collation for existing tables. Implanting in 3.2.0 */
+		//global $wpdb;
+		//$wpdb->query("alter table <some_table> convert to character set utf8 collate utf8_unicode_ci;");
+
 	}
 
 }

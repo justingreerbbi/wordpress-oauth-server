@@ -4,6 +4,7 @@
  * @author Justin Greer <justin@justin-greer.com>
  */
 
+
 /**
  * WordPress OAuth Server Error Filter
  * @deprecated Schedule for removal. The PHP server handles all these now.
@@ -23,9 +24,8 @@ function wo_api_error_setup($errors) {
  */
 add_filter('wo_server_keys', 'wo_server_key_location', 1);
 function wo_server_key_location($keys) {
-	$keys['public'] = WOABSPATH . '/library/keys/id_rsa.pub';
-	$keys['private'] = WOABSPATH . '/library/keys/id_rsa';
-
+	$keys['public'] = WOABSPATH . '/library/keys/public_key.pem';
+	$keys['private'] = WOABSPATH . '/library/keys/private_key.pem';
 	return $keys;
 }
 
@@ -39,7 +39,7 @@ function wo_server_key_location($keys) {
  * the filter and find a way to save the values.
  */
 add_filter('wo_tabs', 'wo_extend_tabs');
-function wo_extend_tabs($tabs) {
+function wo_extend_tabs ( $tabs ) {
 	return $tabs;
 }
 
@@ -47,25 +47,67 @@ function wo_extend_tabs($tabs) {
  * Default Method Filter for the resource server API calls
  */
 add_filter('wo_endpoints', 'wo_default_endpoints', 1);
-function wo_default_endpoints() {
+function wo_default_endpoints () {
 	$endpoints = array(
-		'me' => array('func' => '_wo_method_me')
+		'me' => array('func' => '_wo_method_me'),
+		'destroy' => array('func' => '_wo_method_destroy')
 	);
 	return $endpoints;
 }
 
 /**
- * DEFAULT ME METHOD - DO NOT REMOVE DIRECTLY
- * This is the default resource call "/oauth/me". Do not edit nor remove.
+ * Default Support Scopes
+ *
+ * Keep in mind that "basic" is automatically supported for the time being
  */
-function _wo_method_me($token = null) {
+add_filter('wo_scopes', 'wo_default_scopes');
+function wo_default_scopes () {
+	$scopes = array(
+		'openid',
+		'profile',
+		'email'
+	);
+	return $scopes;
+}
+
+/**
+ * DEFAULT DESTROY METHOD
+ * This method has been added to help secure installs that want to manually destroy sessions (valid access tokens).
+ *
+ * @since  3.1.5
+ */
+function _wo_method_destroy ( $token = null ) {
+	$access_token = &$token['access_token'];
+
+
+	global $wpdb;
+	$stmt = $wpdb->delete("{$wpdb->prefix}oauth_access_tokens", array("access_token" => $access_token ) );
+
+	/** If there is a refresh token we need to remove it as well. */
+	if( !empty( $_REQUEST['refresh_token'] ) )
+		$stmt = $wpdb->delete("{$wpdb->prefix}oauth_refresh_tokens", array("refresh_token" => $_REQUEST['refresh_token'] ) );
+
+	/** Prepare the return */
+	$response = new OAuth2\Response(array(
+		'status' =>   true,
+		'description' => 'Session destroyed successfully')
+	);
+	$response->send();
+	exit;
+}
+
+/**
+ * DEFAULT ME METHOD - DO NOT REMOVE DIRECTLY
+ * This is the default resource call "/oauth/me". Do not edit or remove.
+ */
+function _wo_method_me ( $token = null ) {
 
 	/** 
 	 * Added 3.0.2 to handle access tokens not asigned to user
 	 */
 	if (!isset($token['user_id']) || $token['user_id'] == 0) {
 		$response = new OAuth2\Response();
-		$response->setError(400, 'invalid_request', 'Missinng or invalid access token');
+		$response->setError(400, 'invalid_request', 'Missing or invalid access token');
 		$response->send();
 		exit;
 	}

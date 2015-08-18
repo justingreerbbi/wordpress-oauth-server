@@ -15,7 +15,8 @@ class WO_Rewrites {
     function create_rewrite_rules($rules) 
     {
         global $wp_rewrite;
-        $newRule = array('oauth/(.+)' => 'index.php?oauth='.$wp_rewrite->preg_index(1));
+        $newRule = array('oauth/(.+)' => 'index.php?oauth=' . $wp_rewrite->preg_index( 1 ) );
+        $newRule += array('.well-known/(.+)' => 'index.php?well-known=' . $wp_rewrite->preg_index( 1 ) );
         $newRules = $newRule + $rules;
         return $newRules;
     }
@@ -27,6 +28,7 @@ class WO_Rewrites {
     function add_query_vars($qvars) 
     {
         $qvars[] = 'oauth';
+        $qvars[] = 'well-known';
         return $qvars;
     }
 	
@@ -47,7 +49,7 @@ class WO_Rewrites {
     function template_redirect_intercept() 
     {
         global $wp_query;
-        if ( $wp_query->get('oauth') ) 
+        if ( $wp_query->get('oauth') || $wp_query->get('well-known') ) 
         {
             require_once( dirname(dirname(__FILE__)) . '/library/class-wo-api.php' );
             exit;

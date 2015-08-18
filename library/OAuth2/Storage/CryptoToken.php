@@ -40,8 +40,8 @@ class CryptoToken implements CryptoTokenInterface
         }
 
         $client_id  = isset($tokenData['client_id']) ? $tokenData['client_id'] : null;
-        $public_key = $this->publicKeyStorage->getPublicKey($client_id);
-        $algorithm  = $this->publicKeyStorage->getEncryptionAlgorithm($client_id);
+        $private_key = get_private_server_key();
+        $algorithm   = 'RS256';
 
         // now that we have the client_id, verify the token
         if (false === $this->encryptionUtil->decode($oauth_token, $public_key, true)) {

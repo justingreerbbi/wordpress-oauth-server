@@ -154,7 +154,7 @@ class Wordpressdb implements
      * @param [type] $scope        [description]
      */
     public function setAccessToken($access_token, $client_id, $user_id, $expires, $scope=null) 
-    {
+    {   
         $expires = date('Y-m-d H:i:s', $expires);
         if ($this->getAccessToken($access_token)) {
             $stmt = $this->db->prepare("UPDATE {$this->db->prefix}oauth_access_tokens SET client_id=%s, expires=%s, user_id=%s, scope=%s where access_token=%s", array($client_id, $expires, $user_id, $scope, $access_token));
@@ -283,13 +283,13 @@ class Wordpressdb implements
      *
      * @since 3.0.5-alpha Claims are handled manually since it just makes more sense this way
      */
-    public function getUserClaims($user_id, $claims) {
+    public function getUserClaims( $user_id, $claims ) {
         
         // Grab the user information for the ID
-        $userInfo = get_userdata($user_id);
+        $userInfo = get_userdata( $user_id );
 
         // Split up the claims
-        $claims = explode(' ', trim($claims));
+        $claims = explode( ' ', trim( $claims ) );
 
         // User claims array
         $userClaims = array();
@@ -372,13 +372,17 @@ class Wordpressdb implements
      */
     public function getRefreshToken( $refresh_token ) 
     {
-        $stmt = $this->db->prepare("SELECT * FROM {$this->db->prefix}oauth_refresh_tokens WHERE refresh_token = %s", array($refresh_token));
-        $stmt = $this->db->get_row($stmt);
+        $stmt = $this->db->prepare("SELECT * FROM {$this->db->prefix}oauth_refresh_tokens WHERE refresh_token = %s", 
+            array($refresh_token));
+
+        $stmt = $this->db->get_row($stmt, ARRAY_A);
         
-        if (null != $stmt) {
-            $token['expires'] = strtotime($token['expires']);
+        $token = null;
+        if ( $stmt ) {
+            $token = $stmt;
+            $token['expires'] = strtotime($stmt['expires']);
         }
-        
+
         return $token;
     }
     

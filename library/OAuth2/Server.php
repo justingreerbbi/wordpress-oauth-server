@@ -1,5 +1,4 @@
 <?php
-
 namespace OAuth2;
 
 use OAuth2\Controller\ResourceControllerInterface;

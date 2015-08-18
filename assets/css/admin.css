@@ -155,10 +155,10 @@ a:active {
   background: #0074a2 url(../images/logo.png) no-repeat center 24px;
   -webkit-background-size: 85px 85px;
   background-size: 85px 85px;
-  color: #78c8e6;
+  color: #EDEDED;
   font-size: 14px;
   text-align: center;
-  font-weight: 600;
+  font-weight: 300;
   margin: 5px 0 0;
   padding-top: 120px;
   height: 40px;
@@ -170,4 +170,8 @@ a:active {
   position: absolute;
   top: 0;
   right: 0;
+}
+
+.ui-tabs .ui-tabs-nav li a, .ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-selected a {
+  font-weight: 300;
 }

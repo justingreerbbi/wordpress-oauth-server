@@ -65,7 +65,7 @@ class JwtAccessToken extends AccessToken
             'id'         => $this->generateAccessToken(),
             'iss'        => $this->config['issuer'],
             'aud'        => $client_id,
-            'sub'        => $user_id,
+            'sub'        => (string)$user_id,
             'exp'        => $expires,
             'iat'        => time(),
             'token_type' => $this->config['token_type'],
@@ -114,8 +114,8 @@ class JwtAccessToken extends AccessToken
 
     protected function encodeToken(array $token, $client_id = null)
     {
-        $private_key = $this->publicKeyStorage->getPrivateKey($client_id);
-        $algorithm   = $this->publicKeyStorage->getEncryptionAlgorithm($client_id);
+        $private_key = get_private_server_key();
+        $algorithm   = 'RS256';
 
         return $this->encryptionUtil->encode($token, $private_key, $algorithm);
     }

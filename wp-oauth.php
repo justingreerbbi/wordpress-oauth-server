@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WordPress OAuth Server
  * Plugin URI: http://wp-oauth.com
- * Version: 3.0.5
+ * Version: 3.1.5
  * Description: Use WordPress to power your OAuth Server. Provide Single Sign On and other OAuth functionality.
  * Author: Justin Greer
  * Author URI: http://wp-oauth.com
@@ -53,16 +53,19 @@ register_activation_hook(__FILE__, array(new WO_Server, 'setup'));
 register_activation_hook(__FILE__, array(new WO_Server, 'upgrade'));
 register_activation_hook(__FILE__, 'wo_plugin_activate');
 
-/** [wo_plugin_activate description] */
+/**
+ * Add and or adjust the plugin about page redirect
+ */
 function wo_plugin_activate() {
-    add_option('wo_do_activation_redirect', true);
+	if(! is_multisite() )
+		add_option('wo_do_activation_redirect', true);
 }
 
 /** [wo_plugin_redirect description] */
 function wo_plugin_redirect() {
  	if (get_option('wo_do_activation_redirect', false)) {
     delete_option('wo_do_activation_redirect');
-    if(!isset($_GET['activate-multi'])) {
+    if(!isset($_GET['activate-multi']) ) {
       wp_redirect(add_query_arg( array( 'page' => 'wpo-about' ), 'index.php' ) );
     }
   }

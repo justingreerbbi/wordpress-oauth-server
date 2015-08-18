@@ -1,18 +1,19 @@
 # WordPress OAuth Server
 
-Current Version: 3.0.5
+Current Version: 3.1.5
 
 This project is an OAuth 2.0 compatible authentication method for WordPress. The goal of WP OAuth Server 
 (WordPress Open Authentication) is to provide an easy to use authentication method that 3rd party services can use to securely connect to any server running WordPress site.
 
-You can find online documentation by visiting [http://wp-oauth.com](http://wp-oauth.com)
+You can find documentation by visiting [http://wp-oauth.com](http://wp-oauth.com)
 
 
 ### System Requirements
 
-* WordPress 3.9 or Higher
-* PHP 5.3.9 or Higher
+* WordPress 4.2 or Higher
+* PHP 5.4 or Higher
 * OpenSSL if you choose to use OpenID Connect
+* MySQL (other DB's are not supported)
 
 
 ### Framework
@@ -27,7 +28,6 @@ This project is built on top of [Brent Shaffer's](https://github.com/bshaffer) P
 * Refresh Token
 * OpenID Connect
 
-WP OAuth Server does not currently support `Jwt Bearer` or `Crypto Tokens`.
 
 ## Installation
 

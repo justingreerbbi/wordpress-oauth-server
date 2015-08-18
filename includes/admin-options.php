@@ -53,8 +53,10 @@ class WPOAuth_Admin {
 		add_thickbox();
 		?>
 			<div class="wrap">
-	      <h2>Server Confirguration</h2>
-	      <p>Need some help? <a class="button" href="https://wp-oauth.com/knowledge-base">Check out the Documentation</a></p>
+	      <img style="width:40px; float: left; diplay: inline; margin-right: 10px; margin-top: 5px;" src="<?php echo plugins_url('/assets/images/logo.png', WPOAUTH_FILE); ?>" />
+	      <h2>WP OAuth Server <strong><small> | v <?php echo _WO()->version; ?></small></strong></h2>
+	     	<br/>
+	     	<p></p>
       	<form method="post" action="options.php">
 					<?php settings_fields('wo_options');?>
         	<div id="wo_tabs">
@@ -164,20 +166,51 @@ class WPOAuth_Admin {
 	                  	<p class="description">Enable if the "state" parameter is required when authenticating. </p>
 	              	  </td>
 	              </tr>
+							</table>
+
+							<!-- OpenID Connect -->
+							<h3>OpenID Connect 1.0a <hr></h3>
+							<p>
+								The OpenID Connect 1.0a works with other systems like Drupal and Moodle.
+							</p>
+							<table class="form-table">
+								<tr valign="top">
+	               	<th scope="row">Enable OpenID Connect:</th>
+	               	<?php if(_vl($options['license'])): ?>
+		                <td>
+		                	<input type="checkbox" name="<?php echo $this->option_name?>[use_openid_connect]" value="1" <?php echo $options["use_openid_connect"] == "1" ? "checked='checked'" : "";?>/>
+		                  <p class="description">Enable if your server should generate a id_token when OpenID request is made.</p>
+		              	</td>
+	              	<?php else: ?>
+	              		<td>
+		                  <input type="checkbox" disabled="yes" />
+		                  <p class="description">Enable OpenID Connect 1.0a <a href="https://wp-oauth.com/downloads/wp-oauth-license/" style="color:red;">License Required</a></p>
+		              	</td>
+	              	<?php endif; ?>
+	              </tr>
 
 	              <tr valign="top">
-	               	<th scope="row">Use OpenID Connect:</th>
-	                  <td>
-	                  	<input type="checkbox" name="<?php echo $this->option_name?>[use_openid_connect]" value="1" <?php echo $options["use_openid_connect"] == "1" ? "checked='checked'" : "";?>/>
-	                  	<p class="description">Enable if your server should generate a id_token when OpenID request is made.</p>
-	              	  </td>
-	              </tr>
+	              	<?php if(_vl($options['license'])): ?>
+			           		<th scope="row">ID Token Lifetime</th>
+			            	<td>
+			                <input type="number" name="<?php echo $this->option_name?>[id_token_lifetime]" value="<?php echo $options["id_token_lifetime"];?>" placeholder="3600" />
+			                <p class="description">How long an id_token is valid (in seconds).</p>
+			              </td>
+			            <?php else: ?>
+			            	<th scope="row">ID Token Lifetime</th>
+			            	<td>
+			                <input type="number" placeholder="3600" disabled="yes" />
+			                <p class="description">How long an id_token is valid (in seconds). <a href="https://wp-oauth.com/downloads/wp-oauth-license/" style="color:red;">License Required</a></p>
+			              </td>
+			            <?php endif; ?>
+			          </tr>
+			          
 							</table>
 
 							<h3>Token Lifetimes <?php echo !_vl()? ' <i style="color:red;font-size:14px;">License Required</i>':'';?> <hr></h3>
 							<p>
 								Take control of your token lifetimes easily. By default Access Tokens are valid for 1 hour
-								and Refresh Tokens are vlaid for 24 hours.
+								and Refresh Tokens are valid for 24 hours.
 							</p>
 							<?php if(_vl($options['license'])): ?>
 							<table class="form-table">
@@ -195,13 +228,6 @@ class WPOAuth_Admin {
 	                  	<p class="description">How long a refresh token is valid (seconds)- Leave blank for default (24 hours)</p>
 	              	  </td>
 	              </tr>
-	              <tr valign="top">
-	               	<th scope="row">ID Token Lifetime</th>
-	                  <td>
-	                  	<input type="number" name="<?php echo $this->option_name?>[id_token_lifetime]" value="<?php echo $options["id_token_lifetime"];?>" placeholder="3600" />
-	                  	<p class="description">How long an id_token is valid (seconds) - Leave blank for default (1 hour). Only applies if "Use OpenID Connect" is enabled</p>
-	              	  </td>
-	              </tr>
 							</table>
 							<?php endif; ?>
 
@@ -213,7 +239,7 @@ class WPOAuth_Admin {
 							<?php if(_vl($options['license'])): ?>
 							<table class="form-table">
 	              <tr valign="top">
-	               	<th scope="row">Block All Incomming Requests but Whitelisted: </th>
+	               	<th scope="row">Block All Incoming Requests but Whitelisted: </th>
 	                  <td>
 	                  	<input type="checkbox" name="<?php echo $this->option_name?>[firewall_block_all_incomming]" value="1" <?php echo $options["firewall_block_all_incomming"] == "1" ? "checked='checked'" : "";?>/>
 	                  	<p class="description">Block all incomming requests that are not whitelisted below. </p>
@@ -224,7 +250,7 @@ class WPOAuth_Admin {
 	               	<th scope="row">IP Whitelist: </th>
 	                  <td>
 	                  	<textarea name="<?php echo $this->option_name?>[firewall_ip_whitelist]" style="margin: 0px;width: 340px;height: 140px;resize: none;" placeholder="127.0.0.1, ::1"><?php echo $options["firewall_ip_whitelist"]; ?></textarea>
-	                  	<p class="description">Enter IP addresses seperated by commas. IPV4 and IPV6 are supported.</p>
+	                  	<p class="description">Enter IP addresses separated by commas. IPV4 and IPV6 are supported.</p>
 	              	  </td>
 	              </tr>
 							</table>
@@ -236,7 +262,7 @@ class WPOAuth_Admin {
 					  <div id="clients">
 					  	<h2>
 					  		Clients
-					  		<a href="<?php echo WOURI ; ?>/library/content/create-new-client.php?TB_iframe=true&width=600&height=420" class="add-new-h2 thickbox" title="Add New Client">Add New Client</a>
+					  		<a href="<?php echo WOURI ; ?>library/content/create-new-client.php?TB_iframe=true&width=600&height=420" class="add-new-h2 thickbox" title="Add New Client">Add New Client</a>
 					  	</h2>
 
 							<?php
@@ -273,6 +299,13 @@ class WPOAuth_Admin {
 					  			<td>
 					  				<?php echo substr(php_sapi_name(), 0, 3) != 'cgi' ? " <span style='color:green;'>OK</span>" : " <span style='color:orange;'>Notice</span> - <small>Header 'Authorization Basic' may not work as expected.</small>";?>
 					  			</td>
+					  		</tr>
+
+					  		<tr>
+					  			<th style="text-align:right;">Certificates Generated: </th>
+					  			<td>
+										<?php echo !wo_has_certificates() ? " <span style='color:red;'>No Certificates Found</span>" : "<span style='color:green;'>Certificates Found</span>"?>
+									</td>
 					  		</tr>
 
 					  		<tr>

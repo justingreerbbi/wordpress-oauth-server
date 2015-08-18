@@ -40,23 +40,19 @@ class RefreshToken implements GrantTypeInterface
         return 'refresh_token';
     }
 
-    public function validateRequest(RequestInterface $request, ResponseInterface $response)
-    {
+    public function validateRequest(RequestInterface $request, ResponseInterface $response) {
         if (!$request->request("refresh_token")) {
             $response->setError(400, 'invalid_request', 'Missing parameter: "refresh_token" is required');
-
             return null;
         }
 
         if (!$refreshToken = $this->storage->getRefreshToken($request->request("refresh_token"))) {
             $response->setError(400, 'invalid_grant', 'Invalid refresh token');
-
             return null;
         }
 
         if ($refreshToken['expires'] > 0 && $refreshToken["expires"] < time()) {
             $response->setError(400, 'invalid_grant', 'Refresh token has expired');
-
             return null;
         }
 
@@ -66,23 +62,19 @@ class RefreshToken implements GrantTypeInterface
         return true;
     }
 
-    public function getClientId()
-    {
+    public function getClientId(){
         return $this->refreshToken['client_id'];
     }
 
-    public function getUserId()
-    {
+    public function getUserId(){
         return isset($this->refreshToken['user_id']) ? $this->refreshToken['user_id'] : null;
     }
 
-    public function getScope()
-    {
+    public function getScope(){
         return isset($this->refreshToken['scope']) ? $this->refreshToken['scope'] : null;
     }
 
-    public function createAccessToken(AccessTokenInterface $accessToken, $client_id, $user_id, $scope)
-    {
+    public function createAccessToken(AccessTokenInterface $accessToken, $client_id, $user_id, $scope){
         /*
          * It is optional to force a new refresh token when a refresh token is used.
          * However, if a new refresh token is issued, the old one MUST be expired

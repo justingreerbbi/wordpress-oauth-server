@@ -24,13 +24,14 @@ if ($o["enabled"] == 0) {
 
 global $wp_query;
 $method = $wp_query->get("oauth");
+$well_known = $wp_query->get("well-known");
 $storage = new OAuth2\Storage\Wordpressdb();
 $server = new OAuth2\Server($storage,
 	array(
 		'use_crypto_tokens' => false,
 		'store_encrypted_token_string' => false,
 		'use_openid_connect' => $o['use_openid_connect'] == '' ? false : $o['use_openid_connect'],
-		'issuer' => 'wpoauth',
+		'issuer' => site_url( null, 'https' ), // Must be HTTPS
 		'id_lifetime' => $o['id_token_lifetime'] == '' ? 3600 : $o['id_token_lifetime'],
 		'access_lifetime' => $o['access_token_lifetime'] == '' ? 3600 : $o['access_token_lifetime'],
 		'refresh_token_lifetime' => $o['refresh_token_lifetime'] == '' ? 86400 : $o['refresh_token_lifetime'],
@@ -55,6 +56,7 @@ $server = new OAuth2\Server($storage,
 | my end. None the less, these are controlled in the server settings page.
 |
  */
+$support_grant_types = array();
 if ($o['auth_code_enabled'] == '1') {
 	$server->addGrantType(new OAuth2\GrantType\AuthorizationCode($storage));
 }
@@ -74,18 +76,14 @@ if ($o['refresh_tokens_enabled'] == '1') {
 | DEFAULT SCOPES
 |--------------------------------------------------------------------------
 |
-| For the time being, the plugin will not fully support scopes. This is where
-| the scopes can be registered. This will be extended to be a filter in
-| upcomming release. Modify at your own risk.. This will be wiped unpon
-| a plugin update to newer versions.
+| Supported scopes can be added to the plugin by modifying the wo_scopes. 
+| Until further notice, the default scope is 'basic'. Plans are in place to
+| allow this scope to be adjusted.
 |
  */
 $defaultScope = 'basic';
-$supportedScopes = array(
-	'openid',
-	'profile',
-	'email',
-);
+$supportedScopes = apply_filters('wo_scopes', null, 20);
+
 $memory = new OAuth2\Storage\Memory(array(
 	'default_scope' => $defaultScope,
 	'supported_scopes' => $supportedScopes,
@@ -98,13 +96,14 @@ $server->setScopeUtil($scopeUtil);
 | TOKEN CATCH
 |--------------------------------------------------------------------------
 |
-| The followng code is ran when a request is made to the server using the
+| The following code is ran when a request is made to the server using the
 | Authorization Code (implicit) Grant Type as well as request tokens
 |
  */
 if ($method == 'token') {
 	do_action('wo_before_token_method');
 	$server->handleTokenRequest(OAuth2\Request::createFromGlobals())->send();
+	exit;
 }
 
 /*
@@ -112,7 +111,7 @@ if ($method == 'token') {
 | AUTHORIZATION CODE CATCH
 |--------------------------------------------------------------------------
 |
-| The followng code is ran when a request is made to the server using the
+| The following code is ran when a request is made to the server using the
 | Authorization Code (not implicit) Grant Type.
 |
 | 1. Check if the user is logged in (redirect if not)
@@ -123,15 +122,14 @@ if ($method == 'token') {
 if ($method == 'authorize') {
 	$request = OAuth2\Request::createFromGlobals();
 	$response = new OAuth2\Response();
-
 	if (!$server->validateAuthorizeRequest($request, $response)) {
 		$response->send();
-		die;
+		exit;
 	}
 
 	do_action('wo_before_authorize_method');
-	if (!is_user_logged_in()) {
-		wp_redirect(wp_login_url(site_url() . $_SERVER['REQUEST_URI']));
+	if (! is_user_logged_in() ) {
+		wp_redirect( wp_login_url( $_SERVER['REQUEST_URI'] ) );
 		exit;
 	}
 
@@ -148,13 +146,47 @@ if ($method == 'authorize') {
 | Presents the generic public key for signing.
 |	@since 3.0.5
 */
-if ($method == 'public_cert') {
-	$publicKey = file_get_contents(dirname(__FILE__). '/keys/id_rsa.pub');
-	$response = new OAuth2\Response(array(
-		'success' => true,
-		'cert' => $publicKey
+if ($well_known  == 'keys') {
+	$keys = apply_filters('wo_server_keys', null);
+	$publicKey = openssl_pkey_get_public( file_get_contents( $keys['public'] ) );
+	$publicKey = openssl_pkey_get_details( $publicKey );
+	$response = new OAuth2\Response( array(
+		'keys' => array(
+			array(
+				'kty' => 'RSA',
+				'alg' => 'RS256',
+				'use' => 'sig',
+				'n' =>  strtr( base64_encode( $publicKey['rsa']['n'] ), '+/=', '-_,'),
+				'e' =>  strtr( base64_encode( $publicKey['rsa']['e'] ), '+/=', '-_,')
+				)
+			)
 	));
 	$response->send();
+	exit;
+}
+
+/*
+|--------------------------------------------------------------------------
+| OpenID Discovery
+|--------------------------------------------------------------------------
+|
+| Presents a basic json encoded response for OpenID Discovery.
+| - issuer MUST be HTTPS and match 
+*/
+if ($well_known == 'openid-configuration') {
+	$openid_configuration = array(
+		'issuer' => site_url( null, 'https' ),
+	  'authorization_endpoint' => site_url( '/oauth/authorize' ),
+	  'token_endpoint' => site_url( 'oauth/token' ),
+	  'userinfo_endpoint' => site_url( '/oauth/me' ),
+	  'jwks_uri' => site_url( '/.well-known/keys' ),
+	  'response_types_supported' => array( 'code', 'id_token', 'token id_token', 'code id_token' ),
+	  'subject_types_supported' => array( 'public' ),
+		'id_token_signing_alg_values_supported' => array( 'RS256' )
+	);
+	$response = new OAuth2\Response( $openid_configuration );
+	$response->send();
+	exit;
 }
 
 /*
@@ -163,7 +195,7 @@ if ($method == 'public_cert') {
 |--------------------------------------------------------------------------
 |
 | Below this line is part of the developer API. Do not edit directly.
-| Refer to the developer documentation for exstending the WordPress OAuth
+| Refer to the developer documentation for extending the WordPress OAuth
 | Server plugin core functionality.
 |
 | @todo Document and tighten up error messages. All error messages will soon be
@@ -175,9 +207,9 @@ $ext_methods = apply_filters('wo_endpoints', null);
 if (array_key_exists($method, $ext_methods)) {
 	$response = new OAuth2\Response();
 	if (!$server->verifyResourceRequest(OAuth2\Request::createFromGlobals())) {
-		$response->setError(400, 'invalid_request', 'Missinng or invalid paramter(s)');
+		$response->setError(400, 'invalid_request', 'Missing or invalid parameter(s)');
 		$response->send();
-		die;
+		exit;
 	}
 	$token = $server->getAccessTokenData(OAuth2\Request::createFromGlobals());
 	if (is_null($token)) {
@@ -188,5 +220,11 @@ if (array_key_exists($method, $ext_methods)) {
 	exit;
 }
 
-// Loaner
+/**
+ * Server error response. End of line
+ * @since 3.1.0
+ */
+$response = new OAuth2\Response();
+$response->setError(400, 'invalid_request', 'Unknown request');
+$response->send();
 exit;
