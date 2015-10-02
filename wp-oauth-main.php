@@ -8,8 +8,12 @@
  */
 class WO_Server {
 
-	/** Version */
-	public $version = "3.1.5";
+	/**
+	 * Plugin version
+	 * @todo I would love to parse the file to get the plugin class that checks
+	 * @var string
+	 */
+	public $version = "3.1.8";
 
 	/** Server Instance */
 	public static $_instance = null;
@@ -31,9 +35,6 @@ class WO_Server {
 		"id_lifetime" => 3600  
 	);
 
-	/**
-	 * [__construct description]
-	 */
 	function __construct() {
 
 		if (!defined("WOABSPATH")) {
@@ -50,13 +51,12 @@ class WO_Server {
 		spl_autoload_register(array($this, 'autoload'));
 
 		/**
-		 * Custom auth hook
-		 * This MUST run before anything just to be safe. 20 seems to be the highest so we will stay close with 
-		 * priority set to 21
+		 * Custom Authentication Hook
+		 * This MUST run before anything just to be safe.
 		 *
 		 * @since 3.1.3
 		 */
-		add_filter( 'determine_current_user', array($this, '_wo_authenicate_bypass'), 10);
+		add_filter( 'determine_current_user', array($this, '_wo_authenicate_bypass'), 21);
 
 		/** 
 		 * load all dependents
@@ -137,7 +137,6 @@ class WO_Server {
 	 */
 	public static function includes() {
 		require_once dirname(__FILE__) . '/includes/functions.php';
-		require_once dirname(__FILE__) . '/includes/filters.php';
 		require_once dirname(__FILE__) . '/includes/admin-options.php';
 		require_once dirname(__FILE__) . '/includes/rewrites.php';
 
@@ -166,129 +165,14 @@ class WO_Server {
 	}
 
 	/**
-	 * Plugin Init
-	 * Runs checks and rgisters welcome screen
-	 * @return [type] [description]
-	 */
-	public function plugin_init () {
-		add_dashboard_page(
-			__( 'About WP OAuth',  'wp-oauth' ),
-			__( 'About WP OAuth',  'wp-oauth' ),
-			'manage_options',
-			'wpo-about',
-			array( $this, 'about_screen' )
-		);
-	}
-
-	/**
-	 * About Screen
-	 * Page loaded when plugin activation hook
-	 * @return [type] [description]
-	 */
-	public function about_screen ()
-	{
-		wp_enqueue_style('wo_admin');
-		?>
-		<div class="wrap about-wrap">
-			<h1><?php printf( esc_html__( 'Welcome to WP OAuth Server %s', 'wp-oauth' ), $this->version ); ?></h1>
-			<div class="about-text"><?php printf( esc_html__( 'Thank You for using WP OAuth Server %s. WordPress OAuth Server is bundled with everything you need to run your own OAuth 2.0 Provider Server.', 'wp-oauth' ), $this->version ); ?></div>
-			<div class="wo-badge">Version <?php echo $this->version; ?></div>
-
-			<h2 class="nav-tab-wrapper">
-				<a class="nav-tab nav-tab-active" href="<?php echo esc_url( admin_url( add_query_arg( array( 'page' => 'wpo-about' ), 'index.php' ) ) ); ?>">
-					<?php esc_html_e( 'What&#39;s New', 'wp-oauth' ); ?>
-				</a>
-				<a class="nav-tab" href="https://wp-oauth.com/knowledge-base/" target="_blank">
-					<?php esc_html_e( 'Documentation', 'wp-oauth' ); ?>
-				</a>
-				<a class="nav-tab" href="https://wordpress.org/support/view/plugin-reviews/oauth2-provider#rate-response" target="_blank">
-					<span class="dashicons dashicons-star-filled"></span>
-					<?php esc_html_e( 'Rate Plugin', 'wp-oauth' ); ?>
-				</a>
-				<a class="nav-tab" href="https://wp-oauth.com/" target="_blank">
-					<?php esc_html_e( 'Purchase License', 'wp-oauth' ); ?>
-				</a>
-			</h2>
-
-			<div class="changelog">
-
-				<!-- Feature Headline -->
-				<div class="changelog headline-feature">
-					
-					<div style="text-align: center;">
-						<h2 style="text-align: center;">So What's New?</h2>
-						<strong>
-							This release of WP OAuth Server is a big one when it comes to OpenID Connect and some big name OpenID clients. 
-						</strong>
-					</div>
-
-					<div class="feature-section">
-						<div class="col">
-							<h3>Version <?php echo $this->version; ?> changelog</h3>
-							<p>
-								<ul>
-									<li>
-										- Forced all expires_in parameter in JSON to be an integer.
-									</li>
-									<li>
-										- Add determine_current_user hook.
-									</li>
-								</ul>
-							</p>
-						</div>
-						<div class="col">
-							<h3>WP REST API SUPPORT</h3>
-							<p>
-								<?php echo $this->version; ?> adds authentication support for WP REST API.
-							</p>
-							<img src="<?php echo plugins_url('assets/images/openid-config-json.png', WPOAUTH_FILE ); ?>" />
-						</div>
-					</div>
-
-					<div class="feature-section">
-						<div class="col">
-							<h3>Server Signing</h3>
-							<p>
-								<?php echo $this->version; ?> adds even more security by signing OpenID tokens. This makes your OAuth Server have its own finger print which then can be verified at any point by a client.
-							</p>
-							<div style="text-align: center">
-								<img src="<?php echo plugins_url('assets/images/cer.png', WPOAUTH_FILE ); ?>" />
-							</div>
-						</div>
-						<div class="col">
-							<h3>Credits</h3>
-							<p>
-								It is never a one person job to make a product like WP OAuth Server. Whether it the core team or the community, we want to make sure that they get the credit they deserve.
-								<ul>
-									<li>- WP OAuth Core Development Team</li>
-									<li>- Mauro Constantinescu WP REST API support.</li>
-								</ul>
-							</p>
-						</div>
-					</div>
-
-					<div class="clear"></div>
-				</div>
-
-				<hr />
-				<div class="changelog feature-list">
-					<hr>
-					<div class="return-to-dashboard">
-								<a href="<?php echo esc_url( admin_url("plugins.php")); ?>">Return to Plugins</a> |
-								<a href="<?php echo esc_url( admin_url( add_query_arg( array( 'page' => 'wo_settings' ), 'options-general.php' ) ) ); ?>">Go to Dashboard → OAuth Server</a>
-					</div>
-				</div>
-
-		<?php
-	}
-
-	/**
 	 * plugin update check
 	 * @return [type] [description]
 	 */
 	public function install() {
+		
 		/** Install the required tables in the database */
 		global $wpdb;
+
 		$charset_collate = '';
 
 		/** Set charset to current wp option */
@@ -408,6 +292,11 @@ class WO_Server {
 			$pubKey = openssl_pkey_get_details($res);
 			$pubKey = $pubKey["key"];
 			file_put_contents(dirname(WPOAUTH_FILE) . '/library/keys/public_key.pem', $pubKey);
+
+			// Update plugin version
+			$plugin_data = get_plugin_data( WPOAUTH_FILE );
+			$plugin_version = $plugin_data['Version'];
+			update_option('wpoauth_version', $plugin_version);
 		}
 
 	}

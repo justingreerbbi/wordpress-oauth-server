@@ -35,7 +35,7 @@ function wo_server_key_location($keys) {
  * @since 3.0.3
  *
  * @todo The tabs filter will work for adding additional tabs but we need to look into handling the save
- * method since it is not tied into the core and the core is hardcodeed. Maybe we need to add all tabs into
+ * method since it is not tied into the core and the core is hard coded. Maybe we need to add all tabs into
  * the filter and find a way to save the values.
  */
 add_filter('wo_tabs', 'wo_extend_tabs');
@@ -45,12 +45,20 @@ function wo_extend_tabs ( $tabs ) {
 
 /**
  * Default Method Filter for the resource server API calls
+ *
+ * @since  3.1.8 Endpoints now can accept public methods that bypass the token authorization
  */
 add_filter('wo_endpoints', 'wo_default_endpoints', 1);
 function wo_default_endpoints () {
 	$endpoints = array(
-		'me' => array('func' => '_wo_method_me'),
-		'destroy' => array('func' => '_wo_method_destroy')
+		'me' => array(
+			'func' => '_wo_method_me', 
+			'public' => false 
+		),
+		'destroy' => array( 
+			'func' => '_wo_method_destroy', 
+			'public' => false 
+		)
 	);
 	return $endpoints;
 }
@@ -84,7 +92,7 @@ function _wo_method_destroy ( $token = null ) {
 	$stmt = $wpdb->delete("{$wpdb->prefix}oauth_access_tokens", array("access_token" => $access_token ) );
 
 	/** If there is a refresh token we need to remove it as well. */
-	if( !empty( $_REQUEST['refresh_token'] ) )
+	if( !empty( $_REQUEST[ 'refresh_token' ] ) )
 		$stmt = $wpdb->delete("{$wpdb->prefix}oauth_refresh_tokens", array("refresh_token" => $_REQUEST['refresh_token'] ) );
 
 	/** Prepare the return */
@@ -103,7 +111,7 @@ function _wo_method_destroy ( $token = null ) {
 function _wo_method_me ( $token = null ) {
 
 	/** 
-	 * Added 3.0.2 to handle access tokens not asigned to user
+	 * Added 3.0.2 to handle access tokens not assigned to user
 	 */
 	if (!isset($token['user_id']) || $token['user_id'] == 0) {
 		$response = new OAuth2\Response();
@@ -116,7 +124,7 @@ function _wo_method_me ( $token = null ) {
 	global $wpdb;
 	$me_data = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}users WHERE ID=$user_id", ARRAY_A);
 
-	/** prevent sensative data - makes me happy ;) */
+	/** prevent sensitive data - makes me happy ;) */
 	unset($me_data['user_pass']);
 	unset($me_data['user_activation_key']);
 	unset($me_data['user_url']);

@@ -1,6 +1,6 @@
 # WordPress OAuth Server
 
-Current Version: 3.1.5
+Current Version: 3.1.8
 
 This project is an OAuth 2.0 compatible authentication method for WordPress. The goal of WP OAuth Server 
 (WordPress Open Authentication) is to provide an easy to use authentication method that 3rd party services can use to securely connect to any server running WordPress site.
@@ -11,9 +11,9 @@ You can find documentation by visiting [http://wp-oauth.com](http://wp-oauth.com
 ### System Requirements
 
 * WordPress 4.2 or Higher
-* PHP 5.4 or Higher
+* PHP 5 or Higher
 * OpenSSL if you choose to use OpenID Connect
-* MySQL (other DB's are not supported)
+* MySQL (other DB's are not yet supported)
 
 
 ### Framework
@@ -52,8 +52,6 @@ Since the main framework of this plugin was built on Brent Shaffers server, you 
 
 Brent Shaffer has created a very detailed Step-by-Step guide to using the Authentication API. You can view the 
 homepage of this documentation [here](http://bshaffer.github.io/oauth2-server-php-docs/cookbook/). 
-
-
 
 ## Resources
 
@@ -95,3 +93,5 @@ Before you actually start, there is a few things that should be mentioned as it 
 * [OAuth2 Complete For WordPress strategy for Passport](https://www.npmjs.com/package/passport-oauth2-complete-for-wordpress) - Author: [Ido Ran](http://github.com/ido-ran).
 
 ## Change log
+
+Check commit history!

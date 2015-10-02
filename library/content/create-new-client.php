@@ -3,19 +3,10 @@
  * Create a New Client
  * @author Justin Greer <justin@justin-greer.com>
  *
- * @todo Although this file works is it is very import that we do it right. Now that we have it working and it
- * is secure, we need to start tweaking the file to be more WP compliant. Quality Matters!
- *
- * @todo Add an additional check to ensure that the form is being loaded by WordPress.
- * @todo Load WP core JS and styles for the plugin. It will be more cleaner and not rely on external JS libs.
  */
 
-/** Find wp-load and load it into scope */
-$parse_uri = explode( 'wp-content', $_SERVER['SCRIPT_FILENAME'] );
-require_once( $parse_uri[0] . 'wp-load.php' );
-
-/** should stop 99% exploits */
-if(!current_user_can('manage_options'))
+/** Block direct and or unauthorized access */
+if(!current_user_can('manage_options') || ! wp_verify_nonce($_GET['_wpnonce'], 'wpo-create-client') )
 	exit('Unauthorized Access');
 
 /** listen for post back */
@@ -156,3 +147,4 @@ form {}
 	</form>
 
 </div>
+<?php exit; ?>

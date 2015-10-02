@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: WordPress OAuth Server
+ * Plugin Name: WP OAuth Server
  * Plugin URI: http://wp-oauth.com
- * Version: 3.1.5
+ * Version: 3.1.8
  * Description: Use WordPress to power your OAuth Server. Provide Single Sign On and other OAuth functionality.
  * Author: Justin Greer
  * Author URI: http://wp-oauth.com
@@ -43,31 +43,11 @@ function _wo_register_files() {
 }
 
 /** Grab the main class file */
-require_once dirname(__FILE__) . '/wp-oauth-main.php';
+require_once( dirname(__FILE__) . '/wp-oauth-main.php');
 
-/** some needed adjustments but it is needed */
-add_action('admin_init', 'wo_plugin_redirect');
-add_action('admin_menu', array(new WO_Server, 'plugin_init'));
-
-register_activation_hook(__FILE__, array(new WO_Server, 'setup'));
-register_activation_hook(__FILE__, array(new WO_Server, 'upgrade'));
-register_activation_hook(__FILE__, 'wo_plugin_activate');
 
 /**
- * Add and or adjust the plugin about page redirect
+ * @todo  Move setup and upgrade inside the function wo_plugin_activate()
  */
-function wo_plugin_activate() {
-	if(! is_multisite() )
-		add_option('wo_do_activation_redirect', true);
-}
-
-/** [wo_plugin_redirect description] */
-function wo_plugin_redirect() {
- 	if (get_option('wo_do_activation_redirect', false)) {
-    delete_option('wo_do_activation_redirect');
-    if(!isset($_GET['activate-multi']) ) {
-      wp_redirect(add_query_arg( array( 'page' => 'wpo-about' ), 'index.php' ) );
-    }
-  }
-}
-
+register_activation_hook(__FILE__, array(new WO_Server, 'setup'));
+register_activation_hook(__FILE__, array(new WO_Server, 'upgrade'));

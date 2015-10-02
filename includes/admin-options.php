@@ -54,7 +54,7 @@ class WPOAuth_Admin {
 		?>
 			<div class="wrap">
 	      <img style="width:40px; float: left; diplay: inline; margin-right: 10px; margin-top: 5px;" src="<?php echo plugins_url('/assets/images/logo.png', WPOAUTH_FILE); ?>" />
-	      <h2>WP OAuth Server <strong><small> | v <?php echo _WO()->version; ?></small></strong></h2>
+	      <h2>WP OAuth Server <strong><small> | v <?php echo get_option('wpoauth_version'); ?></small></strong></h2>
 	     	<br/>
 	     	<p></p>
       	<form method="post" action="options.php">
@@ -262,7 +262,7 @@ class WPOAuth_Admin {
 					  <div id="clients">
 					  	<h2>
 					  		Clients
-					  		<a href="<?php echo WOURI ; ?>library/content/create-new-client.php?TB_iframe=true&width=600&height=420" class="add-new-h2 thickbox" title="Add New Client">Add New Client</a>
+					  		<a href="<?php echo site_url(); ?>?wpoauthincludes=create&_wpnonce=<?php echo wp_create_nonce( 'wpo-create-client' ); ?>&TB_iframe=true&width=600&height=420" class="add-new-h2 thickbox" title="Add New Client">Add New Client</a>
 					  	</h2>
 
 							<?php

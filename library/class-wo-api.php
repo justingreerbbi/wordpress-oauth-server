@@ -26,26 +26,26 @@ global $wp_query;
 $method = $wp_query->get("oauth");
 $well_known = $wp_query->get("well-known");
 $storage = new OAuth2\Storage\Wordpressdb();
-$server = new OAuth2\Server($storage,
-	array(
-		'use_crypto_tokens' => false,
-		'store_encrypted_token_string' => false,
-		'use_openid_connect' => $o['use_openid_connect'] == '' ? false : $o['use_openid_connect'],
-		'issuer' => site_url( null, 'https' ), // Must be HTTPS
-		'id_lifetime' => $o['id_token_lifetime'] == '' ? 3600 : $o['id_token_lifetime'],
-		'access_lifetime' => $o['access_token_lifetime'] == '' ? 3600 : $o['access_token_lifetime'],
-		'refresh_token_lifetime' => $o['refresh_token_lifetime'] == '' ? 86400 : $o['refresh_token_lifetime'],
-		'www_realm' => 'Service',
-		'token_param_name' => 'access_token',
-		'token_bearer_header_name' => 'Bearer',
-		'enforce_state' => $o['enforce_state'] == '1' ? true : false,
-		'require_exact_redirect_uri' => $o['require_exact_redirect_uri'] == '1' ? true : false,
-		'allow_implicit' => $o['implicit_enabled'] == '1' ? true : false,
-		'allow_credentials_in_request_body' => true, // Must be set to true for openID to work in most cases
-		'allow_public_clients' => false,
-		'always_issue_new_refresh_token' => true,
-		'redirect_status_code' => 302
-	));
+$config = array(
+	'use_crypto_tokens' => false,
+	'store_encrypted_token_string' => false,
+	'use_openid_connect' => $o['use_openid_connect'] == '' ? false : $o['use_openid_connect'],
+	'issuer' => site_url( null, 'https' ), // Must be HTTPS
+	'id_lifetime' => $o['id_token_lifetime'] == '' ? 3600 : $o['id_token_lifetime'],
+	'access_lifetime' => $o['access_token_lifetime'] == '' ? 3600 : $o['access_token_lifetime'],
+	'refresh_token_lifetime' => $o['refresh_token_lifetime'] == '' ? 86400 : $o['refresh_token_lifetime'],
+	'www_realm' => 'Service',
+	'token_param_name' => 'access_token',
+	'token_bearer_header_name' => 'Bearer',
+	'enforce_state' => $o['enforce_state'] == '1' ? true : false,
+	'require_exact_redirect_uri' => $o['require_exact_redirect_uri'] == '1' ? true : false,
+	'allow_implicit' => $o['implicit_enabled'] == '1' ? true : false,
+	'allow_credentials_in_request_body' => true, // Must be set to true for openID to work in most cases
+	'allow_public_clients' => false,
+	'always_issue_new_refresh_token' => true,
+	'redirect_status_code' => 302
+);
+$server = new OAuth2\Server($storage, $config);
 
 /*
 |--------------------------------------------------------------------------
@@ -67,7 +67,7 @@ if ($o['user_creds_enabled'] == '1') {
 	$server->addGrantType(new OAuth2\GrantType\UserCredentials($storage));
 }
 if ($o['refresh_tokens_enabled'] == '1') {
-	$server->addGrantType(new OAuth2\GrantType\RefreshToken($storage));
+	$server->addGrantType(new OAuth2\GrantType\RefreshToken($storage, $config));
 }
 //$server->addGrantType(new OAuth2\GrantType\JwtBearer($storage));
 
@@ -203,19 +203,31 @@ if ($well_known == 'openid-configuration') {
 | allow for developers to customize error messages.
 |
 */
-$ext_methods = apply_filters('wo_endpoints', null);
-if (array_key_exists($method, $ext_methods)) {
+$ext_methods = apply_filters( "wo_endpoints", null );
+
+// Check to see if the method exists in the filter
+if ( array_key_exists( $method, $ext_methods ) ) {
+
+	// If the method is is set to public, lets just run the method without
+	if( isset($ext_methods[$method]['public']) && $ext_methods[$method]['public'] ){
+		call_user_func_array($ext_methods[$method]['func'], $_REQUEST);
+		exit;
+	}
+
+	// Check the token provided
 	$response = new OAuth2\Response();
-	if (!$server->verifyResourceRequest(OAuth2\Request::createFromGlobals())) {
+	if ( !$server->verifyResourceRequest(OAuth2\Request::createFromGlobals())) {
 		$response->setError(400, 'invalid_request', 'Missing or invalid parameter(s)');
 		$response->send();
 		exit;
 	}
 	$token = $server->getAccessTokenData(OAuth2\Request::createFromGlobals());
-	if (is_null($token)) {
+	if ( is_null( $token ) ) {
 		$server->getResponse()->send();
 		exit;
 	}
+
+	// Once we are here, everything has checked out. Call the method
 	call_user_func_array($ext_methods[$method]['func'], array($token));
 	exit;
 }

@@ -4,8 +4,8 @@ Contributors: justingreerbbi
 Donate link: http://justin-greer.com/
 Tags: oauth2, OAuth provider, Provider, OAuth, OAuth client, Single Sign On, SSO, OpenID Connect, OIDC, OpenID, Connect
 Requires at least: 4.2.4
-Tested up to: 4.2.4
-Stable tag: 3.1.5
+Tested up to: 4.3
+Stable tag: 3.1.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -92,6 +92,21 @@ For any upgrade or modification, PLEASE PLEASE PLEASE make a full backup of your
 1. Adding a Client
 
 == Changelog ==
+
+= 3.1.8 =
+* Optimized activate hooks for better performance and consolidation of code.
+* Started minimization of the code to unneeded overhead,
+* Added removal of access tokens when a user resets password.
+* Fixed issue with refresh tokens not being returned when using refresh_token grant type
+* Added functionality to allow for public endpoints.
+
+= 3.1.7 =
+* Added MySQL check during install
+* Fixed 404 bug for unset permalinks
+* Minor security improvements
+
+= 3.1.6 =
+* Fixed 404 errors when adding/editing clients
 
 = 3.1.5 =
 * Addressed security issues on older PHP versions as well as Windows OS.

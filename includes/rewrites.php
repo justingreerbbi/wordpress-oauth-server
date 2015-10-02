@@ -38,8 +38,7 @@ class WO_Rewrites {
      * [flush_rewrite_rules description]
      * @return [type] [description]
      */
-    function flush_rewrite_rules() 
-    {
+    function flush_rewrite_rules() {
         global $wp_rewrite;
 	   	$wp_rewrite->flush_rules();
     }

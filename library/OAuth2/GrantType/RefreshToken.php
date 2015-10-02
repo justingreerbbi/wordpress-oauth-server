@@ -11,8 +11,7 @@ use OAuth2\ResponseInterface;
  *
  * @author Brent Shaffer <bshafs at gmail dot com>
  */
-class RefreshToken implements GrantTypeInterface
-{
+class RefreshToken implements GrantTypeInterface {
     private $refreshToken;
 
     protected $storage;
@@ -27,8 +26,8 @@ class RefreshToken implements GrantTypeInterface
      *                                                      );
      *                                                      </code>
      */
-    public function __construct(RefreshTokenInterface $storage, $config = array())
-    {
+    public function __construct(RefreshTokenInterface $storage, $config = array()){
+       
         $this->config = array_merge(array(
             'always_issue_new_refresh_token' => false
         ), $config);
