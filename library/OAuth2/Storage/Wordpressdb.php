@@ -433,17 +433,17 @@ class Wordpressdb implements
      */
     public function getUser($username) 
     {
-        $stmt = $this->db->prepare("SELECT * FROM {$this->db->base_prefix}users WHERE user_login=%s", array($username));
-        $stmt = $this->db->get_row($stmt, ARRAY_A);
-        
-        if ( null == $stmt ) {
+        $field = filter_var($username, FILTER_VALIDATE_EMAIL) ? 'email' : 'login';
+
+        $user = get_user_by($field, $username);
+        if (false === $user) {
             return false;
         }
-    
-        $userInfo = $stmt;
+
+        $userInfo = (array)$user->data;
         return array_merge(array(
                 'user_id' => $userInfo['ID']
-                ), 
+                ),
                 $userInfo
             );
     }

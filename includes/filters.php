@@ -119,10 +119,9 @@ function _wo_method_me ( $token = null ) {
 		$response->send();
 		exit;
 	}
-	$user_id = &$token['user_id'];
-
-	global $wpdb;
-	$me_data = $wpdb->get_row("SELECT * FROM {$wpdb->base_prefix}users WHERE ID=$user_id", ARRAY_A);
+	
+	$user = get_user_by('id', $token['user_id']);
+	$me_data = $user->data;
 
 	/** prevent sensitive data - makes me happy ;) */
 	unset($me_data['user_pass']);
