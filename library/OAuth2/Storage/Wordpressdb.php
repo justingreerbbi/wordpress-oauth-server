@@ -449,7 +449,7 @@ class Wordpressdb implements
      */
     public function getUser($username) 
     {
-        $field = filter_var($username, FILTER_VALIDATE_EMAIL) ? 'email' : 'login';
+        $field = (false === filter_var($username, FILTER_VALIDATE_EMAIL)) ? 'login' : 'email';
 
         $user = get_user_by($field, $username);
         if (false === $user) {
