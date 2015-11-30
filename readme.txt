@@ -5,7 +5,7 @@ Donate link: http://justin-greer.com/
 Tags: oauth2, OAuth provider, Provider, OAuth, OAuth client, Single Sign On, SSO, OpenID Connect, OIDC, OpenID, Connect
 Requires at least: 4.2.4
 Tested up to: 4.3
-Stable tag: 3.1.8
+Stable tag: 3.1.92
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -92,6 +92,22 @@ For any upgrade or modification, PLEASE PLEASE PLEASE make a full backup of your
 1. Adding a Client
 
 == Changelog ==
+
+= 3.1.92 =
+* Moved located of do_action('wo_before_authorize_method'); add added $_REQUEST parameter.
+* Rearranged OAuth Server menu for flexibility
+* Added $_REQUEST parameter to wo_before_api action
+* Add wo_failed_login action when login fails for OAuth2\Stoarge::checkPassword during user credentials grant type
+* Added wo_user_not_found action when user is not found when using user credentials
+
+= 3.1.91 =
+* Added action wo_endpoint_user_authenticated which runs before resource method but after access token authentication.
+
+= 3.1.9 =
+* Changed default refresh token lifetime to 10 days
+* Permalinks now check before re-writing
+* Minor code refactoring
+* Added action wo_set_access_token that runs before creating an access token
 
 = 3.1.8 =
 * Optimized activate hooks for better performance and consolidation of code.

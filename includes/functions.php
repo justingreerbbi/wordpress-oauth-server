@@ -4,6 +4,8 @@
  * 
  * @author Justin Greer <justin@justin-greer.com>
  * @package WordPress OAuth Server
+ *
+ * @todo Convert entire file into library ( class )
  */
 
 // Hook into core filters
@@ -123,8 +125,8 @@ function license_status (){
  */
 add_action( 'wo_daily_tasks_hook', 'wo_daily_tasks' );
 function wo_daily_tasks () {
-	$options = get_option('wo_options');
-	if($options['license_status'] == 'valid'){
+	$options = get_option( 'wo_options' );
+	if( $options['license_status'] == 'valid' ){
 		$api_params = array( 
 			'edd_action'=> 'activate_license', 
 			'license' 	=> $options['license'], 
@@ -135,7 +137,7 @@ function wo_daily_tasks () {
 		if ( !is_wp_error( $response ) ){
 			$license_data = json_decode( wp_remote_retrieve_body( $response ) );
 			if($options['license_status'] == 'valid' && $license_data->license != 'valid') {
-				wp_mail('justin@justin-greer.com', 'Issues found with WP OAuth Server', 'Recent checks show that your license key status for WordPress OAuth Server has been changed.');
+				wp_mail( get_option('admin_email'), 'Issues found with WP OAuth Server', 'Recent checks show that your license key status for WordPress OAuth Server has been changed.');
 				$options['license'] = '';
 				$options['license_status'] = '';
 			}
@@ -197,4 +199,32 @@ function get_public_server_key () {
 function wo_has_certificates (){
 	return file_exists( dirname(WPOAUTH_FILE) . '/library/keys/public_key.pem' ) 
 	&& file_exists( dirname(WPOAUTH_FILE) . '/library/keys/private_key.pem' );
+}
+
+/**
+ * [wo_create_client description]
+ * @param  [type] $user [description]
+ * @return [type]       [description]
+ *
+ * @todo Add role and permissions check
+ */
+function wo_create_client( $user=null ){
+
+	do_action('wo_before_create_client', array( $user ) );
+	if(! current_user_can( 'manage_options' ) )
+		return false;
+
+	$new_client_id = wo_gen_key();
+	$new_client_secret = wo_gen_key();
+
+	// Insert the user into the system
+	global $wpdb;
+	return $wpdb->insert("{$wpdb->prefix}oauth_clients",
+		array(
+			'client_id' => $new_client_id,
+			'client_secret' => $new_client_secret,
+			'redirect_uri' => empty($user['client-redirect-uri']) ? '' : $user['client-redirect-uri'],
+			'name' => empty($user['client-name']) ? 'No Name' : $user['client-name'],
+			'description' => empty($user['client-description']) ? '' : $user['client-description']
+			));
 }

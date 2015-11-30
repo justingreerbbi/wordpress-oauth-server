@@ -3,6 +3,7 @@
  * Create a New Client
  * @author Justin Greer <justin@justin-greer.com>
  *
+ * @todo Implant proper error handling
  */
 
 /** Block direct and or unauthorized access */
@@ -11,20 +12,11 @@ if(!current_user_can('manage_options') || ! wp_verify_nonce($_GET['_wpnonce'], '
 
 /** listen for post back */
 if(isset($_POST['_wpnonce']) && wp_verify_nonce( $_POST['_wpnonce'], 'add-new-client')){
-	$new_client_id = wo_gen_key();
-	$new_client_secret = wo_gen_key();
-	global $wpdb;
-	$add_new = $wpdb->insert("{$wpdb->prefix}oauth_clients",
-		array(
-			'client_id' => $new_client_id,
-			'client_secret' => $new_client_secret,
-			'redirect_uri' => $_POST['client-redirect-uri'],
-			'name' => $_POST['client-name'],
-			'description' => $_POST['client-description']
-			));
-
-	print 'Reloading...<script>window.parent.location.reload();</script>';
-	exit;
+	if( wo_create_client( $_POST ) ){
+		print 'Reloading...<script>window.parent.location.reload();</script>';
+		exit;
+	}
+	print 'There was an issue creating a new client in the server';
 }
 
 $options = get_option('wo_options');

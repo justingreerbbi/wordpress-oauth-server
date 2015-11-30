@@ -33,6 +33,7 @@ class UserCredentials implements GrantTypeInterface
     public function validateRequest(RequestInterface $request, ResponseInterface $response)
     {
         if (!$request->request("password") || !$request->request("username")) {
+            do_action('wo_missing_user_or_password');
             $response->setError(400, 'invalid_request', 'Missing parameters: "username" and "password" required');
 
             return null;
@@ -76,8 +77,7 @@ class UserCredentials implements GrantTypeInterface
         return isset($this->userInfo['scope']) ? $this->userInfo['scope'] : null;
     }
 
-    public function createAccessToken(AccessTokenInterface $accessToken, $client_id, $user_id, $scope)
-    {
+    public function createAccessToken(AccessTokenInterface $accessToken, $client_id, $user_id, $scope) {
         return $accessToken->createAccessToken($client_id, $user_id, $scope);
     }
 }

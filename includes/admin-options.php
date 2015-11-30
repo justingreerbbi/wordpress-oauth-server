@@ -1,4 +1,8 @@
 <?php
+/**
+ * WPOauth_Admin Class
+ * Add admin functionkaity to the backend of WordPress
+ */
 class WPOAuth_Admin {
 
 	/**
@@ -13,7 +17,7 @@ class WPOAuth_Admin {
 	 */
 	public static function init() {
 		add_action('admin_init', array(new self, 'admin_init'));
-		add_action('admin_menu', array(new self, 'add_page'));
+		add_action('admin_menu', array(new self, 'add_page'), 1);
 	}
 
 	/**
@@ -22,13 +26,19 @@ class WPOAuth_Admin {
 	 */
 	public function admin_init() {
 		register_setting('wo_options', $this->option_name, array($this, 'validate'));
+
+		require_once(dirname(__FILE__). '/admin/page-server-status.php');
 	}
 
 	/**
 	 * [add_page description]
 	 */
 	public function add_page() {
-		add_options_page('OAuth Server Settings', 'OAuth Server', 'manage_options', 'wo_settings', array($this, 'options_do_page'));
+		add_menu_page('OAuth Server', 'OAuth Server', 'manage_options', 'wo_settings',array($this, 'options_do_page'), 'dashicons-groups');
+
+		add_submenu_page( 'wo_settings', 'OAuth Server', 'OAuth Server', 'manage_options', 'wo_settings', array($this, 'options_do_page' )); 
+
+		add_submenu_page( 'wo_settings', 'Server Status', 'Server Status', 'manage_options', 'wo_server_status', 'wo_server_status_page'); 
 	}
 
 	/**
@@ -53,8 +63,7 @@ class WPOAuth_Admin {
 		add_thickbox();
 		?>
 			<div class="wrap">
-	      <img style="width:40px; float: left; diplay: inline; margin-right: 10px; margin-top: 5px;" src="<?php echo plugins_url('/assets/images/logo.png', WPOAUTH_FILE); ?>" />
-	      <h2>WP OAuth Server <strong><small> | v <?php echo get_option('wpoauth_version'); ?></small></strong></h2>
+	      <h2>WP OAuth Server <strong><small> | v<?php echo _WO()->version; ?></small></strong></h2>
 	     	<br/>
 	     	<p></p>
       	<form method="post" action="options.php">
@@ -64,7 +73,6 @@ class WPOAuth_Admin {
 					  	<li><a href="#general-settings">General Settings</a></li>
 					  	<li><a href="#advanced-configuration">Advanced Configuration</a></li>
 					  	<li><a href="#clients">Clients</a></li>
-					  	<li><a href="#server-status">Server Status</a></li>
 						</ul>
 
 						<!-- GENERAL SETTINGS -->
@@ -271,51 +279,6 @@ class WPOAuth_Admin {
 							$wp_list_table->display();
 							?>
 						</div>
-
-						<!-- SERVER STATUS CONTENT -->
-					  <div id="server-status">
-					  	<h2>Server Status</h2>
-					  	<p>
-					  		The following information is helpful when debugging or reporting an issue. Please note that the
-					  		informaiton provided here is a reference only.
-					  	</p>
-					  	<table>
-					  		<tr>
-					  			<th style="text-align:right;">Plugin Build: </th>
-					  			<td>
-										<?php echo strpos(_WO()->version, '-') ? _WO()->version . " <span style='color:orange;'><small>You are using a development version of the plugin.</small></span>" : _WO()->version;?>
-					  			</td>
-					  		</tr>
-
-					  		<tr>
-					  			<th style="text-align:right;">PHP Version (<?php echo PHP_VERSION;?>): </th>
-					  			<td>
-										<?php echo version_compare(PHP_VERSION, '5.3.9') >= 0 ? " <span style='color:green;'>OK</span>" : " <span style='color:red;'>Failed</span> - <small>Please upgrade PHP to 5.4 or greater.</small>";?>
-					  			</td>
-					  		</tr>
-
-					  		<tr>
-					  			<th style="text-align:right;">Running CGI: </th>
-					  			<td>
-					  				<?php echo substr(php_sapi_name(), 0, 3) != 'cgi' ? " <span style='color:green;'>OK</span>" : " <span style='color:orange;'>Notice</span> - <small>Header 'Authorization Basic' may not work as expected.</small>";?>
-					  			</td>
-					  		</tr>
-
-					  		<tr>
-					  			<th style="text-align:right;">Certificates Generated: </th>
-					  			<td>
-										<?php echo !wo_has_certificates() ? " <span style='color:red;'>No Certificates Found</span>" : "<span style='color:green;'>Certificates Found</span>"?>
-									</td>
-					  		</tr>
-
-					  		<tr>
-					  			<th style="text-align:right;">License: </th>
-					  			<td>
-										<?php echo !_vl() ? " <span style='color:orange;'>Standard" : "<span style='color:green;'>Licensed</span>"?>
-									</td>
-					  		</tr>
-					  	</table>
-					  </div>
 
 					</div>
 

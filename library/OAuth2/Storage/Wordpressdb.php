@@ -153,15 +153,31 @@ class Wordpressdb implements
      * @param [type] $expires      [description]
      * @param [type] $scope        [description]
      */
-    public function setAccessToken($access_token, $client_id, $user_id, $expires, $scope=null) 
-    {   
+    public function setAccessToken($access_token, $client_id, $user_id, $expires, $scope=null) {   
+
+        /** 
+         * wo_set_access_token Action
+         * Returns access_token, client_id, $user_id
+         * @since  3.1.9
+         */
+        do_action('wo_set_access_token', array( 
+            'access_token' => $access_token, 
+            'client_id' => $client_id, 
+            'user_id' => $user_id 
+        ));
+
         $expires = date('Y-m-d H:i:s', $expires);
         if ($this->getAccessToken($access_token)) {
             $stmt = $this->db->prepare("UPDATE {$this->db->prefix}oauth_access_tokens SET client_id=%s, expires=%s, user_id=%s, scope=%s where access_token=%s", array($client_id, $expires, $user_id, $scope, $access_token));
         } else {
             $stmt = $this->db->prepare("INSERT INTO {$this->db->prefix}oauth_access_tokens (access_token, client_id, expires, user_id, scope) VALUES (%s, %s, %s, %s, %s)", array($access_token, $client_id, $expires, $user_id, $scope));
         }
-        return $this->db->query($stmt);
+        
+        // Give return a value
+        $results = $this->db->query($stmt);
+
+        // Return Results
+        return $results;
     }
     
     /**
@@ -244,8 +260,7 @@ class Wordpressdb implements
      * @param  [type] $code [description]
      * @return [type]       [description]
      */
-    public function expireAuthorizationCode( $code ) 
-    {
+    public function expireAuthorizationCode( $code ) {
         $stmt = $this->db->prepare("DELETE FROM {$this->db->prefix}oauth_authorization_codes WHERE authorization_code = %s", array($code));
         return $this->db->query( $stmt );
     }
@@ -256,12 +271,15 @@ class Wordpressdb implements
      * @param  [type] $password [description]
      * @return [type]           [description]
      */
-    public function checkUserCredentials( $username, $password ) 
-    {
-        if ($user = $this->getUser( $username) ) {
-            return $this->checkPassword($user, $password);
+    public function checkUserCredentials( $username, $password ) {
+        if ( $user = $this->getUser( $username ) ) {
+            $login_check = $this->checkPassword($user, $password);
+            if(!$login_check)
+                do_action('wo_failed_login');
+
+            return $login_check; 
         }
-        
+        do_action('wo_user_not_found');
         return false;
     }
     
@@ -270,8 +288,7 @@ class Wordpressdb implements
      * @param  [type] $username [description]
      * @return [type]           [description]
      */
-    public function getUserDetails( $username ) 
-    {
+    public function getUserDetails( $username ) {
         return $this->getUser( $username );
     }
     
@@ -394,9 +411,8 @@ class Wordpressdb implements
      * @param [type] $expires       [description]
      * @param [type] $scope         [description]
      */
-    public function setRefreshToken( $refresh_token, $client_id, $user_id, $expires, $scope=null) 
-    {
-        $expires = date('Y-m-d H:i:s', $expires);
+    public function setRefreshToken( $refresh_token, $client_id, $user_id, $expires, $scope = null) {
+        $expires = date('Y-m-d H:i:s', $expires );
         $stmt = $this->db->prepare("INSERT INTO {$this->db->prefix}oauth_refresh_tokens (refresh_token, client_id, user_id, expires, scope) VALUES (%s, %s, %s, %s, %s)", array($refresh_token, $client_id, $user_id, $expires, $scope));
         
         return $this->db->query($stmt);
@@ -407,9 +423,8 @@ class Wordpressdb implements
      * @param  [type] $refresh_token [description]
      * @return [type]                [description]
      */
-    public function unsetRefreshToken($refresh_token) {
+    public function unsetRefreshToken( $refresh_token ) {
         $stmt = $this->db->prepare("DELETE FROM {$this->db->prefix}oauth_refresh_tokens WHERE refresh_token = %s", array($refresh_token));
-        
         return $this->db->query($stmt);
     }
     
@@ -421,9 +436,10 @@ class Wordpressdb implements
      *
      * @todo Check for Removal
      */
-    protected function checkPassword($user, $password) 
-    {
-        return wp_check_password( $password, $user['user_pass'], $user['ID']);
+    protected function checkPassword($user, $password) {
+        $login_check = wp_check_password( $password, $user['user_pass'], $user['ID']);
+
+        return $login_check;
     }
     
     /**

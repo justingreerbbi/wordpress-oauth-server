@@ -13,6 +13,7 @@ class WO_Rewrites {
      * @return [type]        [description]
      *
      * @since 3.1.6 - Added custom query to handle includes without calling direct
+     * @todo Break the rewrites out into a filter so we can modify them through a process instead of static
      */
     function create_rewrite_rules($rules) {
         global $wp_rewrite;
@@ -39,6 +40,12 @@ class WO_Rewrites {
      * @return [type] [description]
      */
     function flush_rewrite_rules() {
+
+        // Check to see if the main rewrite is used and skip if needed.
+        $rules = get_option( 'rewrite_rules' );
+        //if( isset( $rules['oauth/(.+)'] ) )
+        //    return;
+
         global $wp_rewrite;
 	   	$wp_rewrite->flush_rules();
     }
@@ -54,7 +61,7 @@ class WO_Rewrites {
             exit;
         }
 
-        /** @since 3.1.6 */
+        /** @since 3.1.6 | used by admin only */
         if ( $wp_query->get('wpoauthincludes') ) {
             $allowed_includes = array(
                 'create' => dirname( WPOAUTH_FILE ) . '/library/content/create-new-client.php',

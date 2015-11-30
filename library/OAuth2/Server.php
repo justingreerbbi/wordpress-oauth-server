@@ -337,6 +337,8 @@ class Server implements ResourceControllerInterface,
         $this->response = is_null($response) ? new Response() : $response;
         $value = $this->getResourceController()->getAccessTokenData($request, $this->response);
 
+        //Array ( [id] => 111 [access_token] => xxx [client_id] => xxx [user_id] => 1 [expires] => 1446370538 [scope] => basic )
+        //
         return $value;
     }
 
