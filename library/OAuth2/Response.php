@@ -63,8 +63,7 @@ class Response implements ResponseInterface
         505 => 'HTTP Version Not Supported',
     );
 
-    public function __construct($parameters = array(), $statusCode = 200, $headers = array())
-    {
+    public function __construct($parameters = array(), $statusCode = 200, $headers = array()) {
         $this->setParameters($parameters);
         $this->setStatusCode($statusCode);
         $this->setHttpHeaders($headers);
@@ -76,8 +75,7 @@ class Response implements ResponseInterface
      *
      * @return string The response with headers and content
      */
-    public function __toString()
-    {
+    public function __toString() {
         $headers = array();
         foreach ($this->httpHeaders as $name => $value) {
             $headers[$name] = (array) $value;
@@ -97,18 +95,15 @@ class Response implements ResponseInterface
      *
      * @return string The built header line
      */
-    protected function buildHeader($name, $value)
-    {
+    protected function buildHeader($name, $value) {
         return sprintf("%s: %s\n", $name, $value);
     }
 
-    public function getStatusCode()
-    {
+    public function getStatusCode() {
         return $this->statusCode;
     }
 
-    public function setStatusCode($statusCode, $text = null)
-    {
+    public function setStatusCode($statusCode, $text = null) {
         $this->statusCode = (int) $statusCode;
         if ($this->isInvalid()) {
             throw new \InvalidArgumentException(sprintf('The HTTP status code "%s" is not valid.', $statusCode));
@@ -117,13 +112,11 @@ class Response implements ResponseInterface
         $this->statusText = false === $text ? '' : (null === $text ? self::$statusTexts[$this->statusCode] : $text);
     }
 
-    public function getStatusText()
-    {
+    public function getStatusText() {
         return $this->statusText;
     }
 
-    public function getParameters()
-    {
+    public function getParameters() {
         return $this->parameters;
     }
 

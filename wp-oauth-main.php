@@ -6,14 +6,16 @@
  * @author Justin Greer <justin@justin-greer.com>
  * @package WordPress OAuth Server
  */
+if (!function_exists('add_filter')) {
+	header('Status: 403 Forbidden');
+	header('HTTP/1.1 403 Forbidden');
+	exit();
+}
+
 class WO_Server {
 
-	/**
-	 * Plugin version
-	 * @todo I would love to parse the file to get the plugin class that checks
-	 * @var string
-	 */
-	public $version = "3.1.8";
+	/** Plugin Version */
+	public $version = "3.1.92";
 
 	/** Server Instance */
 	public static $_instance = null;
@@ -29,7 +31,7 @@ class WO_Server {
 		"implicit_enabled" => 0,
 		"require_exact_redirect_uri" => 0,
 		"enforce_state" => 0,
-		"refresh_token_lifetime" => 3600, // 1 Hour
+		"refresh_token_lifetime" => 864000, // 10 Days
 		"access_token_lifetime"	=> 86400, // 24 Hours
 		"use_openid_connect" => 0,
 		"id_lifetime" => 3600  
@@ -73,10 +75,9 @@ class WO_Server {
 	 * Filter; determine_current_user
 	 * Other Filter: check_authentication
 	 *
-	 * This creates a hook in the determine_current_user filter that can check for a valid access_token and 
-	 * user services like WP JSON API and WP REST API.
-	 * @param  [type] $o [description]
-	 * @return [type]    [description]
+	 * This creates a hook in the determine_current_user filter that can check for a valid access_token 
+	 * and user services like WP JSON API and WP REST API.
+	 * @param  [type] $user_id User ID to
 	 *
 	 * @author Mauro Constantinescu Modified slightly but still a contribution to the project.
 	 */
@@ -95,8 +96,15 @@ class WO_Server {
 		$request = OAuth2\Request::createFromGlobals();
 		if ( $server->verifyResourceRequest( $request ) ) {
 			$token = $server->getAccessTokenData( $request );
-			if ( isset( $token['user_id'] ) && $token['user_id'] > 0 )
+			if ( isset( $token['user_id'] ) && $token['user_id'] > 0 ) {
 				return (int)$token['user_id'];	
+
+			// If the token key is there but the ID is either 0 or empty
+			// we will assume it is a valid client access token and will need to investigate the 
+			// request further.	
+			}elseif( isset( $token['user_id'] ) && $token['user_id'] === 0 ) {
+
+			}
 		}
 	}
 
@@ -105,7 +113,7 @@ class WO_Server {
 	 * @return object plugin instance
 	 */
 	public static function instance() {
-		if (is_null(self::$_instance)) {
+		if ( is_null( self::$_instance ) ) {
 			self::$_instance = new self();
 		}
 
@@ -116,16 +124,16 @@ class WO_Server {
 	 * setup plugin class autoload
 	 * @return void
 	 */
-	public function autoload($class) {
+	public function autoload( $class ) {
 		$path = null;
-		$class = strtolower($class);
-		$file = 'class-' . str_replace('_', '-', $class) . '.php';
+		$class = strtolower( $class );
+		$file = 'class-' . str_replace( '_', '-', $class ) . '.php';
 
-		if (strpos($class, "wo_") === 0) {
-			$path = dirname(__FILE__) . '/library/' . trailingslashit(substr(str_replace('_', '-', $class), 18));
+		if ( strpos( $class, "wo_" ) === 0 ) {
+			$path = dirname( __FILE__ ) . '/library/' . trailingslashit( substr( str_replace( '_', '-', $class ), 18 ) );
 		}
 
-		if ($path && is_readable($path . $file)) {
+		if ( $path && is_readable( $path . $file ) ) {
 			include_once $path . $file;
 			return;
 		}
@@ -136,9 +144,9 @@ class WO_Server {
 	 * @return void
 	 */
 	public static function includes() {
-		require_once dirname(__FILE__) . '/includes/functions.php';
-		require_once dirname(__FILE__) . '/includes/admin-options.php';
-		require_once dirname(__FILE__) . '/includes/rewrites.php';
+		require_once dirname( __FILE__ ) . '/includes/functions.php';
+		require_once dirname( __FILE__ ) . '/includes/admin-options.php';
+		require_once dirname( __FILE__ ) . '/includes/rewrites.php';
 
 		/** include the ajax class if DOING_AJAX is defined */
 		if (defined('DOING_AJAX')) {
@@ -156,9 +164,9 @@ class WO_Server {
 	 * @return [type] [description]
 	 */
 	public function setup() {
-		$options = get_option("wo_options");
-		if (!isset($options["enabled"])) {
-			update_option("wo_options", $this->defualt_settings);
+		$options = get_option( "wo_options" );
+		if (! isset( $options["enabled"] ) ) {
+			update_option( "wo_options", $this->defualt_settings );
 		}
 
 		$this->install();

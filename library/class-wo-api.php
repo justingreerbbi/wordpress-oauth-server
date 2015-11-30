@@ -5,11 +5,13 @@
  * For now, you can read here to understand how this plugin works.
  * @link(Github, http://bshaffer.github.io/oauth2-server-php-docs/)
  */
-if ( defined("ABSPATH") === false ) {
-	die("Illegal use of the API");
+if (!function_exists('add_filter')) {
+	header('Status: 403 Forbidden');
+	header('HTTP/1.1 403 Forbidden');
+	exit();
 }
 
-do_action('wo_before_api');
+do_action('wo_before_api', array( $_REQUEST ) );
 require_once dirname(__FILE__) . '/OAuth2/Autoloader.php';
 OAuth2\Autoloader::register();
 
@@ -67,7 +69,7 @@ if ($o['user_creds_enabled'] == '1') {
 	$server->addGrantType(new OAuth2\GrantType\UserCredentials($storage));
 }
 if ($o['refresh_tokens_enabled'] == '1') {
-	$server->addGrantType(new OAuth2\GrantType\RefreshToken($storage, $config));
+	$server->addGrantType(new OAuth2\GrantType\RefreshToken($storage, $config) );
 }
 //$server->addGrantType(new OAuth2\GrantType\JwtBearer($storage));
 
@@ -101,8 +103,8 @@ $server->setScopeUtil($scopeUtil);
 |
  */
 if ($method == 'token') {
-	do_action('wo_before_token_method');
-	$server->handleTokenRequest(OAuth2\Request::createFromGlobals())->send();
+	do_action( 'wo_before_token_method', array( $_REQUEST ) );
+	$server->handleTokenRequest( OAuth2\Request::createFromGlobals() )->send();
 	exit;
 }
 
@@ -120,14 +122,14 @@ if ($method == 'token') {
 |
 */
 if ($method == 'authorize') {
+	do_action('wo_before_authorize_method', array( $_REQUEST ) );
 	$request = OAuth2\Request::createFromGlobals();
 	$response = new OAuth2\Response();
-	if (!$server->validateAuthorizeRequest($request, $response)) {
+	if (!$server->validateAuthorizeRequest( $request, $response ) ) {
 		$response->send();
 		exit;
 	}
 
-	do_action('wo_before_authorize_method');
 	if (! is_user_logged_in() ) {
 		wp_redirect( wp_login_url( $_SERVER['REQUEST_URI'] ) );
 		exit;
@@ -226,6 +228,9 @@ if ( array_key_exists( $method, $ext_methods ) ) {
 		$server->getResponse()->send();
 		exit;
 	}
+
+	/** added 3.1.91 */
+	do_action('wo_endpoint_user_authenticated', array( $token ) );
 
 	// Once we are here, everything has checked out. Call the method
 	call_user_func_array($ext_methods[$method]['func'], array($token));
