@@ -28,7 +28,7 @@ function wo_server_status_page (){
 		<tr>
 			<th style="text-align:left;">Apache Version: </th>
 			<td>
-				<?php echo apache_get_version(); ?>
+				<?php echo function_exists('apache_get_version') ? apache_get_version() : '<strong>apache_get_version()</strong> not enabled.'; ?>
 			</td>
 		</tr>
 

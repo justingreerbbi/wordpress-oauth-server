@@ -71,16 +71,17 @@ class ResourceController implements ResourceControllerInterface
         return (bool) $token;
     }
 
-    public function getAccessTokenData(RequestInterface $request, ResponseInterface $response)
-    {
+    public function getAccessTokenData(RequestInterface $request, ResponseInterface $response) {
         // Get the token parameter
         if ($token_param = $this->tokenType->getAccessTokenParameter($request, $response)) {
             // Get the stored token data (from the implementing subclass)
             // Check we have a well formed token
             // Check token expiration (expires is a mandatory paramter)
             if (!$token = $this->tokenStorage->getAccessToken($token_param)) {
+
                 $response->setError(401, 'invalid_token', 'The access token provided is invalid');
             } elseif (!isset($token["expires"]) || !isset($token["client_id"])) {
+
                 $response->setError(401, 'malformed_token', 'Malformed token (missing "expires")');
             } elseif (time() > $token["expires"]) {
                 $response->setError(401, 'expired_token', 'The access token provided has expired');

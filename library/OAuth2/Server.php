@@ -1,4 +1,5 @@
 <?php
+
 namespace OAuth2;
 
 use OAuth2\Controller\ResourceControllerInterface;
@@ -19,6 +20,7 @@ use OAuth2\ResponseType\ResponseTypeInterface;
 use OAuth2\ResponseType\AuthorizationCode as AuthorizationCodeResponseType;
 use OAuth2\ResponseType\AccessToken;
 use OAuth2\ResponseType\JwtAccessToken;
+use OAuth2\OpenID\ResponseType\CodeIdToken;
 use OAuth2\OpenID\ResponseType\IdToken;
 use OAuth2\OpenID\ResponseType\IdTokenToken;
 use OAuth2\TokenType\TokenTypeInterface;
@@ -80,6 +82,7 @@ class Server implements ResourceControllerInterface,
         'code' => 'OAuth2\ResponseType\AuthorizationCodeInterface',
         'id_token' => 'OAuth2\OpenID\ResponseType\IdTokenInterface',
         'id_token token' => 'OAuth2\OpenID\ResponseType\IdTokenTokenInterface',
+        'code id_token' => 'OAuth2\OpenID\ResponseType\CodeIdTokenInterface',
     );
 
     /**
@@ -119,6 +122,7 @@ class Server implements ResourceControllerInterface,
             'allow_credentials_in_request_body' => true,
             'allow_public_clients'     => true,
             'always_issue_new_refresh_token' => false,
+            'unset_refresh_token_after_use' => true,
         ), $config);
 
         foreach ($grantTypes as $key => $grantType) {
@@ -132,6 +136,10 @@ class Server implements ResourceControllerInterface,
         $this->tokenType = $tokenType;
         $this->scopeUtil = $scopeUtil;
         $this->clientAssertionType = $clientAssertionType;
+
+        if ($this->config['use_openid_connect']) {
+            $this->validateOpenIdConnect();
+        }
     }
 
     public function getAuthorizeController()
@@ -262,6 +270,24 @@ class Server implements ResourceControllerInterface,
     }
 
     /**
+     * Handle a revoke token request
+     * This would be called from the "/revoke" endpoint as defined in the draft Token Revocation spec
+     *
+     * @see https://tools.ietf.org/html/rfc7009#section-2
+     *
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @return Response|ResponseInterface
+     */
+    public function handleRevokeRequest(RequestInterface $request, ResponseInterface $response = null)
+    {
+        $this->response = is_null($response) ? new Response() : $response;
+        $this->getTokenController()->handleRevokeRequest($request, $this->response);
+
+        return $this->response;
+    }
+
+    /**
      * Redirect the user appropriately after approval.
      *
      * After the user has approved or denied the resource request the
@@ -337,22 +363,20 @@ class Server implements ResourceControllerInterface,
         $this->response = is_null($response) ? new Response() : $response;
         $value = $this->getResourceController()->getAccessTokenData($request, $this->response);
 
-        //Array ( [id] => 111 [access_token] => xxx [client_id] => xxx [user_id] => 1 [expires] => 1446370538 [scope] => basic )
-        //
         return $value;
     }
 
-    public function addGrantType(GrantTypeInterface $grantType, $key = null)
+    public function addGrantType(GrantTypeInterface $grantType, $identifier = null)
     {
-        if (is_string($key)) {
-            $this->grantTypes[$key] = $grantType;
-        } else {
-            $this->grantTypes[$grantType->getQuerystringIdentifier()] = $grantType;
+        if (!is_string($identifier)) {
+            $identifier = $grantType->getQuerystringIdentifier();
         }
+
+        $this->grantTypes[$identifier] = $grantType;
 
         // persist added grant type down to TokenController
         if (!is_null($this->tokenController)) {
-            $this->getTokenController()->addGrantType($grantType);
+            $this->getTokenController()->addGrantType($grantType, $identifier);
         }
     }
 
@@ -454,7 +478,6 @@ class Server implements ResourceControllerInterface,
         if (0 == count($this->responseTypes)) {
             $this->responseTypes = $this->getDefaultResponseTypes();
         }
-
         if ($this->config['use_openid_connect'] && !isset($this->responseTypes['id_token'])) {
             $this->responseTypes['id_token'] = $this->createDefaultIdTokenResponseType();
             if ($this->config['allow_implicit']) {
@@ -462,11 +485,7 @@ class Server implements ResourceControllerInterface,
             }
         }
 
-        /**
-         * @since 3.0.5 Added use_openid_connect to allowed config
-         * @var array
-         */
-        $config = array_intersect_key($this->config, array_flip(explode(' ', 'allow_implicit enforce_state require_exact_redirect_uri use_openid_connect')));
+        $config = array_intersect_key($this->config, array_flip(explode(' ', 'allow_implicit enforce_state require_exact_redirect_uri')));
 
         if ($this->config['use_openid_connect']) {
             return new OpenIDAuthorizeController($this->storages['client'], $this->responseTypes, $config, $this->getScopeUtil());
@@ -577,6 +596,7 @@ class Server implements ResourceControllerInterface,
                     throw new \LogicException("Your authorization_code storage must implement OAuth2\OpenID\Storage\AuthorizationCodeInterface to work when 'use_openid_connect' is true");
                 }
                 $responseTypes['code'] = new OpenIDAuthorizationCodeResponseType($this->storages['authorization_code'], $config);
+                $responseTypes['code id_token'] = new CodeIdToken($responseTypes['code'], $responseTypes['id_token']);
             } else {
                 $responseTypes['code'] = new AuthorizationCodeResponseType($this->storages['authorization_code'], $config);
             }
@@ -603,7 +623,7 @@ class Server implements ResourceControllerInterface,
         }
 
         if (isset($this->storages['refresh_token'])) {
-            $config = array_intersect_key($this->config, array('always_issue_new_refresh_token' => ''));
+            $config = array_intersect_key($this->config, array_flip(explode(' ', 'always_issue_new_refresh_token unset_refresh_token_after_use')));
             $grantTypes['refresh_token'] = new RefreshToken($this->storages['refresh_token'], $config);
         }
 
@@ -691,7 +711,7 @@ class Server implements ResourceControllerInterface,
             $refreshStorage = $this->storages['refresh_token'];
         }
 
-        $config = array_intersect_key($this->config, array_flip(explode(' ', 'store_encrypted_token_string')));
+        $config = array_intersect_key($this->config, array_flip(explode(' ', 'store_encrypted_token_string issuer access_lifetime refresh_token_lifetime')));
 
         return new JwtAccessToken($this->storages['public_key'], $tokenStorage, $refreshStorage, $config);
     }
@@ -730,6 +750,14 @@ class Server implements ResourceControllerInterface,
     protected function createDefaultIdTokenTokenResponseType()
     {
         return new IdTokenToken($this->getAccessTokenResponseType(), $this->getIdTokenResponseType());
+    }
+
+    protected function validateOpenIdConnect()
+    {
+        $authCodeGrant = $this->getGrantType('authorization_code');
+        if (!empty($authCodeGrant) && !$authCodeGrant instanceof OpenIDAuthorizationCodeGrantType) {
+            throw new \InvalidArgumentException('You have enabled OpenID Connect, but supplied a grant type that does not support it.');
+        }
     }
 
     protected function normalizeResponseType($name)

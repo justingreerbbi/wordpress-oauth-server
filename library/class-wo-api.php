@@ -69,9 +69,14 @@ if ($o['user_creds_enabled'] == '1') {
 	$server->addGrantType(new OAuth2\GrantType\UserCredentials($storage));
 }
 if ($o['refresh_tokens_enabled'] == '1') {
-	$server->addGrantType(new OAuth2\GrantType\RefreshToken($storage, $config) );
+	$server->addGrantType(new OAuth2\GrantType\RefreshToken($storage) );
 }
-//$server->addGrantType(new OAuth2\GrantType\JwtBearer($storage));
+if ($o['use_openid_connect'] == '1') {
+	$server->addGrantType(new OAuth2\OpenID\GrantType\AuthorizationCode($storage, $config));
+}
+
+// JWT Bearer Token (not supported yet)
+//$server->addGrantType(new OAuth2\GrantType\JwtBearer($storage, $config));
 
 /*
 |--------------------------------------------------------------------------
@@ -158,8 +163,8 @@ if ($well_known  == 'keys') {
 				'kty' => 'RSA',
 				'alg' => 'RS256',
 				'use' => 'sig',
-				'n' =>  strtr( base64_encode( $publicKey['rsa']['n'] ), '+/=', '-_,'),
-				'e' =>  strtr( base64_encode( $publicKey['rsa']['e'] ), '+/=', '-_,')
+				'n' =>  base64_encode( $publicKey['rsa']['n'] ),
+				'e' =>  base64_encode( $publicKey['rsa']['e'] )
 				)
 			)
 	));

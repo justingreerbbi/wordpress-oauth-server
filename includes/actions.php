@@ -32,6 +32,6 @@ function wo_profile_update_action( $user_id ) {
   }
   global $wpdb;
 	$wpdb->delete( "{$wpdb->prefix}oauth_access_tokens", array( "user_id" => $user_id ) );
-	$wpdb->delete( "{$wpdb->prefix}oauth_refresh_tokens", array( "user_id" => $user_id) );
+	$wpdb->delete( "{$wpdb->prefix}oauth_refresh_tokens", array( "user_id" => $user_id ) );
 }
 add_action( 'profile_update', 'wo_profile_update_action' );

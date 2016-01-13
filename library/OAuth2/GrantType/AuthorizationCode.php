@@ -44,6 +44,12 @@ class AuthorizationCode implements GrantTypeInterface
             return false;
         }
 
+        // Remove id_token if not wanted
+        $scopes = explode(' ', trim($authCode['scope']));
+        if( !in_array('openid', $scopes ) ) {
+            unset( $authCode['id_token'] );
+        }
+
         /*
          * 4.1.3 - ensure that the "redirect_uri" parameter is present if the "redirect_uri" parameter was included in the initial authorization request
          * @uri - http://tools.ietf.org/html/rfc6749#section-4.1.3
@@ -95,9 +101,6 @@ class AuthorizationCode implements GrantTypeInterface
         $token = $accessToken->createAccessToken($client_id, $user_id, $scope);
         $this->storage->expireAuthorizationCode($this->authCode['code']);
 
-        if( !empty($this->authCode['id_token']) )
-            $token['id_token'] = $this->authCode['id_token'];
-        
         return $token;
     }
 }

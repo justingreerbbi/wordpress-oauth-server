@@ -29,10 +29,9 @@ class Wordpressdb implements
     
     /**
      * [__construct description]
-     * @param array $config Configuration for the Wpo Stroage Object provided by the developer
+     * @param array $config Configuration for the WPDB Storage Object
      */
-    public function __construct( $config=array() ) 
-    {
+    public function __construct( $config=array() ) {
         global $wpdb;
         $this->db = $wpdb;
         $this->config = array_merge(
@@ -57,8 +56,7 @@ class Wordpressdb implements
      * @param  [type] $client_secret [description]
      * @return [type]                [description]
      */
-    public function checkClientCredentials( $client_id, $client_secret=null ) 
-    {
+    public function checkClientCredentials ( $client_id, $client_secret=null ) {
         $stmt = $this->db->prepare("SELECT * FROM {$this->db->prefix}oauth_clients WHERE client_id = %s", array($client_id));
         $stmt = $this->db->get_row($stmt, ARRAY_A);
         
@@ -70,8 +68,7 @@ class Wordpressdb implements
      * @param  [type]  $client_id [description]
      * @return boolean            [description]
      */
-    public function isPublicClient($client_id) 
-    {
+    public function isPublicClient ( $client_id ) {
         $stmt = $this->db->prepare("SELECT * FROM {$this->db->prefix}oauth_clients WHERE client_id = %s", array($client_id));
         $stmt = $this->db->get_row($stmt, ARRAY_A);
         
@@ -83,8 +80,7 @@ class Wordpressdb implements
      * @param  [type] $client_id [description]
      * @return [type]            [description]
      */
-    public function getClientDetails($client_id) 
-    {
+    public function getClientDetails( $client_id ) {
         $stmt = $this->db->prepare("SELECT * FROM {$this->db->prefix}oauth_clients WHERE client_id = %s", array($client_id));
         $stmt = $this->db->get_row($stmt, ARRAY_A);
         
@@ -183,12 +179,12 @@ class Wordpressdb implements
     /**
      * [getAuthorizationCode description]
      * @param  [type] $code [description]
+     * @param  bool to return id_token key or not. Now that is the question!
      * @return [type]       [description]
      */
-    public function getAuthorizationCode($code) 
-    {
+    public function getAuthorizationCode ( $code ) {
         $stmt = $this->db->prepare("SELECT * from {$this->db->prefix}oauth_authorization_codes WHERE authorization_code = %s", array($code));
-        $stmt = $this->db->get_row($stmt, ARRAY_A);
+        $stmt = $this->db->get_row($stmt, ARRAY_A);        
         
         if (null != $stmt) 
             $stmt['expires'] = strtotime($stmt['expires']);
@@ -240,9 +236,8 @@ class Wordpressdb implements
      * @param [type] $scope        [description]
      * @param [type] $id_token     [description]
      */
-    private function setAuthorizationCodeWithIdToken($code, $client_id, $user_id, $redirect_uri, $expires, $scope=null, $id_token=null) 
-    { 
-        // convert expires to datestring
+    private function setAuthorizationCodeWithIdToken($code, $client_id, $user_id, $redirect_uri, $expires, $scope=null, $id_token=null) { 
+        // convert expires to date string
         $expires = date('Y-m-d H:i:s', $expires);
         
         // if it exists, update it.

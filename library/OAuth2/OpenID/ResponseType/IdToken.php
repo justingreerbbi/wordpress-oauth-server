@@ -39,11 +39,8 @@ class IdToken implements IdTokenInterface
 
         // create the id token.
         list($user_id, $auth_time) = $this->getUserIdAndAuthTime($userInfo);
-
-        // Collect the users claims
         $userClaims = $this->userClaimsStorage->getUserClaims($user_id, $params['scope']);
 
-        // Create the id_token
         $id_token = $this->createIdToken($params['client_id'], $userInfo, $params['nonce'], $userClaims, null);
         $result["fragment"] = array('id_token' => $id_token);
         if (isset($params['state'])) {
@@ -53,12 +50,14 @@ class IdToken implements IdTokenInterface
         return array($params['redirect_uri'], $result);
     }
 
-    public function createIdToken($client_id, $userInfo, $nonce = null, $userClaims = null, $access_token = null) {
-
+    public function createIdToken($client_id, $userInfo, $nonce = null, $userClaims = null, $access_token = null)
+    {
+        // pull auth_time from user info if supplied
         list($user_id, $auth_time) = $this->getUserIdAndAuthTime($userInfo);
+
         $token = array(
             'iss'        => $this->config['issuer'],
-            'sub'        => (string)$user_id,
+            'sub'        => $user_id,
             'aud'        => $client_id,
             'iat'        => time(),
             'exp'        => time() + $this->config['id_lifetime'],
@@ -80,8 +79,9 @@ class IdToken implements IdTokenInterface
         return $this->encodeToken($token, $client_id);
     }
 
-    protected function createAtHash($access_token, $client_id = null) {
-        $algorithm = 'RS256';
+    protected function createAtHash($access_token, $client_id = null)
+    {
+        $algorithm = wo_get_algorithm();
         $hash_algorithm = 'sha' . substr($algorithm, 2);
         $hash = hash($hash_algorithm, $access_token);
         $at_hash = substr($hash, 0, strlen($hash) / 2);
@@ -89,14 +89,14 @@ class IdToken implements IdTokenInterface
         return $this->encryptionUtil->urlSafeB64Encode($at_hash);
     }
 
-    protected function encodeToken(array $token, $client_id = null) {
-        $privateKey = get_private_server_key();
-        $algorithm = 'RS256';
+    protected function encodeToken(array $token, $client_id = null) {   
+        $private_key = get_private_server_key();
+        $algorithm = wo_get_algorithm();
 
-        return $this->encryptionUtil->encode($token, $privateKey);
+        return $this->encryptionUtil->encode($token, $private_key, $algorithm);
     }
 
-    private function getUserIdAndAuthTime( $userInfo ) {
+    private function getUserIdAndAuthTime ( $userInfo ) {
         $auth_time = null;
 
         // support an array for user_id / auth_time

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WP OAuth Server
  * Plugin URI: http://wp-oauth.com
- * Version: 3.1.92
+ * Version: 3.1.93
  * Description: Use WordPress to power your OAuth Server. Provide Single Sign On and other OAuth functionality.
  * Author: Justin Greer
  * Author URI: http://wp-oauth.com
@@ -44,7 +44,6 @@ function _wo_register_files() {
 
 /** Grab the main class file */
 require_once( dirname(__FILE__) . '/wp-oauth-main.php');
-
 
 /**
  * @todo  Move setup and upgrade inside the function wo_plugin_activate()
