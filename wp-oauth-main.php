@@ -15,7 +15,7 @@ if (!function_exists('add_filter')) {
 class WO_Server {
 
 	/** Plugin Version */
-	public $version = "3.1.93";
+	public $version = "3.1.94";
 
 	/** Server Instance */
 	public static $_instance = null;

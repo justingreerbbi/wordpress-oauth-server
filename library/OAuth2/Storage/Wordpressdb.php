@@ -269,8 +269,10 @@ class Wordpressdb implements
     public function checkUserCredentials( $username, $password ) {
         if ( $user = $this->getUser( $username ) ) {
             $login_check = $this->checkPassword($user, $password);
+            
+            // @since 3.1.94 the parameter $user is being passed
             if(!$login_check)
-                do_action('wo_failed_login');
+                do_action('wo_failed_login', $user);
 
             return $login_check; 
         }
@@ -424,15 +426,18 @@ class Wordpressdb implements
     }
     
     /**
-     * Encrypt password
+     * Check the user login credentials
      * @param  [type] $user     [description]
      * @param  [type] $password [description]
      * @return [type]           [description]
      *
-     * @todo Check for Removal
+     * 
      */
     protected function checkPassword($user, $password) {
         $login_check = wp_check_password( $password, $user['user_pass'], $user['ID']);
+        if(!$login_check){
+            do_action('wp_login_failed', $user['user_login']);
+        }
 
         return $login_check;
     }
