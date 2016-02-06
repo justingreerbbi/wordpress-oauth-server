@@ -193,6 +193,19 @@ function get_public_server_key () {
 }
 
 /**
+ * Returns the set ALGO that is to be used for the server to encode
+ *
+ * @todo Possibly set this to be adjusted somewhere. The it_token calls for it to be set by each
+ * client as a pref but we need to keep this simple.
+ * 
+ * @since 3.1.93
+ * @return String Type of algorithm used for encoding and decoding.
+ */
+function wo_get_algorithm (){
+	return 'RS256';
+}	
+
+/**
  * Check to see if there is certificates that have been generated
  * @return boolean [description]
  */

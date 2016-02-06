@@ -61,11 +61,13 @@ class JwtAccessToken extends AccessToken
     {
         // token to encrypt
         $expires = time() + $this->config['access_lifetime'];
+        $id = $this->generateAccessToken();
         $jwtAccessToken = array(
-            'id'         => $this->generateAccessToken(),
+            'id'         => $id, // for BC (see #591)
+            'jti'        => $id,
             'iss'        => $this->config['issuer'],
             'aud'        => $client_id,
-            'sub'        => (string)$user_id,
+            'sub'        => $user_id,
             'exp'        => $expires,
             'iat'        => time(),
             'token_type' => $this->config['token_type'],
@@ -88,7 +90,7 @@ class JwtAccessToken extends AccessToken
         // token to return to the client
         $token = array(
             'access_token' => $access_token,
-            'expires_in' => $this->config['access_lifetime'],
+            'expires_in' => (int) $this->config['access_lifetime'],
             'token_type' => $this->config['token_type'],
             'scope' => $scope
         );
@@ -114,8 +116,8 @@ class JwtAccessToken extends AccessToken
 
     protected function encodeToken(array $token, $client_id = null)
     {
-        $private_key = get_private_server_key();
-        $algorithm   = 'RS256';
+        $private_key = $this->publicKeyStorage->getPrivateKey($client_id);
+        $algorithm   = $this->publicKeyStorage->getEncryptionAlgorithm($client_id);
 
         return $this->encryptionUtil->encode($token, $private_key, $algorithm);
     }

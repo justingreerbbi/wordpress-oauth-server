@@ -2,10 +2,10 @@
 
 Contributors: justingreerbbi
 Donate link: http://justin-greer.com/
-Tags: oauth2, OAuth provider, Provider, OAuth, OAuth client, Single Sign On, SSO, OpenID Connect, OIDC, OpenID, Connect
-Requires at least: 4.2.4
-Tested up to: 4.3
-Stable tag: 3.1.92
+Tags: OAuth2 Service, oauth2, OAuth provider, Provider, OAuth, OAuth client, Single Sign On, SSO, OpenID Connect, OIDC, OpenID, Connect
+Requires at least: 4.3
+Tested up to: 4.4.1
+Stable tag: 3.1.94
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -93,12 +93,24 @@ For any upgrade or modification, PLEASE PLEASE PLEASE make a full backup of your
 
 == Changelog ==
 
+= 3.1.94 =
+* Updated generateAuthorizationCode() to use wp_generate_password()
+* Fixed bug with expires_in not retuning as integer
+
+= 3.1.93 =
+* Updated OAuth2 Library and re-ported to WP.
+* Updated AuthorizationCode handler to manage id_token delivery.
+* Fixed invalid id_token issue.
+
 = 3.1.92 =
 * Moved located of do_action('wo_before_authorize_method'); add added $_REQUEST parameter.
 * Rearranged OAuth Server menu for flexibility
 * Added $_REQUEST parameter to wo_before_api action
 * Add wo_failed_login action when login fails for OAuth2\Stoarge::checkPassword during user credentials grant type
 * Added wo_user_not_found action when user is not found when using user credentials
+
+TODOS
+* Add http://php.net/manual/en/function.apache-get-version.php function check before running it.
 
 = 3.1.91 =
 * Added action wo_endpoint_user_authenticated which runs before resource method but after access token authentication.

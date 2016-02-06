@@ -47,7 +47,7 @@ class AuthorizeController implements AuthorizeControllerInterface
             'allow_implicit' => false,
             'enforce_state'  => true,
             'require_exact_redirect_uri' => true,
-            'redirect_status_code' => 302
+            'redirect_status_code' => 302,
         ), $config);
 
         if (is_null($scopeUtil)) {
@@ -82,16 +82,8 @@ class AuthorizeController implements AuthorizeControllerInterface
             return;
         }
 
-        /**
-         * Simple hack to provide user claims to id_token
-         * This will work for the time being.
-         */
-        $userClaims = '';
-        if(isset($request->query['scope']))
-            $userClaims = $this->clientStorage->getUserClaims($user_id, $request->query['scope']);
-
         // build the parameters to set in the redirect URI
-        if (!$params = $this->buildAuthorizeParameters($request, $response, $user_id, $userClaims)) {
+        if (!$params = $this->buildAuthorizeParameters($request, $response, $user_id)) {
             return;
         }
 
@@ -244,8 +236,8 @@ class AuthorizeController implements AuthorizeControllerInterface
             // restrict scope by client specific scope if applicable,
             // otherwise verify the scope exists
             $clientScope = $this->clientStorage->getClientScope($client_id);
-            if ((is_null($clientScope) && !$this->scopeUtil->scopeExists($requestedScope))
-                || ($clientScope && !$this->scopeUtil->checkScope($requestedScope, $clientScope))) {
+            if ((empty($clientScope) && !$this->scopeUtil->scopeExists($requestedScope))
+                || (!empty($clientScope) && !$this->scopeUtil->checkScope($requestedScope, $clientScope))) {
                 $response->setRedirect($this->config['redirect_status_code'], $redirect_uri, $state, 'invalid_scope', 'An unsupported scope was requested', null);
 
                 return false;

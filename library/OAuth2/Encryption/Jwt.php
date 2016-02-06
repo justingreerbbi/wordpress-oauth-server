@@ -8,7 +8,7 @@ namespace OAuth2\Encryption;
  */
 class Jwt implements EncryptionInterface
 {
-    public function encode($payload, $key, $algo = 'RS256')
+    public function encode($payload, $key, $algo = 'HS256')
     {
         $header = $this->generateJwtHeader($payload, $algo);
 
@@ -25,7 +25,7 @@ class Jwt implements EncryptionInterface
         return implode('.', $segments);
     }
 
-    public function decode($jwt, $key = null, $verify = true)
+    public function decode($jwt, $key = null, $allowedAlgorithms = true)
     {
         if (!strpos($jwt, '.')) {
             return false;
@@ -49,8 +49,13 @@ class Jwt implements EncryptionInterface
 
         $sig = $this->urlSafeB64Decode($cryptob64);
 
-        if ($verify) {
+        if ((bool) $allowedAlgorithms) {
             if (!isset($header['alg'])) {
+                return false;
+            }
+
+            // check if bool arg supplied here to maintain BC
+            if (is_array($allowedAlgorithms) && !in_array($header['alg'], $allowedAlgorithms)) {
                 return false;
             }
 
@@ -88,7 +93,7 @@ class Jwt implements EncryptionInterface
         }
     }
 
-    private function sign($input, $key, $algo = 'RS256')
+    private function sign($input, $key, $algo = 'HS256')
     {
         switch ($algo) {
             case 'HS256':
@@ -152,7 +157,7 @@ class Jwt implements EncryptionInterface
             'alg' => $algorithm,
         );
     }
-    
+
     protected function hash_equals($a, $b)
     {
         if (function_exists('hash_equals')) {
@@ -162,6 +167,7 @@ class Jwt implements EncryptionInterface
         for ($i = 0; $i < strlen($a) && $i < strlen($b); $i++) {
             $diff |= ord($a[$i]) ^ ord($b[$i]);
         }
+
         return $diff === 0;
     }
 }

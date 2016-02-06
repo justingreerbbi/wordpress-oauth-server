@@ -54,7 +54,8 @@ class AuthorizationCode implements AuthorizationCodeInterface
      * @see http://tools.ietf.org/html/rfc6749#section-4
      * @ingroup oauth2_section_4
      */
-    public function createAuthorizationCode($client_id, $user_id, $redirect_uri, $scope = null) {
+    public function createAuthorizationCode($client_id, $user_id, $redirect_uri, $scope = null)
+    {
         $code = $this->generateAuthorizationCode();
         $this->storage->setAuthorizationCode($code, $client_id, $user_id, $redirect_uri, time() + $this->config['auth_code_lifetime'], $scope);
 
@@ -65,7 +66,8 @@ class AuthorizationCode implements AuthorizationCodeInterface
      * @return
      * TRUE if the grant type requires a redirect_uri, FALSE if not
      */
-    public function enforceRedirect() {
+    public function enforceRedirect()
+    {
         return $this->config['enforce_redirect'];
     }
 
@@ -80,11 +82,10 @@ class AuthorizationCode implements AuthorizationCodeInterface
      *
      * @ingroup oauth2_section_4
      *
-     * @since 3.1.5
-     * Change to use wp_generate_password() as a token/code generator to address vulnerability on older PHP versions
-     * and Windows server.
+     * @since 3.1.94 The function has been converted to use wp_generate_password
      */
-    protected function generateAuthorizationCode() {
+    protected function generateAuthorizationCode()
+    {
         $tokenLen = 40;
         return strtolower(wp_generate_password( $tokenLen, false, $extra_special_chars = false ));
     }
