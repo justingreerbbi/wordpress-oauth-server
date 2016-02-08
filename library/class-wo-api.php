@@ -25,8 +25,8 @@ if ( 0 == $o["enabled"] ) {
 }
 
 global $wp_query;
-$method = $wp_query->get("oauth");
-$well_known = $wp_query->get("well-known");
+$method = $wp_query->get( 'oauth' );
+$well_known = $wp_query->get( 'well-known' );
 $storage = new OAuth2\Storage\Wordpressdb();
 $config = array(
 	'use_crypto_tokens' => false,
@@ -150,7 +150,7 @@ if ( $method == 'authorize' ) {
 | Presents the generic public key for signing.
 |	@since 3.0.5
 */
-if ($well_known  == 'keys') {
+if ( $well_known  == 'keys' ) {
 	$keys = apply_filters( 'wo_server_keys', null);
 	$publicKey = openssl_pkey_get_public( file_get_contents( $keys['public'] ) );
 	$publicKey = openssl_pkey_get_details( $publicKey );
@@ -225,7 +225,7 @@ if ( array_key_exists( $method, $ext_methods ) ) {
 		$response->send();
 		exit;
 	}
-	$token = $server->getAccessTokenData(OAuth2\Request::createFromGlobals());
+	$token = $server->getAccessTokenData( OAuth2\Request::createFromGlobals() );
 	if ( is_null( $token ) ) {
 		$server->getResponse()->send();
 		exit;
@@ -235,7 +235,7 @@ if ( array_key_exists( $method, $ext_methods ) ) {
 	do_action('wo_endpoint_user_authenticated', array( $token ) );
 
 	// Once we are here, everything has checked out. Call the method
-	call_user_func_array($ext_methods[$method]['func'], array($token));
+	call_user_func_array( $ext_methods[$method]['func'], array( $token ) );
 	exit;
 }
 

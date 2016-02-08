@@ -65,10 +65,9 @@ add_action( 'init', '_wo_server_register_query_vars' );
  * @return void
  */
 function _wo_server_register_rewrites() {
-  add_rewrite_rule( '^oauth/authorize/?$','index.php?oauth=authorize','top' );
-  add_rewrite_rule( '^oauth/token/?$','index.php?oauth=token','top' );
-  add_rewrite_rule( '^oauth/.well-known/?$','index.php?well-known=$matches[1]','top' );
-  add_rewrite_rule( '^oauth/wpoauthincludes/?$','index.php?wpoauthincludes=$matches[1]','top' );
+  add_rewrite_rule( '^oauth/(.+)','index.php?oauth=$matches[1]','top' );
+  add_rewrite_rule( '^.well-known/(.+)','index.php?well-known=$matches[1]','top' );
+  add_rewrite_rule( '^wpoauthincludes/(.+)','index.php?wpoauthincludes=$matches[1]','top' );
 }
 
 /**
@@ -77,7 +76,9 @@ function _wo_server_register_rewrites() {
  */
 function _wo_server_template_redirect_intercept( $template ) {
   global $wp_query;
+
   if ( $wp_query->get( 'oauth' ) || $wp_query->get( 'well-known' ) ) {
+    //print $wp_query->get( 'oauth' ); exit;
     require_once dirname( __FILE__ ) . '/library/class-wo-api.php';
     exit;
   }
