@@ -81,7 +81,6 @@ function wo_default_scopes () {
 /**
  * DEFAULT DESTROY METHOD
  * This method has been added to help secure installs that want to manually destroy sessions (valid access tokens).
- *
  * @since  3.1.5
  */
 function _wo_method_destroy ( $token = null ) {

@@ -174,10 +174,8 @@ if ( $well_known  == 'keys' ) {
 | OpenID Discovery
 |--------------------------------------------------------------------------
 |
-| Presents a basic json encoded response for OpenID Discovery.
-| - issuer MUST be HTTPS and match 
 */
-if ($well_known == 'openid-configuration') {
+if ( $well_known == 'openid-configuration' ) {
 	$openid_configuration = array(
 		'issuer' => site_url( null, 'https' ),
 	  'authorization_endpoint' => site_url( '/oauth/authorize' ),
@@ -220,7 +218,7 @@ if ( array_key_exists( $method, $ext_methods ) ) {
 
 	// Check the token provided
 	$response = new OAuth2\Response();
-	if ( !$server->verifyResourceRequest(OAuth2\Request::createFromGlobals())) {
+	if ( ! $server->verifyResourceRequest( OAuth2\Request::createFromGlobals() ) ) {
 		$response->setError(400, 'invalid_request', 'Missing or invalid parameter(s)');
 		$response->send();
 		exit;
