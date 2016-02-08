@@ -52,19 +52,8 @@ class WO_Server {
 		}
 		spl_autoload_register( array( $this, 'autoload') );
 
-		/**
-		 * Custom Authentication Hook
-		 * This MUST run before anything just to be safe.
-		 *
-		 * @since 3.1.3
-		 */
+		
 		add_filter( 'determine_current_user', array($this, '_wo_authenicate_bypass'), 21);
-
-		/** 
-		 * load all dependents
-		 *
-		 * @since 1.0.0
-		 */
 		add_action("init", array(__CLASS__, "includes"));
 
 	}

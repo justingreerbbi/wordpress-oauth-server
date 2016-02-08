@@ -211,12 +211,11 @@ $ext_methods = apply_filters( "wo_endpoints", null );
 if ( array_key_exists( $method, $ext_methods ) ) {
 
 	// If the method is is set to public, lets just run the method without
-	if( isset($ext_methods[$method]['public']) && $ext_methods[$method]['public'] ){
+	if( isset( $ext_methods[$method]['public'] ) && $ext_methods[$method]['public'] ){
 		call_user_func_array($ext_methods[$method]['func'], $_REQUEST);
 		exit;
 	}
 
-	// Check the token provided
 	$response = new OAuth2\Response();
 	if ( ! $server->verifyResourceRequest( OAuth2\Request::createFromGlobals() ) ) {
 		$response->setError(400, 'invalid_request', 'Missing or invalid parameter(s)');
@@ -229,11 +228,9 @@ if ( array_key_exists( $method, $ext_methods ) ) {
 		exit;
 	}
 
-	/** added 3.1.91 */
 	do_action('wo_endpoint_user_authenticated', array( $token ) );
-
-	// Once we are here, everything has checked out. Call the method
 	call_user_func_array( $ext_methods[$method]['func'], array( $token ) );
+
 	exit;
 }
 
