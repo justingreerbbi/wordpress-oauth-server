@@ -94,8 +94,9 @@ For any upgrade or modification, PLEASE PLEASE PLEASE make a full backup of your
 == Changelog ==
 
 = 3.1.96 =
-* Minor Tweaks
-* Now sends proper config to refresh token controller
+* Restructuring and clean up.
+* Refresh token controller now accepts parameters properly.
+* Rewrote rewrite functionality to fix issues regarding rewrites on ever load.
 
 = 3.1.95 =
 * Removed ALTER query. There is no need and someone updating from older version will experience issues anyways. Step by step upgrading is required.
