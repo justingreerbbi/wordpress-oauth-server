@@ -15,7 +15,7 @@ if (!function_exists('add_filter')) {
 class WO_Server {
 
 	/** Plugin Version */
-	public $version = "3.1.94";
+	public $version = "3.1.95";
 
 	/** Server Instance */
 	public static $_instance = null;
@@ -39,18 +39,18 @@ class WO_Server {
 
 	function __construct() {
 
-		if (!defined("WOABSPATH")) {
-			define("WOABSPATH", dirname(__FILE__));
+		if ( ! defined( 'WOABSPATH' ) ) {
+			define( 'WOABSPATH', dirname( __FILE__ ) );
 		}
 
-		if (!defined("WOURI")) {
-			define("WOURI", plugins_url("/", __FILE__));
+		if ( ! defined( 'WOURI' ) ) {
+			define( 'WOURI', plugins_url( '/', __FILE__) );
 		}
 
-		if (function_exists("__autoload")) {
-			spl_autoload_register("__autoload");
+		if ( function_exists( '__autoload' ) ) {
+			spl_autoload_register( '__autoload' );
 		}
-		spl_autoload_register(array($this, 'autoload'));
+		spl_autoload_register( array( $this, 'autoload') );
 
 		/**
 		 * Custom Authentication Hook
@@ -83,12 +83,11 @@ class WO_Server {
 	 */
 	public function _wo_authenicate_bypass( $user_id ) {
 		if ( $user_id && $user_id > 0 ) 
-			return (int)$user_id;
+			return (int) $user_id;
 
-		/** Extra code but if the user is already logged in, there is no need to re query the DB */
 		$o = get_option( 'wo_options' );
 		if ( $o['enabled'] == 0 ) 
-		return (int)$user_id;
+		return (int) $user_id;
 		
 		require_once( dirname( WPOAUTH_FILE ) . '/library/OAuth2/Autoloader.php');
 		OAuth2\Autoloader::register();
@@ -97,11 +96,7 @@ class WO_Server {
 		if ( $server->verifyResourceRequest( $request ) ) {
 			$token = $server->getAccessTokenData( $request );
 			if ( isset( $token['user_id'] ) && $token['user_id'] > 0 ) {
-				return (int)$token['user_id'];	
-
-			// If the token key is there but the ID is either 0 or empty
-			// we will assume it is a valid client access token and will need to investigate the 
-			// request further.	
+				return (int) $token['user_id'];	
 			}elseif( isset( $token['user_id'] ) && $token['user_id'] === 0 ) {
 
 			}
@@ -146,7 +141,7 @@ class WO_Server {
 	public static function includes() {
 		require_once dirname( __FILE__ ) . '/includes/functions.php';
 		require_once dirname( __FILE__ ) . '/includes/admin-options.php';
-		require_once dirname( __FILE__ ) . '/includes/rewrites.php';
+		//require_once dirname( __FILE__ ) . '/includes/rewrites.php';
 
 		/** include the ajax class if DOING_AJAX is defined */
 		if (defined('DOING_AJAX')) {
@@ -273,9 +268,6 @@ class WO_Server {
       );
 			";
 
-		/** @todo LEGACY id_token PATCH - REMOVE IN VERSION 3.2.0*/
-		$wpdb->query("ALTER TABLE {$wpdb->prefix}oauth_authorization_codes MODIFY id_token VARCHAR(3000)");
-
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		dbDelta($sql1);
 		dbDelta($sql2);
@@ -289,13 +281,13 @@ class WO_Server {
 		 * Create certificates for signing
 		 *
 		 */
-		if(function_exists('openssl_pkey_new')){
-			$res = openssl_pkey_new(array(
+		if( function_exists( 'openssl_pkey_new' ) ){
+			$res = openssl_pkey_new( array(
 			    "private_key_bits" => 2048,
 			    "private_key_type" => OPENSSL_KEYTYPE_RSA,
 			));
-			openssl_pkey_export($res, $privKey);
-			file_put_contents(dirname(WPOAUTH_FILE) . '/library/keys/private_key.pem', $privKey);
+			openssl_pkey_export( $res, $privKey );
+			file_put_contents(dirname( WPOAUTH_FILE) . '/library/keys/private_key.pem', $privKey);
 
 			$pubKey = openssl_pkey_get_details($res);
 			$pubKey = $pubKey["key"];
@@ -304,7 +296,7 @@ class WO_Server {
 			// Update plugin version
 			$plugin_data = get_plugin_data( WPOAUTH_FILE );
 			$plugin_version = $plugin_data['Version'];
-			update_option('wpoauth_version', $plugin_version);
+			update_option( 'wpoauth_version', $plugin_version );
 		}
 
 	}
@@ -314,30 +306,29 @@ class WO_Server {
 	 * 
 	 */
 	public function upgrade () {
-		$options = get_option('wo_options');
+		$options = get_option( 'wo_options' );
 
 		// added 3.0.4
-		if(!$options['access_token_lifetime'])
+		if( ! isset( $options['access_token_lifetime'] ) ) {
 			$options['access_token_lifetime'] = 3600;
+		}
 
 		// added 3.0.4
-		if(!$options['refresh_token_lifetime'])
+		if( ! isset( $options['refresh_token_lifetime'] ) ) {
 			$options['refresh_token_lifetime'] = 86400;
+		}
 
 		// added 3.0.5
-		if(!$options['id_token_lifetime'])
+		if( ! isset( $options['id_token_lifetime'] ) ) {
 			$options['id_token_lifetime'] = 3600;
+		}
 
 		// added 3.0.5
-		if(!$options['use_openid_connect'])
+		if( ! isset( $options['use_openid_connect'] ) ) {
 			$options['use_openid_connect'] = 3600;
+		}
 
-		update_option('wo_options', $options);
-
-		/** @todo Modification of collation for existing tables. Implanting in 3.2.0 */
-		//global $wpdb;
-		//$wpdb->query("alter table <some_table> convert to character set utf8 collate utf8_unicode_ci;");
-
+		update_option( 'wo_options', $options );
 	}
 
 }

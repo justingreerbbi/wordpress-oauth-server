@@ -126,7 +126,7 @@ function license_status (){
 add_action( 'wo_daily_tasks_hook', 'wo_daily_tasks' );
 function wo_daily_tasks () {
 	$options = get_option( 'wo_options' );
-	if( $options['license_status'] == 'valid' ){
+	if( @$options['license_status'] == 'valid' ){
 		$api_params = array( 
 			'edd_action'=> 'activate_license', 
 			'license' 	=> $options['license'], 
@@ -136,7 +136,7 @@ function wo_daily_tasks () {
 		$response = wp_remote_get( add_query_arg( $api_params, 'https://wp-oauth.com' ) );
 		if ( !is_wp_error( $response ) ){
 			$license_data = json_decode( wp_remote_retrieve_body( $response ) );
-			if($options['license_status'] == 'valid' && $license_data->license != 'valid') {
+			if(@$options['license_status'] == 'valid' && $license_data->license != 'valid') {
 				wp_mail( get_option('admin_email'), 'Issues found with WP OAuth Server', 'Recent checks show that your license key status for WordPress OAuth Server has been changed.');
 				$options['license'] = '';
 				$options['license_status'] = '';

@@ -5,19 +5,19 @@
  * For now, you can read here to understand how this plugin works.
  * @link(Github, http://bshaffer.github.io/oauth2-server-php-docs/)
  */
-if (!function_exists('add_filter')) {
+if (! function_exists( 'add_filter' ) ) {
 	header('Status: 403 Forbidden');
 	header('HTTP/1.1 403 Forbidden');
 	exit();
 }
 
-do_action('wo_before_api', array( $_REQUEST ) );
-require_once dirname(__FILE__) . '/OAuth2/Autoloader.php';
+do_action( 'wo_before_api', array( $_REQUEST ) );
+require_once dirname( __FILE__ ) . '/OAuth2/Autoloader.php';
 OAuth2\Autoloader::register();
 
 // Grab the options
 $o = get_option("wo_options");
-if ($o["enabled"] == 0) {
+if ( 0 == $o["enabled"] ) {
 	do_action('wo_before_unavailable_error');
 	$response = new OAuth2\Response(array('error' => 'temporarily_unavailable'));
 	$response->send();
@@ -47,7 +47,7 @@ $config = array(
 	'always_issue_new_refresh_token' => true,
 	'redirect_status_code' => 302
 );
-$server = new OAuth2\Server($storage, $config);
+$server = new OAuth2\Server( $storage, $config );
 
 /*
 |--------------------------------------------------------------------------
@@ -59,24 +59,21 @@ $server = new OAuth2\Server($storage, $config);
 |
  */
 $support_grant_types = array();
-if ($o['auth_code_enabled'] == '1') {
-	$server->addGrantType(new OAuth2\GrantType\AuthorizationCode($storage));
+if ( '1' == $o['auth_code_enabled'] ) {
+	$server->addGrantType( new OAuth2\GrantType\AuthorizationCode( $storage ) );
 }
-if ($o['client_creds_enabled'] == '1') {
-	$server->addGrantType(new OAuth2\GrantType\ClientCredentials($storage));
+if ( '1' == $o['client_creds_enabled'] ) {
+	$server->addGrantType(new OAuth2\GrantType\ClientCredentials( $storage ) );
 }
-if ($o['user_creds_enabled'] == '1') {
-	$server->addGrantType(new OAuth2\GrantType\UserCredentials($storage));
+if ( '1' == $o['user_creds_enabled'] ) {
+	$server->addGrantType(new OAuth2\GrantType\UserCredentials( $storage ) );
 }
-if ($o['refresh_tokens_enabled'] == '1') {
-	$server->addGrantType(new OAuth2\GrantType\RefreshToken($storage) );
+if ( '1' == $o['refresh_tokens_enabled'] ) {
+	$server->addGrantType( new OAuth2\GrantType\RefreshToken( $storage, $config ) );
 }
-if ($o['use_openid_connect'] == '1') {
-	$server->addGrantType(new OAuth2\OpenID\GrantType\AuthorizationCode($storage, $config));
+if ( '1' == $o['use_openid_connect'] ) {
+	$server->addGrantType( new OAuth2\OpenID\GrantType\AuthorizationCode( $storage, $config ) );
 }
-
-// JWT Bearer Token (not supported yet)
-//$server->addGrantType(new OAuth2\GrantType\JwtBearer($storage, $config));
 
 /*
 |--------------------------------------------------------------------------
@@ -89,14 +86,14 @@ if ($o['use_openid_connect'] == '1') {
 |
  */
 $defaultScope = 'basic';
-$supportedScopes = apply_filters('wo_scopes', null, 20);
+$supportedScopes = apply_filters( 'wo_scopes', null, 20 );
 
-$memory = new OAuth2\Storage\Memory(array(
+$memory = new OAuth2\Storage\Memory( array(
 	'default_scope' => $defaultScope,
 	'supported_scopes' => $supportedScopes,
-));
-$scopeUtil = new OAuth2\Scope($memory);
-$server->setScopeUtil($scopeUtil);
+) );
+$scopeUtil = new OAuth2\Scope( $memory );
+$server->setScopeUtil( $scopeUtil );
 
 /*
 |--------------------------------------------------------------------------
@@ -107,7 +104,7 @@ $server->setScopeUtil($scopeUtil);
 | Authorization Code (implicit) Grant Type as well as request tokens
 |
  */
-if ($method == 'token') {
+if ( $method == 'token' ) {
 	do_action( 'wo_before_token_method', array( $_REQUEST ) );
 	$server->handleTokenRequest( OAuth2\Request::createFromGlobals() )->send();
 	exit;
@@ -126,11 +123,11 @@ if ($method == 'token') {
 | 3. Create the authorization request using the authentication user's user_id
 |
 */
-if ($method == 'authorize') {
-	do_action('wo_before_authorize_method', array( $_REQUEST ) );
+if ( $method == 'authorize' ) {
+	do_action( 'wo_before_authorize_method', array( $_REQUEST ) );
 	$request = OAuth2\Request::createFromGlobals();
 	$response = new OAuth2\Response();
-	if (!$server->validateAuthorizeRequest( $request, $response ) ) {
+	if (! $server->validateAuthorizeRequest( $request, $response ) ) {
 		$response->send();
 		exit;
 	}
@@ -154,7 +151,7 @@ if ($method == 'authorize') {
 |	@since 3.0.5
 */
 if ($well_known  == 'keys') {
-	$keys = apply_filters('wo_server_keys', null);
+	$keys = apply_filters( 'wo_server_keys', null);
 	$publicKey = openssl_pkey_get_public( file_get_contents( $keys['public'] ) );
 	$publicKey = openssl_pkey_get_details( $publicKey );
 	$response = new OAuth2\Response( array(
