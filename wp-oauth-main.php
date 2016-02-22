@@ -6,16 +6,13 @@
  * @author Justin Greer <justin@justin-greer.com>
  * @package WordPress OAuth Server
  */
-if (!function_exists('add_filter')) {
-	header('Status: 403 Forbidden');
-	header('HTTP/1.1 403 Forbidden');
-	exit();
-}
+
+defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
 class WO_Server {
 
 	/** Plugin Version */
-	public $version = "3.1.95";
+	public $version = "3.1.96";
 
 	/** Server Instance */
 	public static $_instance = null;
