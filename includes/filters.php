@@ -81,25 +81,23 @@ function wo_default_scopes () {
 /**
  * DEFAULT DESTROY METHOD
  * This method has been added to help secure installs that want to manually destroy sessions (valid access tokens).
- *
  * @since  3.1.5
  */
 function _wo_method_destroy ( $token = null ) {
 	$access_token = &$token['access_token'];
 
-
 	global $wpdb;
-	$stmt = $wpdb->delete("{$wpdb->prefix}oauth_access_tokens", array("access_token" => $access_token ) );
+	$stmt = $wpdb->delete("{$wpdb->prefix}oauth_access_tokens", array( 'access_token' => $access_token ) );
 
 	/** If there is a refresh token we need to remove it as well. */
-	if( !empty( $_REQUEST[ 'refresh_token' ] ) )
-		$stmt = $wpdb->delete("{$wpdb->prefix}oauth_refresh_tokens", array("refresh_token" => $_REQUEST['refresh_token'] ) );
+	if( ! empty( $_REQUEST[ 'refresh_token' ] ) )
+		$stmt = $wpdb->delete("{$wpdb->prefix}oauth_refresh_tokens", array( 'refresh_token' => $_REQUEST['refresh_token'] ) );
 
 	/** Prepare the return */
-	$response = new OAuth2\Response(array(
+	$response = new OAuth2\Response( array(
 		'status' =>   true,
-		'description' => 'Session destroyed successfully')
-	);
+		'description' => 'Session destroyed successfully'
+		) );
 	$response->send();
 	exit;
 }
@@ -109,25 +107,19 @@ function _wo_method_destroy ( $token = null ) {
  * This is the default resource call "/oauth/me". Do not edit or remove.
  */
 function _wo_method_me ( $token = null ) {
-
-	/** 
-	 * Added 3.0.2 to handle access tokens not assigned to user
-	 */
-	if (!isset($token['user_id']) || $token['user_id'] == 0) {
+	if ( ! isset( $token['user_id'] ) || $token['user_id'] == 0 ) {
 		$response = new OAuth2\Response();
-		$response->setError(400, 'invalid_request', 'Missing or invalid access token');
+		$response->setError( 400, 'invalid_request', 'Missing or invalid access token' );
 		$response->send();
 		exit;
 	}
-	$user_id = &$token['user_id'];
 
-	global $wpdb;
-	$me_data = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}users WHERE ID=$user_id", ARRAY_A);
+	$user = get_user_by( 'id', $token['user_id'] );
+	$me_data = (array) $user->data;
 
-	/** prevent sensitive data - makes me happy ;) */
-	unset($me_data['user_pass']);
-	unset($me_data['user_activation_key']);
-	unset($me_data['user_url']);
+	unset( $me_data['user_pass'] );
+	unset( $me_data['user_activation_key'] );
+	unset( $me_data['user_url'] );
 
 	/**
 	 * @since  3.0.5 
@@ -136,7 +128,7 @@ function _wo_method_me ( $token = null ) {
 	 */
 	$me_data['email'] = $me_data['user_email'];
 
-	$response = new OAuth2\Response($me_data);
+	$response = new OAuth2\Response( $me_data );
 	$response->send();
 	exit;
 }

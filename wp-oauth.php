@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WP OAuth Server
  * Plugin URI: http://wp-oauth.com
- * Version: 3.1.95
+ * Version: 3.1.96
  * Description: Use WordPress to power your OAuth Server. Provide Single Sign On and other OAuth functionality.
  * Author: Justin Greer
  * Author URI: http://wp-oauth.com
@@ -32,24 +32,27 @@ if (! defined( 'WPOAUTH_FILE' ) ) {
  *
  * Since PHP 5.4, WP will through notices due to the way WP calls statically
  */
-add_action( 'wp_loaded', '_wo_register_files' );
-function _wo_register_files() {
+function _wo_server_register_files() {
 	wp_register_style( 'wo_admin', plugins_url( '/assets/css/admin.css', __FILE__ ) );
 	wp_register_script( 'wo_admin', plugins_url( '/assets/js/admin.js', __FILE__ ) );
 }
+add_action( 'wp_loaded', '_wo_server_register_files' );
 
-/** Grab the main class file */
-require_once( dirname(__FILE__) . '/wp-oauth-main.php');
+require_once( dirname(__FILE__) . '/wp-oauth-main.php' );
 
-function _wo_server_init() {
-  _wo_register_rewrites();
+/**
+ * Adds/registers query vars
+ * @return void
+ */
+function _wo_server_register_query_vars() {
+  _wo_server_register_rewrites();
 
   global $wp;
   $wp->add_query_var( 'oauth' );
   $wp->add_query_var( 'well-known' );
   $wp->add_query_var( 'wpoauthincludes' );
 }
-add_action( 'init', '_wo_server_init' );
+add_action( 'init', '_wo_server_register_query_vars' );
 
 /**
  * Registers rewrites for OAuth2 Server
@@ -61,26 +64,26 @@ add_action( 'init', '_wo_server_init' );
  * 
  * @return void
  */
-function _wo_register_rewrites() {
-  add_rewrite_rule( '^oauth/authorize/?$','index.php?oauth=authorize','top' );
-  add_rewrite_rule( '^oauth/token/?$','index.php?oauth=token','top' );
-  add_rewrite_rule( '^oauth/.well-known/?$','index.php?well-known=$matches[1]','top' );
-  add_rewrite_rule( '^oauth/wpoauthincludes/?$','index.php?wpoauthincludes=$matches[1]','top' );
+function _wo_server_register_rewrites() {
+  add_rewrite_rule( '^oauth/(.+)','index.php?oauth=$matches[1]','top' );
+  add_rewrite_rule( '^.well-known/(.+)','index.php?well-known=$matches[1]','top' );
+  add_rewrite_rule( '^wpoauthincludes/(.+)','index.php?wpoauthincludes=$matches[1]','top' );
 }
 
 /**
  * [template_redirect_intercept description]
  * @return [type] [description]
  */
-function _wo_template_redirect_intercept( $template ) {
+function _wo_server_template_redirect_intercept( $template ) {
   global $wp_query;
+
   if ( $wp_query->get( 'oauth' ) || $wp_query->get( 'well-known' ) ) {
-      require_once dirname( __FILE__ ) . '/library/class-wo-api.php';
-      exit;
+    //print $wp_query->get( 'oauth' ); exit;
+    require_once dirname( __FILE__ ) . '/library/class-wo-api.php';
+    exit;
   }
 
-  /** @since 3.1.6 | used by admin only */
-  if ( $wp_query->get('wpoauthincludes') ) {
+  if ( $wp_query->get( 'wpoauthincludes' ) ) {
       $allowed_includes = array(
           'create' => dirname( WPOAUTH_FILE ) . '/library/content/create-new-client.php',
           'edit' => dirname( WPOAUTH_FILE ) . '/library/content/edit-client.php'
@@ -92,35 +95,35 @@ function _wo_template_redirect_intercept( $template ) {
 
   return $template;
 }
-add_filter( 'template_include', '_wo_template_redirect_intercept', 100);
+add_filter( 'template_include', '_wo_server_template_redirect_intercept', 100);
 
 /**
  * OAuth2 Server Activation
  * @param  [type] $network_wide [description]
  * @return [type]               [description]
  */
-function _wo_activation( $network_wide ) {
+function _wo_server_activation( $network_wide ) {
     if ( function_exists( 'is_multisite' ) && is_multisite() && $network_wide ) {
         $mu_blogs = wp_get_sites();
         foreach ( $mu_blogs as $mu_blog ) {
             switch_to_blog( $mu_blog['blog_id'] );
-            _wo_register_rewrites();
+            _wo_server_register_rewrites();
             flush_rewrite_rules();
         }
         restore_current_blog();
     } else {
-        _wo_register_rewrites();
+        _wo_server_register_rewrites();
         flush_rewrite_rules();
     }
 }
-register_activation_hook( __FILE__, '_wo_activation' );
+register_activation_hook( __FILE__, '_wo_server_activation' );
 
 /**
  * OAuth Server Deactivation
  * @param  [type] $network_wide [description]
  * @return [type]               [description]
  */
-function _wo_deactivation( $network_wide ) {
+function _wo_server_deactivation( $network_wide ) {
     if ( function_exists( 'is_multisite' ) && is_multisite() && $network_wide ) {
         $mu_blogs = wp_get_sites();
         foreach ( $mu_blogs as $mu_blog ) {
@@ -132,7 +135,7 @@ function _wo_deactivation( $network_wide ) {
         flush_rewrite_rules();
     }
 }
-register_deactivation_hook( __FILE__, '_wo_deactivation' );
+register_deactivation_hook( __FILE__, '_wo_server_deactivation' );
 
 /**
  * @todo  Move setup and upgrade inside the function wo_plugin_activate()

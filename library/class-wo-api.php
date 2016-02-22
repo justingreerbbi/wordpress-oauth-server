@@ -5,11 +5,7 @@
  * For now, you can read here to understand how this plugin works.
  * @link(Github, http://bshaffer.github.io/oauth2-server-php-docs/)
  */
-if (! function_exists( 'add_filter' ) ) {
-	header('Status: 403 Forbidden');
-	header('HTTP/1.1 403 Forbidden');
-	exit();
-}
+defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
 do_action( 'wo_before_api', array( $_REQUEST ) );
 require_once dirname( __FILE__ ) . '/OAuth2/Autoloader.php';
@@ -25,8 +21,8 @@ if ( 0 == $o["enabled"] ) {
 }
 
 global $wp_query;
-$method = $wp_query->get("oauth");
-$well_known = $wp_query->get("well-known");
+$method = $wp_query->get( 'oauth' );
+$well_known = $wp_query->get( 'well-known' );
 $storage = new OAuth2\Storage\Wordpressdb();
 $config = array(
 	'use_crypto_tokens' => false,
@@ -150,7 +146,7 @@ if ( $method == 'authorize' ) {
 | Presents the generic public key for signing.
 |	@since 3.0.5
 */
-if ($well_known  == 'keys') {
+if ( $well_known  == 'keys' ) {
 	$keys = apply_filters( 'wo_server_keys', null);
 	$publicKey = openssl_pkey_get_public( file_get_contents( $keys['public'] ) );
 	$publicKey = openssl_pkey_get_details( $publicKey );
@@ -174,10 +170,8 @@ if ($well_known  == 'keys') {
 | OpenID Discovery
 |--------------------------------------------------------------------------
 |
-| Presents a basic json encoded response for OpenID Discovery.
-| - issuer MUST be HTTPS and match 
 */
-if ($well_known == 'openid-configuration') {
+if ( $well_known == 'openid-configuration' ) {
 	$openid_configuration = array(
 		'issuer' => site_url( null, 'https' ),
 	  'authorization_endpoint' => site_url( '/oauth/authorize' ),
@@ -213,29 +207,26 @@ $ext_methods = apply_filters( "wo_endpoints", null );
 if ( array_key_exists( $method, $ext_methods ) ) {
 
 	// If the method is is set to public, lets just run the method without
-	if( isset($ext_methods[$method]['public']) && $ext_methods[$method]['public'] ){
+	if( isset( $ext_methods[$method]['public'] ) && $ext_methods[$method]['public'] ){
 		call_user_func_array($ext_methods[$method]['func'], $_REQUEST);
 		exit;
 	}
 
-	// Check the token provided
 	$response = new OAuth2\Response();
-	if ( !$server->verifyResourceRequest(OAuth2\Request::createFromGlobals())) {
+	if ( ! $server->verifyResourceRequest( OAuth2\Request::createFromGlobals() ) ) {
 		$response->setError(400, 'invalid_request', 'Missing or invalid parameter(s)');
 		$response->send();
 		exit;
 	}
-	$token = $server->getAccessTokenData(OAuth2\Request::createFromGlobals());
+	$token = $server->getAccessTokenData( OAuth2\Request::createFromGlobals() );
 	if ( is_null( $token ) ) {
 		$server->getResponse()->send();
 		exit;
 	}
 
-	/** added 3.1.91 */
 	do_action('wo_endpoint_user_authenticated', array( $token ) );
+	call_user_func_array( $ext_methods[$method]['func'], array( $token ) );
 
-	// Once we are here, everything has checked out. Call the method
-	call_user_func_array($ext_methods[$method]['func'], array($token));
 	exit;
 }
 
