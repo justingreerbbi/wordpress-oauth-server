@@ -4,8 +4,8 @@ Contributors: justingreerbbi
 Donate link: http://justin-greer.com/
 Tags: OAuth2 Service, oauth2, OAuth provider, Provider, OAuth, OAuth client, Single Sign On, SSO, OpenID Connect, OIDC, OpenID, Connect
 Requires at least: 4.3
-Tested up to: 4.4.2
-Stable tag: 3.1.96
+Tested up to: 4.5
+Stable tag: 3.1.97
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,22 +16,31 @@ Create and Manage an OAuth 2.0 server powered by WordPress. Become a Single Sign
 This plugin is a full OAuth 2.0 authorization server/provider for WordPress. 
 The goal of WP OAuth Server is to provide an easy to use authorization method that 3rd party platforms can use to securely authorize users from your WordPress site.
 
-= Features =
+NOTE: WP OAuth Server has moved the version 3.2.0 release to wp-oauth.com. WP OAuth Server 3.1.X will still be hosted here at 
+WordPress.org but will only contain the Auth Code grant type.
 
-* Unlimited Clients
-* Firewall
-* Support for Implicit Flow
-* Built-In Resource Server
-* Automated Authorization
+= Features =
+* Works with WP REST API/ JSON API. Access protected endpoints via OAuth2
+* Create and Manage a client.
+* Built-In Resource Server. You can either extend the resource server or JSON API. You pick.
+* Automated Authorization for Single Sign On using WordPress as the provider.
 * Extendable
 
 = Supported Grant Types =
 
 * Authentication Code
-* User Credentials
+
+
+NOTE: WP OAuth Server 3.2.0 Supports all grant types including:
+
+* Auth Code
 * Client Credentials
-* Refresh Token
-* OpenID Connect with discovery
+* User Credentials
+* Implicit Flow
+* OpenID Code
+* OpenID Implicit
+
+You can purchase 3.2 + by visiting http://wp-oauth.com.
 
 = How to Use =
 
@@ -40,8 +49,9 @@ WordPress OAuth Server.
 
 = Licensing = 
 
-WP OAuth Server is free to used. Please support the project by licensing. You can view more information at
-https://wp-oauth.com.
+Licensing is not needed to use this plugin. WP OAuth Server 3.1.X is limited grant type and functionality. Using WP OAuth Server 
+without licensing is perfectly fine and encouraged. if you would like to have more than 1 client and the ability use ALL the grant types,
+you will need to purchase a license and download WP OAuth Server 3.2+ at https://wp-oauth.com.
 
 = Minimum Requirements =
 
@@ -92,6 +102,10 @@ For any upgrade or modification, PLEASE PLEASE PLEASE make a full backup of your
 1. Adding a Client
 
 == Changelog ==
+
+= 3.1.97 =
+* Bug fix in openID sub return parameter.
+* Added notice about upgrading and continuation of WP OAuth Server in WordPress plugin repository.
 
 = 3.1.96 =
 * Restructuring and clean up.

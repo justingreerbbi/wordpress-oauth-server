@@ -57,7 +57,7 @@ class IdToken implements IdTokenInterface
 
         $token = array(
             'iss'        => $this->config['issuer'],
-            'sub'        => $user_id,
+            'sub'        => strval( $user_id ),
             'aud'        => $client_id,
             'iat'        => time(),
             'exp'        => time() + $this->config['id_lifetime'],

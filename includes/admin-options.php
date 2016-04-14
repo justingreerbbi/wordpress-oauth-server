@@ -63,9 +63,9 @@ class WPOAuth_Admin {
 		add_thickbox();
 		?>
 			<div class="wrap">
-	      <h2>WP OAuth Server <strong><small> | v<?php echo _WO()->version; ?></small></strong></h2>
-	     	<br/>
-	     	<p></p>
+	      	<h2>WP OAuth Server <strong><small> | v<?php echo _WO()->version; ?></small></strong></h2>
+	     	<br/> 
+	     	<p>VERSION 3.1.9</p>
       	<form method="post" action="options.php">
 					<?php settings_fields('wo_options');?>
         	<div id="wo_tabs">
@@ -86,7 +86,7 @@ class WPOAuth_Admin {
 	                  <?php if (!_vl()): ?>
 	                  	<p class="description">Get a license by visiting <a href="https://wp-oauth.com/knowledge-base/" target="_blank">http://wp-oauth.com/pro-license</a>.</p>
 	                	<?php else: ?>
-	                		<p class="description" style="color:green;">Congratulations and Thank You. Your license is <strong>valid</strong>.</p>
+	                		<p class="description" style="color:orange;">Upgrade to 3.2.0. <strong>WARNING:</strong> There is manual setup to configure options after this update.</p>
 	                	<?php endif; ?>
 	                </td>
 	              </tr>
@@ -104,8 +104,8 @@ class WPOAuth_Admin {
 					  <div id="advanced-configuration">
 					  	<h2>Advanced Configuration</h2>
 					  	
-	            <h3>Grant Types <hr></h3>
-	            <p>Control which Grant Types that the server will accept.</p>
+			            <h3>Grant Types <hr></h3>
+			            <p>Control which Grant Types that the server will accept.</p>
 							<table class="form-table">
 
 	              <tr valign="top">

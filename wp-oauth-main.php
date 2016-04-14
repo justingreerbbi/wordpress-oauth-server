@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 class WO_Server {
 
 	/** Plugin Version */
-	public $version = "3.1.96";
+	public $version = "3.1.97";
 
 	/** Server Instance */
 	public static $_instance = null;
