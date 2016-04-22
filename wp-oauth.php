@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WP OAuth Server
  * Plugin URI: http://wp-oauth.com
- * Version: 3.1.97
+ * Version: 3.1.98
  * Description: Use WordPress to power your OAuth Server. Provide Single Sign On and other OAuth functionality.
  * Author: Justin Greer
  * Author URI: http://wp-oauth.com
@@ -78,7 +78,6 @@ function _wo_server_template_redirect_intercept( $template ) {
 	global $wp_query;
 
 	if ( $wp_query->get( 'oauth' ) || $wp_query->get( 'well-known' ) ) {
-		//print $wp_query->get( 'oauth' ); exit;
 		require_once dirname( __FILE__ ) . '/library/class-wo-api.php';
 		exit;
 	}
@@ -146,7 +145,7 @@ register_activation_hook(__FILE__, array(new WO_Server, 'upgrade'));
 function wo_admin_notice_upgrade_jump() {
 		?>
 		<div class="notice notice-warning">
-			<p>WP OAuth Server has updated to version 3.2.0. In order to migrate to 3.2.0, you will have to upgrade your license by <a href="https://wp-oauth.com/2016/04/upgrading-3-1-97-3-2-0/">clicking here</a>.</p>
+			<p>WP OAuth Server has updated to version 3.2.x. Click <a href="https://wp-oauth.com/2016/04/upgrading-3-1-97-3-2-0/">here</a> for more information.</p>
 		</div>
 		<?php
 }
@@ -164,7 +163,7 @@ function wo_licensed_upgrade(){
 		}
 		$license_key = trim( $wo_options['license'] ); 
 		$edd_updater = new EDD_SL_Plugin_Updater( 'https://wp-oauth.com', __FILE__, array(
-			'version' 		=> '3.1.97',
+			'version' 		=> '3.1.98',
 			'license' 		=> $license_key,
 			'item_name'     => 'WP OAuth Server',
 			'author' 		=> 'Justin Greer',

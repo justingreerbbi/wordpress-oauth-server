@@ -5,7 +5,7 @@ Donate link: http://justin-greer.com/
 Tags: OAuth2 Service, oauth2, OAuth provider, Provider, OAuth, OAuth client, Single Sign On, SSO, OpenID Connect, OIDC, OpenID, Connect
 Requires at least: 4.3
 Tested up to: 4.5
-Stable tag: 3.1.97
+Stable tag: 3.1.98
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -55,7 +55,7 @@ you will need to purchase a license and download WP OAuth Server 3.2+ at https:/
 
 = Minimum Requirements =
 
-* PHP 5.3.9 or greater *(latest version recommended)*
+* PHP 5.6 or greater *(latest version recommended)*
 * OpenSSL installed and enabled if you plan on using OpenID Connect
 
 = Other Information =
