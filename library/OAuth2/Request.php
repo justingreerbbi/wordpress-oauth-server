@@ -91,7 +91,7 @@ class Request implements RequestInterface
         return $this->query;
     }
 
-    /**
+     /**
      * Returns the request body content.
      *
      * @param Boolean $asResource If true, a resource will be returned
@@ -107,11 +107,19 @@ class Request implements RequestInterface
         if (true === $asResource) {
             $this->content = false;
 
-            return fopen('php://input', 'rb');
+            if( !isset( $HTTP_RAW_POST_DATA ) ) {
+                return fopen('php://input', 'rb');
+            }else{
+                return $HTTP_RAW_POST_DATA;
+            }
         }
 
         if (null === $this->content) {
-            $this->content = file_get_contents('php://input');
+            if( !isset( $HTTP_RAW_POST_DATA ) ) {
+                $this->content = file_get_contents('php://input');
+            }else{
+                $this->content = $HTTP_RAW_POST_DATA;
+            }
         }
 
         return $this->content;
