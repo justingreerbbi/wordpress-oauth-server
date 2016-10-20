@@ -13,10 +13,10 @@ Create and Manage an OAuth 2.0 server powered by WordPress. Become a Single Sign
 
 == Description ==
 
-This plugin is a full OAuth 2.0 authorization server/provider for WordPress. 
+This plugin is a full OAuth 2.0 authorization server/provider for WordPress.
 The goal of WP OAuth Server is to provide an easy to use authorization method that 3rd party platforms can use to securely authorize users from your WordPress site.
 
-NOTE: WP OAuth Server has moved the version 3.2.0 release to wp-oauth.com. WP OAuth Server 3.1.X will still be hosted here at 
+NOTE: WP OAuth Server has moved the version 3.2.0 release to wp-oauth.com. WP OAuth Server 3.1.X will still be hosted here at
 WordPress.org but will only contain the Auth Code grant type.
 
 = Features =
@@ -44,12 +44,12 @@ You can purchase 3.2 + by visiting http://wp-oauth.com.
 
 = How to Use =
 
-Visit https://wp-oauth.com/knowledge-base/ for detailed documentation on installing, configuring and using 
+Visit https://wp-oauth.com/support/documentation for detailed documentation on installing, configuring and using
 WordPress OAuth Server.
 
-= Licensing = 
+= Licensing =
 
-Licensing is not needed to use this plugin. WP OAuth Server 3.1.X is limited grant type and functionality. Using WP OAuth Server 
+Licensing is not needed to use this plugin. WP OAuth Server 3.1.X is limited grant type and functionality. Using WP OAuth Server
 without licensing is perfectly fine and encouraged. if you would like to have more than 1 client and the ability use ALL the grant types,
 you will need to purchase a license and download WP OAuth Server 3.2+ at https://wp-oauth.com.
 
@@ -95,7 +95,7 @@ You can visit https://wp-oauth.com/knowledge-base/. You will find in-depth docum
 
 Version 2.0.0 and lower are not compatible with version 3.0.0. If you have built your service using version 2.0.0 or lower, visit https://wp-oauth.com/account/submit-ticket/ to open a new request support request.
 
-For any upgrade or modification, PLEASE PLEASE PLEASE make a full backup of your data. 
+For any upgrade or modification, PLEASE PLEASE PLEASE make a full backup of your data.
 
 == Screenshots ==
 
@@ -188,7 +188,7 @@ TODOS
 * Tweak redirect location in API when a user is not logged in
 
 = 3.0.9 =
-* Added userinfo endpoint to /.well-known/openid-configuration 
+* Added userinfo endpoint to /.well-known/openid-configuration
 * Fixed improper return of keys when for public facing /.well-known
 * Auto generation of new certificates during activation to ensure all server have a different signature
 
@@ -217,7 +217,7 @@ TODOS
 * Added generic key signing for all clients.
 * Added public endpoint for verifying id_token (/oauth/public_key)
 
-= 3.0.4 = 
+= 3.0.4 =
 * Updated Readme.txt content
 * Add more descriptive text during PHP version check
 * Fixed license links
@@ -262,7 +262,7 @@ TODOS
 = 1.0.3 =
 * Fixed Admin URL links for plugin dashboard
 
-= 1.0.2 = 
+= 1.0.2 =
 * Fixed Broken login redirect
 
 = 1.0.1 =
